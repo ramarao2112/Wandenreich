@@ -1,0 +1,30 @@
+resource User:
+  fields:
+    id: uuid
+    email: string
+    password_hash: string [sensitive]
+
+resource Trip:
+  fields:
+    id: uuid
+    destination: string
+    owner_id: uuid -> User.id
+
+secrets:
+  DB_URL: env
+  JWT_SECRET: env
+
+endpoint POST /trips:
+  resource: Trip
+  auth: required
+  body: [destination]
+  returns: Trip
+
+endpoint GET /trips/{id}
+  resource: Trip
+  returns: Trip
+
+endpoint GET /users/{id}:
+  resource: User
+  auth: required
+  returns: User

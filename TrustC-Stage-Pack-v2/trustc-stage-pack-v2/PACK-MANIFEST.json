@@ -1,0 +1,133 @@
+{
+  "packVersion": "2-proposed",
+  "date": "2026-10-06",
+  "files": [
+    {
+      "path": "00-START-HERE.md",
+      "sha256": "a7a8c2bc7264cda79be7d6bfa59d654482f24bf4425d07b816a127bfa68b3bc8",
+      "bytes": 6204
+    },
+    {
+      "path": "01-REVIEW-AND-DECISIONS.md",
+      "sha256": "19852b00ff9a9f146a9f9d42319df5a7e860f672ed61b0d948a371d9686a521e",
+      "bytes": 6809
+    },
+    {
+      "path": "A-contracts.md",
+      "sha256": "63c3f60f271b34bb10fcb1d410dbc283c4fef96252855daa054304fd49e96236",
+      "bytes": 9227
+    },
+    {
+      "path": "B-compiler-spec.md",
+      "sha256": "02c80a828a6571ca8dc8077d82b25494d1ec03b8723509b02c0c0e54688a8436",
+      "bytes": 14951
+    },
+    {
+      "path": "C-fixtures-and-tests.md",
+      "sha256": "db7febd4b26495f934530d9d8e967ba9d38907431df177de43ad250272de15df",
+      "bytes": 5214
+    },
+    {
+      "path": "D-ui-design-addendum.md",
+      "sha256": "5dc8864e74fe566eff6cb725b4ca018f6d1d6be8eef71f46d58dbb941ab26900",
+      "bytes": 6660
+    },
+    {
+      "path": "fixtures/F1.trust",
+      "sha256": "4e364036b90af9de7a8f883dc26dbd64068c08507928a4690b91c5d5ea22dc8a",
+      "bytes": 461
+    },
+    {
+      "path": "fixtures/F2.trust",
+      "sha256": "ef146324f68fb20e98d2a653e0ca31ad29690d6ce4a31cc9e11a05ad38502884",
+      "bytes": 490
+    },
+    {
+      "path": "fixtures/F3.trust",
+      "sha256": "7f1f8f7e51d235ae7f20ff32d4d5bd9d58b5b39cb07777a6df3f3eac51966366",
+      "bytes": 622
+    },
+    {
+      "path": "fixtures/F4.trust",
+      "sha256": "3811bfb2e8bce846f95ab75840c751de48b103c4ea5db2c76f9f4e0a97c6c946",
+      "bytes": 460
+    },
+    {
+      "path": "fixtures/F5.trust",
+      "sha256": "34cf3a4be90538ee06fdaaa6ccd55883955775180eb75125235698521b5ba32f",
+      "bytes": 500
+    },
+    {
+      "path": "fixtures/F6.trust",
+      "sha256": "605ebcf2123d9ad4d045e008b94b593fa5874838a8503806efc47b19d439d319",
+      "bytes": 472
+    },
+    {
+      "path": "fixtures/F7.trust",
+      "sha256": "005d3e9ab9d0b8ac8715dd24384617b62a825b615da1bd4f30c0a06c7f1c281a",
+      "bytes": 509
+    },
+    {
+      "path": "fixtures/F7b.trust",
+      "sha256": "85be936b0b82eab8f8ba9b48b19baa0abdded964c744fcc93a13fa73e5f7c650",
+      "bytes": 525
+    },
+    {
+      "path": "optional-9-ai-front-door.md",
+      "sha256": "ca41fcccb6175d6eaded92f4f402b1e40ebaf8c2d591599d1766165db0cada13",
+      "bytes": 2283
+    },
+    {
+      "path": "stage-1-setup-and-fixtures.md",
+      "sha256": "8979e74614df81b95898a75beaadd8be6d4daf710db52b22d9fb3e395e3f9886",
+      "bytes": 3378
+    },
+    {
+      "path": "stage-2-parse.md",
+      "sha256": "2765201f7d5293eddbe4b3a23768aae0d5bfe7f0921bc26a75dacf1c01e91441",
+      "bytes": 2869
+    },
+    {
+      "path": "stage-3-verify-and-fixes.md",
+      "sha256": "933bf2bccd74dab427c78a33c8715b91563f5d4918e325d45e2d9233be83ec8f",
+      "bytes": 2993
+    },
+    {
+      "path": "stage-4-generate.md",
+      "sha256": "48c80713fccefd1660ba8ce214a8704b4a18a61e4198165c5483c3670067f065",
+      "bytes": 3575
+    },
+    {
+      "path": "stage-5-attack.md",
+      "sha256": "4e776fb9774a913c575488c6d8f9b9d245a9d35ebff6fdb2d3beff7087157d52",
+      "bytes": 3886
+    },
+    {
+      "path": "stage-6-server.md",
+      "sha256": "3c4282e78dd11ae84518bef9a2d0ab256b64a75bd023547b05a82c5d604012b6",
+      "bytes": 3981
+    },
+    {
+      "path": "stage-7-ui.md",
+      "sha256": "bdf93fefca0ad7bc26497511803b42fe07aec495c95e87d34a1f739fe9f629b1",
+      "bytes": 4325
+    },
+    {
+      "path": "stage-8-demo-proofing.md",
+      "sha256": "40be9411801999315df92c9e870230b827632843b43f9c9a3db3653540b6c221",
+      "bytes": 4164
+    }
+  ],
+  "validation": [
+    "Eight stage documents have goals, gates and handoffs",
+    "Markdown code fences balanced",
+    "F1/F2/F3 counts and key diagnostic positions checked against source",
+    "Archive contents and checksums checked"
+  ],
+  "notPerformed": [
+    "TrustC implementation",
+    "Compiler/security tests",
+    "Antigravity execution",
+    "UI rendering or accessibility validation"
+  ]
+}

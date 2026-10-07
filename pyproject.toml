@@ -1,0 +1,78 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "trustc"
+version = "0.1.0"
+description = "TrustC — security-focused compiler and workbench for TrustSpec"
+requires-python = ">=3.9"
+license = {text = "MIT"}
+authors = [{name = "TrustC Team"}]
+
+dependencies = [
+    "pydantic>=2.4,<3",
+    "email-validator>=2.0",
+]
+
+[project.optional-dependencies]
+server = [
+    "fastapi>=0.104,<1",
+    "uvicorn[standard]>=0.24,<1",
+]
+generated-app = [
+    "fastapi>=0.104,<1",
+    "uvicorn[standard]>=0.24,<1",
+    "sqlalchemy[asyncio]>=2.0,<3",
+    "aiosqlite>=0.19",
+    "pyjwt>=2.8,<3",
+]
+dev = [
+    "pytest>=7.4,<9",
+    "pytest-asyncio>=0.21",
+    "httpx>=0.25",
+    "ruff>=0.1",
+    "mypy>=1.7",
+]
+
+[project.scripts]
+trustc = "trustc.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+trustc = [
+    "schemas/*.json",
+    "grammars/*.lark",
+    "templates/**/*",
+    "rule_docs/*.md",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+    "stage1: Stage 1 tests",
+    "stage2: Stage 2 tests",
+    "stage3: Stage 3 tests",
+    "stage4: Stage 4 tests",
+    "stage5: Stage 5 tests",
+    "stage6: Stage 6 tests",
+    "stage7: Stage 7 tests",
+    "stage8: Stage 8 tests",
+]
+filterwarnings = [
+    "ignore::DeprecationWarning",
+]
+
+[tool.ruff]
+target-version = "py39"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I"]
+
+[tool.mypy]
+python_version = "3.9"
+warn_return_any = true
+warn_unused_configs = true
