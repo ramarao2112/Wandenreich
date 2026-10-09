@@ -1,0 +1,26 @@
+resource User:
+  fields:
+    id: uuid
+    email: email
+    password_hash: string [sensitive]
+
+resource Item:
+  fields:
+    id: uuid
+    name: string
+    owner_id: uuid -> User.id
+
+secrets:
+  DB_URL: env
+  JWT_SECRET: env
+
+endpoint POST /items:
+  resource: Item
+  auth: required
+  body: [name]
+  returns: Item [id, name]
+
+endpoint GET /items:
+  resource: Item
+  auth: required
+  returns: Item [id, name]

@@ -1,0 +1,77 @@
+Command: C:\Users\rama rao\OneDrive\Desktop\TrustC\.venv-win\Scripts\python.exe -m pytest -v tests/unit/test_parser.py
+Exit Code: 0
+
+STDOUT:
+============================= test session starts =============================
+platform win32 -- Python 3.14.4, pytest-8.4.2, pluggy-1.6.0 -- C:\Users\rama rao\OneDrive\Desktop\TrustC\.venv-win\Scripts\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\rama rao\OneDrive\Desktop\TrustC
+configfile: pyproject.toml
+plugins: anyio-4.15.1, asyncio-1.4.0
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 59 items
+
+tests/unit/test_parser.py::TestCanonicalFFixtures::test_valid_f_fixtures_parse_successfully[F1] PASSED [  1%]
+tests/unit/test_parser.py::TestCanonicalFFixtures::test_valid_f_fixtures_parse_successfully[F2] PASSED [  3%]
+tests/unit/test_parser.py::TestCanonicalFFixtures::test_valid_f_fixtures_parse_successfully[F3] PASSED [  5%]
+tests/unit/test_parser.py::TestCanonicalFFixtures::test_valid_f_fixtures_parse_successfully[F5] PASSED [  6%]
+tests/unit/test_parser.py::TestCanonicalFFixtures::test_valid_f_fixtures_parse_successfully[F6] PASSED [  8%]
+tests/unit/test_parser.py::TestCanonicalFFixtures::test_valid_f_fixtures_parse_successfully[F7] PASSED [ 10%]
+tests/unit/test_parser.py::TestCanonicalFFixtures::test_valid_f_fixtures_parse_successfully[F7b] PASSED [ 11%]
+tests/unit/test_parser.py::TestCanonicalFFixtures::test_f4_syntax_error_exact_span PASSED [ 13%]
+tests/unit/test_parser.py::TestPolicyResolution::test_f2_endpoint_policies PASSED [ 15%]
+tests/unit/test_parser.py::TestPolicyResolution::test_f3_ownership_waiver_span PASSED [ 16%]
+tests/unit/test_parser.py::TestPolicyResolution::test_f7_retains_role_only PASSED [ 18%]
+tests/unit/test_parser.py::TestPolicyResolution::test_f7b_retains_wrong_field_authorization PASSED [ 20%]
+tests/unit/test_parser.py::TestPolicyResolution::test_f1_absent_auth_retained PASSED [ 22%]
+tests/unit/test_parser.py::TestPolicyResolution::test_f5_body_field_span PASSED [ 23%]
+tests/unit/test_parser.py::TestSpecErrorFixtures::test_x03_multiple_ownership_edges_rejected PASSED [ 25%]
+tests/unit/test_parser.py::TestSpecErrorFixtures::test_x04_unknown_projected_field_rejected PASSED [ 27%]
+tests/unit/test_parser.py::TestSourceHandling::test_crlf_normalized_to_lf PASSED [ 28%]
+tests/unit/test_parser.py::TestSourceHandling::test_no_trailing_newline_accepted PASSED [ 30%]
+tests/unit/test_parser.py::TestSourceHandling::test_tab_characters_rejected PASSED [ 32%]
+tests/unit/test_parser.py::TestSourceHandling::test_byte_limit_exceeded_rejected PASSED [ 33%]
+tests/unit/test_parser.py::TestSourceHandling::test_non_ascii_comment_preserved PASSED [ 35%]
+tests/unit/test_parser.py::TestSourceHandling::test_trailing_newline_presence_hashes_differently PASSED [ 37%]
+tests/unit/test_parser.py::TestSourceHandling::test_exact_byte_boundary_and_crlf_shrink PASSED [ 38%]
+tests/unit/test_parser.py::TestSourceHandling::test_exact_diagnostic_span_after_non_ascii_comment PASSED [ 40%]
+tests/unit/test_parser.py::TestSourceHandling::test_lone_cr_handling PASSED [ 42%]
+tests/unit/test_parser.py::TestSourceHandling::test_inconsistent_indentation_rejected PASSED [ 44%]
+tests/unit/test_parser.py::TestSourceHandling::test_unrelated_malformed_declaration_error_position PASSED [ 45%]
+tests/unit/test_parser.py::TestValidationRules::test_duplicate_resource_rejected PASSED [ 47%]
+tests/unit/test_parser.py::TestValidationRules::test_duplicate_field_rejected PASSED [ 49%]
+tests/unit/test_parser.py::TestValidationRules::test_duplicate_endpoint_rejected PASSED [ 50%]
+tests/unit/test_parser.py::TestValidationRules::test_duplicate_endpoint_attr_rejected PASSED [ 52%]
+tests/unit/test_parser.py::TestValidationRules::test_missing_user_resource_rejected PASSED [ 54%]
+tests/unit/test_parser.py::TestValidationRules::test_missing_id_uuid_rejected PASSED [ 55%]
+tests/unit/test_parser.py::TestValidationRules::test_unsupported_field_type_rejected PASSED [ 57%]
+tests/unit/test_parser.py::TestValidationRules::test_user_ownership_edge_rejected PASSED [ 59%]
+tests/unit/test_parser.py::TestValidationRules::test_ownership_target_not_user_id_rejected PASSED [ 61%]
+tests/unit/test_parser.py::TestValidationRules::test_reserved_resource_name_rejected PASSED [ 62%]
+tests/unit/test_parser.py::TestValidationRules::test_python_keyword_identifier_rejected PASSED [ 64%]
+tests/unit/test_parser.py::TestValidationRules::test_invalid_path_pattern_rejected PASSED [ 66%]
+tests/unit/test_parser.py::TestValidationRules::test_body_on_get_rejected PASSED [ 67%]
+tests/unit/test_parser.py::TestValidationRules::test_missing_body_on_put_rejected PASSED [ 69%]
+tests/unit/test_parser.py::TestValidationRules::test_cross_resource_returns_rejected PASSED [ 71%]
+tests/unit/test_parser.py::TestValidationRules::test_source_after_endpoints_rejected PASSED [ 72%]
+tests/unit/test_parser.py::TestValidationRules::test_forbidden_user_operations_rejected PASSED [ 74%]
+tests/unit/test_parser.py::TestValidationRules::test_case_insensitive_reserved_names_and_collisions PASSED [ 76%]
+tests/unit/test_parser.py::TestValidationRules::test_duplicate_projected_fields_rejected PASSED [ 77%]
+tests/unit/test_parser.py::TestValidationRules::test_duplicate_secrets_rejected PASSED [ 79%]
+tests/unit/test_parser.py::TestValidationRules::test_non_uuid_ownership_edge_rejected PASSED [ 81%]
+tests/unit/test_parser.py::TestValidationRules::test_invalid_ownership_target_rejected PASSED [ 83%]
+tests/unit/test_parser.py::TestValidationRules::test_permitted_and_forbidden_return_body_combinations PASSED [ 84%]
+tests/unit/test_parser.py::TestValidationRules::test_wrong_but_existing_auth_field_preserved PASSED [ 86%]
+tests/unit/test_parser.py::TestImmutableIR::test_program_and_nodes_are_frozen PASSED [ 88%]
+tests/unit/test_parser.py::TestImmutableIR::test_deep_immutability_of_endpoint_spans PASSED [ 89%]
+tests/unit/test_parser.py::TestImmutableIR::test_to_dict_matches_v2_schema PASSED [ 91%]
+tests/unit/test_parser.py::TestGrammarAndLALR::test_lark_lalr_grammar_builds_without_conflicts PASSED [ 93%]
+tests/unit/test_parser.py::TestInternalExceptions::test_internal_exception_not_mislabeled_as_syntax_error PASSED [ 94%]
+tests/unit/test_parser.py::TestCLIParse::test_cli_parse_f2_exits_0 PASSED [ 96%]
+tests/unit/test_parser.py::TestCLIParse::test_cli_parse_f4_exits_2 PASSED [ 98%]
+tests/unit/test_parser.py::TestCLIParse::test_cli_parse_nonexistent_exits_2 PASSED [100%]
+
+============================= 59 passed in 0.18s ==============================
+
+STDERR:
+

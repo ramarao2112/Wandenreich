@@ -1,0 +1,33 @@
+Command: C:\Users\rama rao\OneDrive\Desktop\TrustC\.venv-win\Scripts\python.exe -m trustc.cli build tests/fixtures/F4.trust -o .trustc-smoke/refusal_f4 --replace --format=json
+Exit Code: 2
+
+STDOUT:
+{
+  "schemaVersion": 2,
+  "specVersion": 0,
+  "specHash": "3811bfb2e8bce846f95ab75840c751de48b103c4ea5db2c76f9f4e0a97c6c946",
+  "command": "build",
+  "ms": 32,
+  "kind": "build",
+  "status": "invalid_spec",
+  "exitCode": 2,
+  "specErrors": [
+    {
+      "kind": "syntax",
+      "code": "PARSE_ERROR",
+      "message": "Syntax error at line 23, column 25: unexpected '\n'. Expected: ':'",
+      "span": {
+        "line": 23,
+        "col": 25,
+        "endLine": 23,
+        "endCol": 26
+      },
+      "snippet": "endpoint GET /trips/{id}"
+    }
+  ],
+  "diagnostics": [],
+  "error": null
+}
+
+STDERR:
+

@@ -1,0 +1,9 @@
+resource User:
+  fields:
+    id: uuid
+    email: string
+
+endpoint GET /users/{id}:
+  resource: User
+  auth: required
+  returns: User [id, email]

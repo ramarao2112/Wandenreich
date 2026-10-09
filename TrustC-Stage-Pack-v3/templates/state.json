@@ -1,0 +1,15 @@
+{
+  "workflowVersion": 3,
+  "schemaVersion": 2,
+  "lastCompletedStage": null,
+  "activeStage": 0,
+  "milestone": "Inspect existing repository and Stage 1 discrepancies",
+  "status": "NOT_STARTED",
+  "sourceRevision": null,
+  "contentFingerprint": null,
+  "mandatoryGates": [],
+  "blockers": [],
+  "nextAction": "Read stage-0-recover-stage-1.md and inspect existing files",
+  "optionalAiStatus": "DEFERRED",
+  "independentReview": "PENDING"
+}

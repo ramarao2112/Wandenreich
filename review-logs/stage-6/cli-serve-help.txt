@@ -1,0 +1,17 @@
+Command: C:\Users\rama rao\OneDrive\Desktop\TrustC\.venv-win\Scripts\python.exe -m trustc.cli serve --help
+Exit Code: 0
+
+STDOUT:
+usage: trustc serve [-h] [--host HOST] [--port PORT] [--static STATIC]
+                    [--workspace WORKSPACE]
+
+options:
+  -h, --help            show this help message and exit
+  --host HOST           Host to bind (default: 127.0.0.1)
+  --port PORT           Port to bind (default: 8787)
+  --static STATIC       Directory to serve static UI assets from
+  --workspace WORKSPACE
+                        Workspace directory for server artifacts
+
+STDERR:
+

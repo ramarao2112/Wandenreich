@@ -1,0 +1,8 @@
+{
+  "venvPath": "C:\\Users\\rama rao\\OneDrive\\Desktop\\TrustC",
+  "venv": ".venv-win",
+  "extraPaths": [
+    "src",
+    ".venv-win/Lib/site-packages"
+  ]
+}

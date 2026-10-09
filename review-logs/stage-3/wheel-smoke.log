@@ -1,0 +1,39 @@
+Command: C:\Users\rama rao\OneDrive\Desktop\TrustC\.venv-win\Scripts\python.exe scripts/wheel_smoke_test.py
+Exit Code: 0
+
+STDOUT:
+[2026-10-08T10:32:06.079688+00:00] Starting Stage 2 Wheel Smoke Test
+Repository Root: C:\Users\rama rao\OneDrive\Desktop\TrustC
+
+--- Step 1: Building wheel with command: C:\Users\rama rao\OneDrive\Desktop\TrustC\.venv-win\Scripts\python.exe -m build --wheel --outdir C:\Users\rama rao\OneDrive\Desktop\TrustC\dist ---
+PASS: Wheel built successfully: trustc-0.1.0-py3-none-any.whl (64394 bytes)
+
+--- Step 2: Inspecting wheel archive contents ---
+PASS: Archive contains all required resources (grammar size: 2517 bytes)
+
+--- Step 3: Creating fresh virtualenv in C:\Users\RAMARA~1\AppData\Local\Temp\trustc_smoke_venv_ifhl1b44 ---
+PASS: Fresh virtualenv initialized at C:\Users\RAMARA~1\AppData\Local\Temp\trustc_smoke_venv_ifhl1b44
+
+--- Step 4: Installing wheel: C:\Users\RAMARA~1\AppData\Local\Temp\trustc_smoke_venv_ifhl1b44\Scripts\python.exe -m pip install C:\Users\rama rao\OneDrive\Desktop\TrustC\dist\trustc-0.1.0-py3-none-any.whl ---
+PASS: Wheel installed in fresh environment (3.597s)
+
+--- Step 5: Verifying import isolation in C:\Users\RAMARA~1\AppData\Local\Temp\trustc_smoke_run_5_ca6hvh ---
+Imported trustc module location: C:\Users\RAMARA~1\AppData\Local\Temp\trustc_smoke_venv_ifhl1b44\Lib\site-packages\trustc\__init__.py
+PASS: Module verified imported from fresh virtualenv site-packages
+
+--- Step 6: Testing installed `trustc parse` entrypoint on F2 and F4 ---
+F2 run exit code: 0 (expected 0)
+PASS: F2 parsed cleanly with specHash ef146324f68fb20e98d2a653e0ca31ad29690d6ce4a31cc9e11a05ad38502884
+F4 run exit code: 2 (expected 2)
+PASS: F4 structured error verified at line 23 column 25 without traceback
+
+--- Step 7: Cleaning up test directories ---
+PASS: Cleaned up temporary virtualenv and test run directory
+
+[2026-10-08T10:32:16.951491+00:00] Stage 2 Wheel Smoke Test PASSED completely!
+
+STDERR:
+Actual environment location may have moved due to redirects, links or junctions.
+  Requested location: "C:\Users\RAMARA~1\AppData\Local\Temp\trustc_smoke_venv_ifhl1b44\Scripts\python.exe"
+  Actual location:    "C:\Users\rama rao\AppData\Local\Temp\trustc_smoke_venv_ifhl1b44\Scripts\python.exe"
+

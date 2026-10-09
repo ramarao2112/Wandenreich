@@ -1,0 +1,373 @@
+{
+  "$defs": {
+    "BuildEvidence": {
+      "properties": {
+        "schemaVersion": {
+          "const": 2,
+          "default": 2,
+          "title": "Schemaversion",
+          "type": "integer"
+        },
+        "buildId": {
+          "title": "Buildid",
+          "type": "string"
+        },
+        "specHash": {
+          "title": "Spechash",
+          "type": "string"
+        },
+        "specVersion": {
+          "minimum": 0,
+          "title": "Specversion",
+          "type": "integer"
+        },
+        "compilerVersion": {
+          "title": "Compilerversion",
+          "type": "string"
+        },
+        "templateVersion": {
+          "title": "Templateversion",
+          "type": "string"
+        },
+        "rules": {
+          "items": {
+            "$ref": "#/$defs/RuleResult"
+          },
+          "title": "Rules",
+          "type": "array"
+        },
+        "endpointPolicies": {
+          "items": {
+            "$ref": "#/$defs/EndpointPolicy"
+          },
+          "title": "Endpointpolicies",
+          "type": "array"
+        },
+        "structuralRestrictions": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Structuralrestrictions",
+          "type": "array"
+        },
+        "declarations": {
+          "items": {
+            "$ref": "#/$defs/Declaration"
+          },
+          "title": "Declarations",
+          "type": "array"
+        },
+        "limitations": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Limitations",
+          "type": "array"
+        }
+      },
+      "required": [
+        "buildId",
+        "specHash",
+        "specVersion",
+        "compilerVersion",
+        "templateVersion"
+      ],
+      "title": "BuildEvidence",
+      "type": "object"
+    },
+    "Declaration": {
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "endpoint": {
+          "title": "Endpoint",
+          "type": "string"
+        },
+        "span": {
+          "$ref": "#/$defs/Span"
+        },
+        "kind": {
+          "$ref": "#/$defs/DeclarationKind"
+        },
+        "reason": {
+          "title": "Reason",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "endpoint",
+        "span",
+        "kind",
+        "reason"
+      ],
+      "title": "Declaration",
+      "type": "object"
+    },
+    "DeclarationKind": {
+      "enum": [
+        "public_auth",
+        "ownership_waiver",
+        "sensitive_exposure"
+      ],
+      "title": "DeclarationKind",
+      "type": "string"
+    },
+    "EndpointMode": {
+      "enum": [
+        "owner",
+        "self",
+        "login_only",
+        "public"
+      ],
+      "title": "EndpointMode",
+      "type": "string"
+    },
+    "EndpointPolicy": {
+      "properties": {
+        "endpoint": {
+          "title": "Endpoint",
+          "type": "string"
+        },
+        "mode": {
+          "$ref": "#/$defs/EndpointMode"
+        },
+        "ownerWaived": {
+          "title": "Ownerwaived",
+          "type": "boolean"
+        },
+        "sensitiveFields": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Sensitivefields",
+          "type": "array"
+        }
+      },
+      "required": [
+        "endpoint",
+        "mode",
+        "ownerWaived"
+      ],
+      "title": "EndpointPolicy",
+      "type": "object"
+    },
+    "ForcedLine": {
+      "properties": {
+        "line": {
+          "minimum": 1,
+          "title": "Line",
+          "type": "integer"
+        },
+        "specSpan": {
+          "$ref": "#/$defs/Span"
+        },
+        "kind": {
+          "$ref": "#/$defs/ForcedLineKind"
+        }
+      },
+      "required": [
+        "line",
+        "specSpan",
+        "kind"
+      ],
+      "title": "ForcedLine",
+      "type": "object"
+    },
+    "ForcedLineKind": {
+      "enum": [
+        "route",
+        "auth",
+        "owner-set",
+        "query",
+        "owner-check",
+        "self-check"
+      ],
+      "title": "ForcedLineKind",
+      "type": "string"
+    },
+    "GeneratedFile": {
+      "properties": {
+        "path": {
+          "title": "Path",
+          "type": "string"
+        },
+        "content": {
+          "title": "Content",
+          "type": "string"
+        },
+        "forced": {
+          "items": {
+            "$ref": "#/$defs/ForcedLine"
+          },
+          "title": "Forced",
+          "type": "array"
+        }
+      },
+      "required": [
+        "path",
+        "content"
+      ],
+      "title": "GeneratedFile",
+      "type": "object"
+    },
+    "RuleId": {
+      "enum": [
+        "TC-001",
+        "TC-002",
+        "TC-003",
+        "TC-004",
+        "TC-005"
+      ],
+      "title": "RuleId",
+      "type": "string"
+    },
+    "RuleResult": {
+      "properties": {
+        "ruleId": {
+          "$ref": "#/$defs/RuleId"
+        },
+        "ruleName": {
+          "title": "Rulename",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "passed",
+            "failed",
+            "not_applicable"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "checked": {
+          "minimum": 0,
+          "title": "Checked",
+          "type": "integer"
+        },
+        "violations": {
+          "minimum": 0,
+          "title": "Violations",
+          "type": "integer"
+        },
+        "summary": {
+          "title": "Summary",
+          "type": "string"
+        }
+      },
+      "required": [
+        "ruleId",
+        "ruleName",
+        "status",
+        "checked",
+        "violations",
+        "summary"
+      ],
+      "title": "RuleResult",
+      "type": "object"
+    },
+    "Span": {
+      "description": "1-based source span with Unicode code-point columns.",
+      "properties": {
+        "line": {
+          "minimum": 1,
+          "title": "Line",
+          "type": "integer"
+        },
+        "col": {
+          "minimum": 1,
+          "title": "Col",
+          "type": "integer"
+        },
+        "endLine": {
+          "minimum": 1,
+          "title": "Endline",
+          "type": "integer"
+        },
+        "endCol": {
+          "minimum": 1,
+          "title": "Endcol",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "line",
+        "col",
+        "endLine",
+        "endCol"
+      ],
+      "title": "Span",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "schemaVersion": {
+      "const": 2,
+      "default": 2,
+      "title": "Schemaversion",
+      "type": "integer"
+    },
+    "specVersion": {
+      "minimum": 0,
+      "title": "Specversion",
+      "type": "integer"
+    },
+    "specHash": {
+      "title": "Spechash",
+      "type": "string"
+    },
+    "command": {
+      "title": "Command",
+      "type": "string"
+    },
+    "ms": {
+      "minimum": 0,
+      "title": "Ms",
+      "type": "integer"
+    },
+    "kind": {
+      "const": "build",
+      "default": "build",
+      "title": "Kind",
+      "type": "string"
+    },
+    "status": {
+      "const": "completed",
+      "default": "completed",
+      "title": "Status",
+      "type": "string"
+    },
+    "exitCode": {
+      "const": 0,
+      "default": 0,
+      "title": "Exitcode",
+      "type": "integer"
+    },
+    "buildId": {
+      "title": "Buildid",
+      "type": "string"
+    },
+    "files": {
+      "items": {
+        "$ref": "#/$defs/GeneratedFile"
+      },
+      "title": "Files",
+      "type": "array"
+    },
+    "evidence": {
+      "$ref": "#/$defs/BuildEvidence"
+    }
+  },
+  "required": [
+    "specVersion",
+    "specHash",
+    "command",
+    "ms",
+    "buildId",
+    "evidence"
+  ],
+  "title": "BuildSuccess",
+  "type": "object"
+}

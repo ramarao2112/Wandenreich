@@ -1,4 +1,4 @@
-"""TrustC v2 wire contracts — Pydantic models matching A-contracts.md.
+"""TrustC v2 wire contracts -- Pydantic models matching A-contracts.md.
 
 All types use camelCase JSON aliases. Schema version 2 is enforced.
 Discriminated unions validate status/exitCode combinations.
@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import uuid
 from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List, Literal, Optional, Union
@@ -136,11 +137,21 @@ class Span(BaseModel):
 
     class Config:
         populate_by_name = True
+        from_attributes = True
 
 
 class SpecRequest(BaseModel):
     spec: str
     spec_version: int = Field(..., alias="specVersion", ge=0)
+
+    class Config:
+        populate_by_name = True
+
+
+class AttackRequest(BaseModel):
+    spec: str
+    spec_version: int = Field(..., alias="specVersion", ge=0)
+    build_id: Optional[str] = Field(None, alias="buildId")
 
     class Config:
         populate_by_name = True
@@ -213,6 +224,9 @@ class ResultIdentity(BaseModel):
     class Config:
         populate_by_name = True
 
+    def to_dict(self) -> Dict[str, Any]:
+        return self.model_dump(by_alias=True)
+
 
 # ---------------------------------------------------------------------------
 # CheckResult
@@ -233,12 +247,12 @@ class CheckResult(ResultIdentity):
 
     @model_validator(mode="after")
     def validate_check_consistency(self) -> "CheckResult":
-        # ok ↔ exitCode
+        # ok <-> exitCode
         if self.ok and self.exit_code != 0:
             raise ValueError("ok=true requires exitCode=0")
         if not self.ok and self.exit_code == 0:
             raise ValueError("ok=false requires exitCode!=0")
-        # specErrors present → no diagnostics/rules, rulesRun=0, exitCode=2
+        # specErrors present -> no diagnostics/rules, rulesRun=0, exitCode=2
         if self.spec_errors:
             if self.diagnostics:
                 raise ValueError("specErrors present: diagnostics must be empty")
@@ -248,7 +262,7 @@ class CheckResult(ResultIdentity):
                 raise ValueError("specErrors present: rulesRun must be 0")
             if self.exit_code != 2:
                 raise ValueError("specErrors present: exitCode must be 2")
-        # Successfully parsed → all 5 rules run
+        # Successfully parsed -> all 5 rules run
         if not self.spec_errors and self.exit_code != 2:
             if self.rules_run != 5:
                 raise ValueError(f"Parsed spec must run all 5 rules, got {self.rules_run}")
@@ -353,6 +367,14 @@ class AttackStep(BaseModel):
 
     class Config:
         populate_by_name = True
+
+    @model_validator(mode="after")
+    def validate_step_id_uuid(self) -> "AttackStep":
+        try:
+            uuid.UUID(self.step_id)
+        except Exception:
+            raise ValueError(f"stepId must be a valid canonical UUID string, got: {self.step_id}")
+        return self
 
 
 class AttackCoverage(BaseModel):
@@ -506,6 +528,23 @@ class RunAccepted(BaseModel):
         populate_by_name = True
 
 
+class RunStatusResponse(BaseModel):
+    run_id: str = Field(..., alias="runId")
+    state: Literal["running", "terminal"]
+    result: Optional[RunResult] = None
+
+    class Config:
+        populate_by_name = True
+
+
+class RunCancelResponse(BaseModel):
+    run_id: str = Field(..., alias="runId")
+    state: Literal["cancelling"] = "cancelling"
+
+    class Config:
+        populate_by_name = True
+
+
 class ApiError(BaseModel):
     error: Dict[str, str]
 
@@ -517,6 +556,19 @@ class ApiError(BaseModel):
 class RuleMeta(BaseModel):
     id: RuleId
     name: str
+
+
+class RuleDocResponse(BaseModel):
+    id: str
+    name: str
+    checks: str
+    flaw: str
+    fix_type: str = Field(..., alias="fixType")
+    refused: str
+    accepted: str
+
+    class Config:
+        populate_by_name = True
 
 
 class ServerMeta(BaseModel):

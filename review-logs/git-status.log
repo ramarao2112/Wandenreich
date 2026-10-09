@@ -1,0 +1,40 @@
+commit 01db2f5319759538ad25ff8ce2fec7de9474bd48
+Author: TrustC <trustc@local>
+Date:   Wed Oct 7 12:30:04 2026 +0530
+
+    TrustC: Stage 1 setup, contracts, and fixtures complete
+On branch main
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   pyproject.toml
+	modified:   scripts/check-stage.py
+	modified:   src/trustc/cli.py
+	modified:   tests/contract/test_contracts.py
+	modified:   tests/expected/decisions.py
+	modified:   tests/unit/test_fixtures.py
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	REVIEW-HANDOFF.md
+	docs/decisions/
+	docs/dependencies.md
+	docs/fixtures-provenance.md
+	docs/progress/
+	docs/source-inventory.md
+	requirements.lock
+	review-logs/
+	src/trustc/schemas/
+	tests/contract/test_drift.py
+	tests/fixtures/X01.trust
+	tests/fixtures/X02.trust
+	tests/fixtures/X03.trust
+	tests/fixtures/X04.trust
+	tests/fixtures/X05.trust
+	tests/fixtures/X06.trust
+	tests/fixtures/X07.trust
+	tests/fixtures/X14.trust
+	tests/fixtures/X15.trust
+	ui/
+
+no changes added to commit (use "git add" and/or "git commit -a")

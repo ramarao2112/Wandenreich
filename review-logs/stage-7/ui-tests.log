@@ -1,0 +1,39 @@
+Command: C:\Program Files\nodejs\npm.cmd test
+Exit Code: 0
+
+STDOUT:
+
+> trustc-ui@0.1.0 test
+> vitest run
+
+
+[7m[1m[36m RUN [39m[22m[27m [36mv1.6.0[39m [90mC:/Users/rama rao/OneDrive/Desktop/TrustC/ui[39m
+
+ [32m✓[39m src/utils/patch.test.ts [2m ([22m[2m1 test[22m[2m)[22m[90m 3[2mms[22m[39m
+ [32m✓[39m src/state/workbenchStore.test.ts [2m ([22m[2m5 tests[22m[2m)[22m[90m 7[2mms[22m[39m
+ [32m✓[39m src/components/components.test.tsx [2m ([22m[2m5 tests[22m[2m)[22m[90m 162[2mms[22m[39m
+ [32m✓[39m src/components/a11y.test.tsx [2m ([22m[2m5 tests[22m[2m)[22m[33m 536[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m4 passed[39m[22m[90m (4)[39m
+[2m      Tests [22m [1m[32m16 passed[39m[22m[90m (16)[39m
+[2m   Start at [22m 23:28:46
+[2m   Duration [22m 2.47s[2m (transform 228ms, setup 0ms, collect 1.16s, tests 708ms, environment 3.53s, prepare 600ms)[22m
+
+
+STDERR:
+[90mstderr[2m | src/components/a11y.test.tsx[2m > [22m[2mAccessibility (axe)[2m > [22m[2mTopBar has no axe accessibility violations[22m[39m
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+[90mstderr[2m | src/components/a11y.test.tsx[2m > [22m[2mAccessibility (axe)[2m > [22m[2mDiagnosticsTab has no axe accessibility violations[22m[39m
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+[90mstderr[2m | src/components/a11y.test.tsx[2m > [22m[2mAccessibility (axe)[2m > [22m[2mTestsTab has no axe accessibility violations[22m[39m
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+[90mstderr[2m | src/components/a11y.test.tsx[2m > [22m[2mAccessibility (axe)[2m > [22m[2mEvidenceTab has no axe accessibility violations[22m[39m
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+[90mstderr[2m | src/components/a11y.test.tsx[2m > [22m[2mAccessibility (axe)[2m > [22m[2mFooter has no axe accessibility violations[22m[39m
+Not implemented: HTMLCanvasElement's getContext() method: without installing the canvas npm package
+
+

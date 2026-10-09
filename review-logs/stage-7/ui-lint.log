@@ -1,0 +1,11 @@
+Command: C:\Program Files\nodejs\npm.cmd run lint
+Exit Code: 0
+
+STDOUT:
+
+> trustc-ui@0.1.0 lint
+> eslint src
+
+
+STDERR:
+

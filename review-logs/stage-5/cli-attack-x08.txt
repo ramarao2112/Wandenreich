@@ -1,0 +1,16 @@
+Command: C:\Users\rama rao\OneDrive\Desktop\TrustC\.venv-win\Scripts\python.exe -m trustc.cli attack tests/fixtures/X08.trust
+Exit Code: 0
+
+STDOUT:
+  [actor: anonymous  ] GET /notes/33333333-3333-3333-3333-333333333333 -> 200 (expected 200) [review]
+  [actor: second_user] GET /notes/33333333-3333-3333-3333-333333333333 -> 200 (expected 200) [review]
+  [actor: owner      ] GET /notes/33333333-3333-3333-3333-333333333333 -> 200 (expected 200) [as_expected]
+  [actor: anonymous  ] DELETE /notes/33333333-3333-3333-3333-333333333333 -> 204 (expected 204) [review]
+  [actor: second_user] DELETE /notes/33333333-3333-3333-3333-333333333333 -> 204 (expected 204) [review]
+  [actor: owner      ] DELETE /notes/33333333-3333-3333-3333-333333333333 -> 204 (expected 204) [as_expected]
+
+Attack complete:
+  6 matched expectations · 4 policy reviews · 0 failed
+
+STDERR:
+

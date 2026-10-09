@@ -1,0 +1,71 @@
+{
+  "$defs": {
+    "RuleId": {
+      "enum": [
+        "TC-001",
+        "TC-002",
+        "TC-003",
+        "TC-004",
+        "TC-005"
+      ],
+      "title": "RuleId",
+      "type": "string"
+    },
+    "RuleMeta": {
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/RuleId"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "name"
+      ],
+      "title": "RuleMeta",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "schemaVersion": {
+      "const": 2,
+      "default": 2,
+      "title": "Schemaversion",
+      "type": "integer"
+    },
+    "sessionId": {
+      "title": "Sessionid",
+      "type": "string"
+    },
+    "version": {
+      "title": "Version",
+      "type": "string"
+    },
+    "port": {
+      "title": "Port",
+      "type": "integer"
+    },
+    "target": {
+      "title": "Target",
+      "type": "string"
+    },
+    "rules": {
+      "items": {
+        "$ref": "#/$defs/RuleMeta"
+      },
+      "title": "Rules",
+      "type": "array"
+    }
+  },
+  "required": [
+    "sessionId",
+    "version",
+    "port",
+    "target"
+  ],
+  "title": "ServerMeta",
+  "type": "object"
+}

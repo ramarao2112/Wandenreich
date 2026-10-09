@@ -1,0 +1,89 @@
+Command: C:\Users\rama rao\OneDrive\Desktop\TrustC\.venv-win\Scripts\python.exe scripts/smoke-generated.py tests/fixtures/F2.trust -o .trustc-smoke/generated
+Exit Code: 0
+
+STDOUT:
+Starting Stage 4 Runtime Smoke Test
+Spec: C:\Users\rama rao\OneDrive\Desktop\TrustC\tests\fixtures\F2.trust
+Output: C:\Users\rama rao\OneDrive\Desktop\TrustC\.trustc-smoke\generated
+✅ [PASS] Built F2.trust successfully (BuildId: 57e42581-f92b-45ce-9798-345a3967c21d, 12 files)
+
+--- Testing S4-01 Environment & Startup Security ---
+  ✅ [PASS] Missing JWT_SECRET halts startup with clear error
+  ✅ [PASS] Empty JWT_SECRET halts startup with clear error
+  ✅ [PASS] Undersized JWT_SECRET (< 32 bytes) halts startup with clear error
+  ✅ [PASS] Error output contains zero secret or key material
+  ✅ [PASS] Missing DB_URL halts startup with clear error
+✅ [PASS] All S4-01 environment and startup security checks passed!
+
+--- Testing S4-04 Artifact Manifest Verification ---
+  ✅ [PASS] Clean build manifest verified successfully
+  ✅ [PASS] Tampered executable bytes successfully detected and rejected
+  ✅ [PASS] Unexpected unmanifested file successfully detected and rejected
+  ✅ [PASS] Missing manifested file successfully detected and rejected
+✅ [PASS] All S4-04 artifact manifest checks passed!
+
+--- Testing F2 Generated Application ---
+  ✅ [PASS] /health returns 200 with status ok
+  ✅ [PASS] Anonymous POST /trips rejected with 401 Unauthorized
+  ✅ [PASS] Anonymous GET /trips/{id} rejected with 401 Unauthorized
+  ✅ [PASS] Anonymous GET /users/{id} rejected with 401 Unauthorized
+  ✅ [PASS] Expired JWT token rejected with 401
+  ✅ [PASS] Tampered JWT signature rejected with 401
+  ✅ [PASS] JWT with invalid issuer rejected with 401
+  ✅ [PASS] JWT with invalid audience rejected with 401
+  ✅ [PASS] JWT with unknown user sub rejected with 401
+  ✅ [PASS] User 1 creates Trip (201 Created) with owner set
+  ✅ [PASS] User 1 reads own trip (200 OK)
+  ✅ [PASS] User 2 reading User 1 trip rejected with 403 Forbidden
+  ✅ [PASS] Nonexistent trip returns 404 Not Found
+  ✅ [PASS] User 1 reads self profile; password_hash strictly excluded
+  ✅ [PASS] User response contains exact projected fields [id, email]
+  ✅ [PASS] User 2 reading User 1 profile rejected with 403 Forbidden
+  ✅ [PASS] Nonexistent user lookup returns 404 Not Found (404 before 403)
+  ✅ [PASS] Injected owner_id rejected with 422 Unprocessable Entity
+  ✅ [PASS] Injected id in body rejected with 422 Unprocessable Entity
+  ✅ [PASS] Extra unrecognized field in body rejected with 422
+  ✅ [PASS] Denied writes produced zero database mutations
+  ✅ [PASS] SQL injection string stored verbatim as literal data
+  ✅ [PASS] Database tables intact after SQL injection payload test
+
+✅ [PASS] All F2 runtime authorization, injection, and schema tests passed!
+
+--- Testing Mutation Authorization (PUT, PATCH, DELETE, List) ---
+  ✅ [PASS] GET /trips as User 1 returns only User 1's trip (owner filtered)
+  ✅ [PASS] GET /trips as User 2 returns only User 2's trip (owner filtered)
+  ✅ [PASS] Anonymous PUT /trips/{id} rejected with 401 Unauthorized
+  ✅ [PASS] Other-user PUT /trips/{id} rejected with 403 Forbidden
+  ✅ [PASS] Denied PUT requests made zero database changes
+  ✅ [PASS] Nonexistent trip PUT returns 404 Not Found
+  ✅ [PASS] Owner PUT /trips/{id} succeeds with 200 OK and updated destination
+  ✅ [PASS] Anonymous PATCH /trips/{id} rejected with 401 Unauthorized
+  ✅ [PASS] Other-user PATCH /trips/{id} rejected with 403 Forbidden
+  ✅ [PASS] Nonexistent trip PATCH returns 404 Not Found
+  ✅ [PASS] Empty PATCH body {} rejected with 422 Unprocessable Entity
+  ✅ [PASS] Injected owner_id in PATCH rejected with 422 Unprocessable Entity
+  ✅ [PASS] Owner PATCH /trips/{id} succeeds with 200 OK and updated destination
+  ✅ [PASS] Anonymous DELETE /trips/{id} rejected with 401 Unauthorized
+  ✅ [PASS] Other-user DELETE /trips/{id} rejected with 403 Forbidden
+  ✅ [PASS] Denied DELETE requests left item intact in database
+  ✅ [PASS] Nonexistent trip DELETE returns 404 Not Found
+  ✅ [PASS] Owner DELETE /trips/{id} succeeds with 204 No Content
+  ✅ [PASS] Deleted trip confirmed removed from database
+✅ [PASS] All mutation authorization and schema tests passed!
+✅ [PASS] Built F3.trust successfully for waiver & update tests
+
+--- Testing F3 Ownership Waiver & Suffixed Updates ---
+  ✅ [PASS] F3 omitted field is_public defaults to False in DB
+  ✅ [PASS] F3 authorize: public waiver permits User 2 update
+  ✅ [PASS] PUT route with omitted returns returns empty dict {}
+  ✅ [PASS] Waiver still requires authentication (anonymous -> 401)
+  ✅ [PASS] Authorized update persisted in database
+
+✅ [PASS] All F3 waiver and suffixed update tests passed!
+
+============================================================
+Stage 4 Runtime Smoke Test PASSED completely!
+============================================================
+
+STDERR:
+

@@ -1,10 +1,12 @@
 """Stage 1 contract tests — round-trip serialization and invalid-union rejection."""
 
+import uuid
+
 import pytest
 from pydantic import ValidationError
 
 from trustc.contracts import (
-    SCHEMA_VERSION,
+    AttackCheck,
     AttackCompleted,
     AttackCoverage,
     AttackStep,
@@ -13,7 +15,7 @@ from trustc.contracts import (
     CheckResult,
     Diagnostic,
     DiffFix,
-    EndpointPolicy,
+    ForcedLine,
     GeneratedFile,
     PromptFix,
     RuleResult,
@@ -22,7 +24,6 @@ from trustc.contracts import (
     normalize_source,
     spec_hash,
 )
-
 
 pytestmark = pytest.mark.stage1
 
@@ -176,7 +177,124 @@ class TestRunFailure:
         assert rf.status == "cancelled"
 
 
+class TestBuildSuccess:
+    def test_valid_build_success(self):
+        evidence = BuildEvidence(
+            schemaVersion=2,
+            buildId="b123",
+            specHash="abc456",
+            specVersion=0,
+            compilerVersion="0.1.0",
+            templateVersion="0.1.0",
+            rules=[],
+            endpointPolicies=[],
+            structuralRestrictions=[],
+            declarations=[],
+            limitations=[],
+        )
+        file = GeneratedFile(
+            path="src/main.py",
+            content="# generated",
+            forced=[
+                ForcedLine(
+                    line=1,
+                    specSpan=Span(line=1, col=1, endLine=1, endCol=10),
+                    kind="route",
+                )
+            ],
+        )
+        bs = BuildSuccess(
+            schemaVersion=2,
+            specVersion=0,
+            specHash="abc456",
+            command="build test.trust",
+            ms=50,
+            buildId="b123",
+            files=[file],
+            evidence=evidence,
+        )
+        assert bs.kind == "build"
+        assert bs.status == "completed"
+        assert bs.exit_code == 0
+        dumped = bs.model_dump(by_alias=True)
+        assert dumped["schemaVersion"] == 2
+        assert dumped["buildId"] == "b123"
+        assert dumped["files"][0]["path"] == "src/main.py"
+        # Round trip JSON
+        json_str = bs.model_dump_json(by_alias=True)
+        bs2 = BuildSuccess.model_validate_json(json_str)
+        assert bs2.build_id == bs.build_id
+
+    def test_rejects_nonzero_exit_code(self):
+        evidence = BuildEvidence(
+            schemaVersion=2,
+            buildId="b123",
+            specHash="abc456",
+            specVersion=0,
+            compilerVersion="0.1.0",
+            templateVersion="0.1.0",
+        )
+        with pytest.raises(ValidationError):
+            BuildSuccess(
+                schemaVersion=2,
+                specVersion=0,
+                specHash="abc456",
+                command="build",
+                ms=0,
+                buildId="b123",
+                exitCode=1,  # type: ignore[arg-type]
+                evidence=evidence,
+            )
+
+
 class TestAttackCompleted:
+    def test_valid_attack_completed(self):
+        step_id = str(uuid.uuid4())
+        step = AttackStep(
+            stepId=step_id,
+            endpoint="GET /trips/{id}",
+            actor="anonymous",
+            method="GET",
+            path="/trips/123",
+            expect=401,
+            got=401,
+            outcome="as_expected",
+            checks=[
+                AttackCheck(
+                    name="status_code",
+                    expected="401",
+                    actual="401",
+                    passed=True,
+                )
+            ],
+        )
+        ac = AttackCompleted(
+            schemaVersion=2,
+            specVersion=0,
+            specHash="abc",
+            command="attack test.trust",
+            ms=100,
+            buildId="b1",
+            artifactHash="ah1",
+            steps=[step],
+            asExpected=1,
+            review=0,
+            unexpected=0,
+            total=1,
+            coverage=AttackCoverage(testedEndpoints=["GET /trips/{id}"]),
+        )
+        assert ac.kind == "attack"
+        assert ac.status == "completed"
+        assert ac.exit_code == 0
+        dumped = ac.model_dump(by_alias=True)
+        assert dumped["asExpected"] == 1
+        assert dumped["total"] == 1
+        # Round trip JSON
+        json_str = ac.model_dump_json(by_alias=True)
+        ac2 = AttackCompleted.model_validate_json(json_str)
+        assert ac2.as_expected == 1
+        assert len(ac2.steps) == 1
+
     def test_rejects_mismatched_totals(self):
         with pytest.raises(ValidationError, match="total"):
             AttackCompleted(
@@ -189,7 +307,7 @@ class TestAttackCompleted:
 
     def test_rejects_null_outcome_in_completed(self):
         step = AttackStep(
-            stepId="s1", endpoint="GET /trips/{id}", actor="anonymous",
+            stepId=str(uuid.uuid4()), endpoint="GET /trips/{id}", actor="anonymous",
             method="GET", path="/trips/abc", expect=401,
             got=None, outcome=None,
         )
@@ -200,6 +318,19 @@ class TestAttackCompleted:
                 buildId="b1", artifactHash="ah1",
                 steps=[step], asExpected=0, review=0, unexpected=0, total=1,
                 coverage=AttackCoverage(),
+            )
+
+    def test_rejects_non_uuid_step_id(self):
+        with pytest.raises(ValidationError, match="valid canonical UUID string"):
+            AttackStep(
+                stepId="step-12345",
+                endpoint="GET /trips/{id}",
+                actor="anonymous",
+                method="GET",
+                path="/trips/123",
+                expect=401,
+                got=401,
+                outcome="as_expected",
             )
 
 

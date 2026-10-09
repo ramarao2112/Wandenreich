@@ -1,0 +1,40 @@
+TrustC Stage 5 — F2 Access Control Mutation Testing Evidence
+=================================================================
+Original Build Hash: b9bbdbe95b047e229cd32adc39d53a18056fd3afa049eb27366dd1933388170a
+Mutated Build Hash:  5e6350ff42e1ab148a2d2f06e289c29797189e59b9ce49e79a922a366ef93e81
+Artifact Hash Recomputed: True
+
+Original F2 Attack Result:
+  Exit code: 0
+  Matched: 6
+  asExpected: 6, review: 0, unexpected: 0
+
+Mutated F2 Attack Result (Owner-Check Statement Removed from routers/trips.py):
+  Exit code: 1 (assertion: exit 1 on unexpected access)
+  Matched: 5
+  asExpected: 5, review: 0, unexpected: 1
+
+Detected Flaw Step Details:
+  Step ID:         7cc24619-ff6a-4315-a1e4-114c9d063de3
+  Endpoint:        GET /trips/{id}
+  Actor:           Actor.SECOND_USER
+  Method & Path:   GET /trips/33333333-3333-3333-3333-333333333333
+  Expected Status: 403
+  Received Status: 200
+  Outcome:         unexpected
+
+Preserved Self-Protection Step Details (Unmutated routers/users.py):
+  Step ID:         42b5f36e-f92a-4775-a90c-47703c7c76df
+  Endpoint:        GET /users/{id}
+  Actor:           Actor.SECOND_USER
+  Method & Path:   GET /users/11111111-1111-1111-1111-111111111111
+  Expected Status: 403
+  Received Status: 403
+  Outcome:         as_expected
+
+Isolation Verification:
+  - The mutation helper operates on an isolated directory copy.
+  - AST parsing removed the owner-check statement in routers/trips.py.
+  - ast.parse confirmed syntax validity before testing.
+  - Manifest and artifactHash were recalculated over the actual mutated bytes.
+  - Original build and files remain completely untouched.

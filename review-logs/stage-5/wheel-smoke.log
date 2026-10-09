@@ -1,0 +1,50 @@
+[2026-10-09T18:53:05.870270+00:00] Starting Stage 5 Wheel Installation & Smoke Test
+Repository Root: C:\Users\rama rao\OneDrive\Desktop\TrustC
+
+--- Step 1: Building wheel with command: C:\Users\rama rao\OneDrive\Desktop\TrustC\.venv-win\Scripts\python.exe -m build --wheel --outdir C:\Users\rama rao\OneDrive\Desktop\TrustC\dist ---
+PASS: Wheel built successfully: trustc-0.1.0-py3-none-any.whl (104374 bytes)
+
+--- Step 2: Inspecting wheel archive contents ---
+PASS: Archive contains all required Stage 4 templates: 6 templates verified
+PASS: Archive contains all required resources (grammar size: 2517 bytes)
+
+--- Step 3: Creating fresh virtualenv in C:\Users\RAMARA~1\AppData\Local\Temp\trustc_smoke_venv_t72pjnwj ---
+PASS: Fresh virtualenv initialized at C:\Users\RAMARA~1\AppData\Local\Temp\trustc_smoke_venv_t72pjnwj
+
+--- Step 4: Installing wheel: C:\Users\RAMARA~1\AppData\Local\Temp\trustc_smoke_venv_t72pjnwj\Scripts\python.exe -m pip install C:\Users\rama rao\OneDrive\Desktop\TrustC\dist\trustc-0.1.0-py3-none-any.whl[harness] ---
+PASS: Wheel installed in fresh environment (34.925s)
+
+--- Step 5: Verifying import isolation in C:\Users\RAMARA~1\AppData\Local\Temp\trustc_smoke_run_w3jbvyg9 ---
+Imported trustc module location: C:\Users\RAMARA~1\AppData\Local\Temp\trustc_smoke_venv_t72pjnwj\Lib\site-packages\trustc\__init__.py
+PASS: Module verified imported from fresh virtualenv site-packages
+
+--- Step 6: Testing installed `trustc parse` entrypoint on F2 and F4 ---
+NOTE: trustc.exe blocked by WDAC policy (WinError 4551); using python -m trustc.cli in isolated virtualenv
+F2 run exit code: 0 (expected 0)
+PASS: F2 parsed cleanly with specHash ef146324f68fb20e98d2a653e0ca31ad29690d6ce4a31cc9e11a05ad38502884
+NOTE: trustc.exe blocked by WDAC policy (WinError 4551); using python -m trustc.cli in isolated virtualenv
+F4 run exit code: 2 (expected 2)
+PASS: F4 structured error verified at line 23 column 25 without traceback
+
+--- Step 6b: Testing installed `trustc check` entrypoint on F2 and F1 ---
+NOTE: trustc.exe blocked by WDAC policy (WinError 4551); using python -m trustc.cli in isolated virtualenv
+Check F2 exit code: 0 (expected 0)
+PASS: Installed trustc check F2 verified exit 0
+NOTE: trustc.exe blocked by WDAC policy (WinError 4551); using python -m trustc.cli in isolated virtualenv
+Check F1 exit code: 1 (expected 1)
+PASS: Installed trustc check F1 verified exit 1
+
+--- Step 6c: Testing installed `trustc build` entrypoint on F2 ---
+NOTE: trustc.exe blocked by WDAC policy (WinError 4551); using python -m trustc.cli in isolated virtualenv
+Build F2 exit code: 0 (expected 0)
+PASS: Installed trustc build F2 verified exit 0 with all template assets
+
+--- Step 6d: Testing installed `trustc attack` entrypoint on F2 ---
+NOTE: trustc.exe blocked by WDAC policy (WinError 4551); using python -m trustc.cli in isolated virtualenv
+Attack F2 exit code: 0 (expected 0)
+PASS: Installed trustc attack F2 verified exit 0 with 6 expected, 0 review, 0 unexpected (14.734s)
+
+--- Step 7: Cleaning up test directories ---
+PASS: Cleaned up temporary virtualenv and test run directory
+
+[2026-10-09T18:54:16.399453+00:00] Stage 5 Wheel Installation & Smoke Test PASSED completely!

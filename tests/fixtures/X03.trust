@@ -1,0 +1,20 @@
+resource User:
+  fields:
+    id: uuid
+    email: string
+
+resource Trip:
+  fields:
+    id: uuid
+    destination: string
+    owner_id: uuid -> User.id
+    second_owner: uuid -> User.id
+
+secrets:
+  DB_URL: env
+  JWT_SECRET: env
+
+endpoint GET /trips/{id}:
+  resource: Trip
+  auth: required
+  returns: Trip

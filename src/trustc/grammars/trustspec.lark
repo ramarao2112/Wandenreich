@@ -1,0 +1,74 @@
+// TrustSpec LALR(1) grammar for Lark — Stage 2
+// Matches the language boundary in B-compiler-spec.md §B1
+//
+// File order: one or more resources, optional secrets block, one or more endpoints.
+// Strict fixed declaration order enforced by grammar.
+// Spans and keyword tokens preserved for exact diagnostics.
+
+start: (_NL)* (resource_block (_NL)*)+ (secrets_block (_NL)*)? (endpoint_block (_NL)*)+
+
+// ─── Resources ───────────────────────────────────────────
+resource_block: RESOURCE IDENT ":" _NL FIELDS ":" _NL (field_decl _NL)+
+
+field_decl: IDENT ":" field_type ownership_target? sensitive_marker?
+
+field_type: IDENT
+ownership_target: ARROW IDENT "." IDENT
+sensitive_marker: "[" SENSITIVE "]"
+
+// ─── Secrets ─────────────────────────────────────────────
+secrets_block: SECRETS ":" _NL (secret_decl _NL)+
+
+secret_decl: IDENT ":" ENV
+
+// ─── Endpoints ───────────────────────────────────────────
+endpoint_block: ENDPOINT METHOD PATH ":" _NL (endpoint_attr _NL)+
+
+?endpoint_attr: resource_attr
+    | auth_attr
+    | authorize_attr
+    | role_only_attr
+    | body_attr
+    | returns_attr
+    | expose_attr
+
+resource_attr: RESOURCE ":" IDENT
+auth_attr: AUTH ":" AUTH_VALUE
+authorize_attr: AUTHORIZE ":" authorize_value
+?authorize_value: authorize_public | authorize_equality
+authorize_public: "public"
+authorize_equality: IDENT "==" CURRENT_USER "." IDENT
+role_only_attr: ROLE_ONLY ":" IDENT
+body_attr: BODY ":" "[" field_list_inner? "]"
+returns_attr: RETURNS ":" IDENT ("[" field_list_inner "]")?
+expose_attr: EXPOSE ":" "[" field_list_inner "]"
+
+field_list_inner: IDENT ("," IDENT)*
+
+// ─── Terminals ───────────────────────────────────────────
+RESOURCE: "resource"
+FIELDS: "fields"
+SECRETS: "secrets"
+ENDPOINT: "endpoint"
+AUTH: "auth"
+AUTHORIZE: "authorize"
+ROLE_ONLY: "role_only"
+BODY: "body"
+RETURNS: "returns"
+EXPOSE: "expose"
+ENV: "env"
+SENSITIVE: "sensitive"
+CURRENT_USER: "current_user"
+
+METHOD: "GET" | "POST" | "PUT" | "PATCH" | "DELETE"
+AUTH_VALUE: "required" | "public"
+PATH: /\/[A-Za-z0-9_\-\/{}]+/
+
+IDENT: /[A-Za-z][A-Za-z0-9_]*/
+ARROW: "->"
+
+_NL: NEWLINE | COMMENT
+NEWLINE: /(\s*\n)+/
+COMMENT.2: /#[^\n]*/
+
+%ignore /[ \t]+/

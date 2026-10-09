@@ -1,0 +1,16 @@
+============================================================
+Stage 4 Standalone Generated App Installation & Runtime Test
+============================================================
+Step 1: Building F2 FastAPI application...
+Step 2: Creating clean isolated virtual environment in C:\Users\RAMARA~1\AppData\Local\Temp\trustc_clean_install_40v9btmg\venv...
+Step 3: Installing generated requirements.txt with pip...
+  ✅ [PASS] Requirements installed successfully in clean environment
+Step 4: Recording resolved runtime dependency versions...
+Step 5: Exercising application in clean virtualenv (health, auth, DB)...
+  ✅ [PASS] Application started and exercised successfully in clean virtualenv
+
+Saved clean installation report to C:\Users\rama rao\OneDrive\Desktop\TrustC\review-logs\stage-4\generated-app-install.txt
+
+Actual environment location may have moved due to redirects, links or junctions.
+  Requested location: "C:\Users\RAMARA~1\AppData\Local\Temp\trustc_clean_install_40v9btmg\venv\Scripts\python.exe"
+  Actual location:    "C:\Users\rama rao\AppData\Local\Temp\trustc_clean_install_40v9btmg\venv\Scripts\python.exe"

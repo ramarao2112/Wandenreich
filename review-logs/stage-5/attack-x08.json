@@ -1,0 +1,249 @@
+{
+  "schemaVersion": 2,
+  "specVersion": 0,
+  "specHash": "8e149ac95e24fc55fce9399c64177d301bc5b8e6ebe88350c8f1746d62384a65",
+  "command": "trustc attack tests/fixtures/X08.trust",
+  "ms": 1650,
+  "kind": "attack",
+  "status": "completed",
+  "exitCode": 0,
+  "buildId": "44f47ebd-3fdc-430e-821b-8cf2084528e0",
+  "artifactHash": "ce2c1fd0c82e2dc2607595c715e8d5d5354dc0e22afdc16f4ee5615affc4df67",
+  "steps": [
+    {
+      "stepId": "49460ba1-9123-4471-a911-aecf4d7abbc7",
+      "endpoint": "GET /notes/{id}",
+      "actor": "anonymous",
+      "method": "GET",
+      "path": "/notes/33333333-3333-3333-3333-333333333333",
+      "expect": 200,
+      "got": 200,
+      "outcome": "review",
+      "reason": "Public endpoint permits unauthenticated access",
+      "declarationIds": [
+        "decl-pub-GET-_notes_{id}"
+      ],
+      "checks": [
+        {
+          "name": "status_code",
+          "expected": "200",
+          "actual": "200",
+          "passed": true
+        },
+        {
+          "name": "credential_protection",
+          "expected": "no credentials in body",
+          "actual": "clean body",
+          "passed": true
+        },
+        {
+          "name": "response_projection",
+          "expected": "exact fields: ['id', 'title']",
+          "actual": "exact fields: ['id', 'title']",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "stepId": "aec77e4e-04c0-422a-9464-69bdedb6350e",
+      "endpoint": "GET /notes/{id}",
+      "actor": "second_user",
+      "method": "GET",
+      "path": "/notes/33333333-3333-3333-3333-333333333333",
+      "expect": 200,
+      "got": 200,
+      "outcome": "review",
+      "reason": "Public endpoint permits second user access",
+      "declarationIds": [
+        "decl-pub-GET-_notes_{id}"
+      ],
+      "checks": [
+        {
+          "name": "status_code",
+          "expected": "200",
+          "actual": "200",
+          "passed": true
+        },
+        {
+          "name": "credential_protection",
+          "expected": "no credentials in body",
+          "actual": "clean body",
+          "passed": true
+        },
+        {
+          "name": "response_projection",
+          "expected": "exact fields: ['id', 'title']",
+          "actual": "exact fields: ['id', 'title']",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "stepId": "e7d4be08-c52c-4bee-9496-3e3d5a73dd7e",
+      "endpoint": "GET /notes/{id}",
+      "actor": "owner",
+      "method": "GET",
+      "path": "/notes/33333333-3333-3333-3333-333333333333",
+      "expect": 200,
+      "got": 200,
+      "outcome": "as_expected",
+      "reason": null,
+      "declarationIds": [
+        "decl-pub-GET-_notes_{id}"
+      ],
+      "checks": [
+        {
+          "name": "status_code",
+          "expected": "200",
+          "actual": "200",
+          "passed": true
+        },
+        {
+          "name": "credential_protection",
+          "expected": "no credentials in body",
+          "actual": "clean body",
+          "passed": true
+        },
+        {
+          "name": "response_projection",
+          "expected": "exact fields: ['id', 'title']",
+          "actual": "exact fields: ['id', 'title']",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "stepId": "de22a75a-9f00-43b8-bccb-9205a2bb5b36",
+      "endpoint": "DELETE /notes/{id}",
+      "actor": "anonymous",
+      "method": "DELETE",
+      "path": "/notes/33333333-3333-3333-3333-333333333333",
+      "expect": 204,
+      "got": 204,
+      "outcome": "review",
+      "reason": "Public endpoint permits unauthenticated access",
+      "declarationIds": [
+        "decl-pub-DELETE-_notes_{id}"
+      ],
+      "checks": [
+        {
+          "name": "status_code",
+          "expected": "204",
+          "actual": "204",
+          "passed": true
+        },
+        {
+          "name": "allowed_write_persistence",
+          "expected": "row deleted from DB",
+          "actual": "row deleted",
+          "passed": true
+        },
+        {
+          "name": "empty_response",
+          "expected": "empty body",
+          "actual": "empty body",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "stepId": "cb7b2246-07d8-49d6-b534-be32993b2cdf",
+      "endpoint": "DELETE /notes/{id}",
+      "actor": "second_user",
+      "method": "DELETE",
+      "path": "/notes/33333333-3333-3333-3333-333333333333",
+      "expect": 204,
+      "got": 204,
+      "outcome": "review",
+      "reason": "Public endpoint permits second user access",
+      "declarationIds": [
+        "decl-pub-DELETE-_notes_{id}"
+      ],
+      "checks": [
+        {
+          "name": "status_code",
+          "expected": "204",
+          "actual": "204",
+          "passed": true
+        },
+        {
+          "name": "allowed_write_persistence",
+          "expected": "row deleted from DB",
+          "actual": "row deleted",
+          "passed": true
+        },
+        {
+          "name": "empty_response",
+          "expected": "empty body",
+          "actual": "empty body",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "stepId": "bc8b66af-b3f3-4ac4-b9c2-3cc6b8dcb4e1",
+      "endpoint": "DELETE /notes/{id}",
+      "actor": "owner",
+      "method": "DELETE",
+      "path": "/notes/33333333-3333-3333-3333-333333333333",
+      "expect": 204,
+      "got": 204,
+      "outcome": "as_expected",
+      "reason": null,
+      "declarationIds": [
+        "decl-pub-DELETE-_notes_{id}"
+      ],
+      "checks": [
+        {
+          "name": "status_code",
+          "expected": "204",
+          "actual": "204",
+          "passed": true
+        },
+        {
+          "name": "allowed_write_persistence",
+          "expected": "row deleted from DB",
+          "actual": "row deleted",
+          "passed": true
+        },
+        {
+          "name": "empty_response",
+          "expected": "empty body",
+          "actual": "empty body",
+          "passed": true
+        }
+      ]
+    }
+  ],
+  "asExpected": 2,
+  "review": 4,
+  "unexpected": 0,
+  "total": 6,
+  "coverage": {
+    "testedEndpoints": [
+      "GET /notes/{id}",
+      "DELETE /notes/{id}"
+    ],
+    "excludedEndpoints": []
+  },
+  "declarationObservations": [
+    {
+      "declarationId": "decl-pub-GET-_notes_{id}",
+      "stepIds": [
+        "49460ba1-9123-4471-a911-aecf4d7abbc7",
+        "aec77e4e-04c0-422a-9464-69bdedb6350e",
+        "e7d4be08-c52c-4bee-9496-3e3d5a73dd7e"
+      ],
+      "state": "observed"
+    },
+    {
+      "declarationId": "decl-pub-DELETE-_notes_{id}",
+      "stepIds": [
+        "de22a75a-9f00-43b8-bccb-9205a2bb5b36",
+        "cb7b2246-07d8-49d6-b534-be32993b2cdf",
+        "bc8b66af-b3f3-4ac4-b9c2-3cc6b8dcb4e1"
+      ],
+      "state": "observed"
+    }
+  ]
+}

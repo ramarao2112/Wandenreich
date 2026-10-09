@@ -1,0 +1,24 @@
+resource User:
+  fields:
+    id: uuid
+    email: email
+    password_hash: string [sensitive]
+
+resource Note:
+  fields:
+    id: uuid
+    title: string
+    owner_id: uuid -> User.id
+
+secrets:
+  DB_URL: env
+  JWT_SECRET: env
+
+endpoint GET /notes/{id}:
+  resource: Note
+  auth: public
+  returns: Note [id, title]
+
+endpoint DELETE /notes/{id}:
+  resource: Note
+  auth: public

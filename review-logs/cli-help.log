@@ -1,0 +1,17 @@
+usage: trustc [-h] [--version] {check,build,attack,fix,explain} ...
+
+TrustC — security-focused compiler and workbench for TrustSpec
+
+positional arguments:
+  {check,build,attack,fix,explain}
+                        Available commands
+    check               Parse and verify a TrustSpec file
+    build               Generate a FastAPI app from a TrustSpec
+    attack              Build, run and test the generated app
+    fix                 Apply proposed security fixes
+    explain             Explain a security rule
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --version             show program's version number and exit
+Exit code: 0

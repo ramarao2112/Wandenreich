@@ -1,0 +1,28 @@
+======================================================================
+TrustC SARIF 2.1.0 Full Schema Validation Report
+Published Schema Path: C:\Users\rama rao\OneDrive\Desktop\TrustC\src\trustc\schemas\sarif-schema-2.1.0.json
+Published Schema $id:  https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json
+Published Schema Title: Static Analysis Results Format (SARIF) Version 2.1.0 JSON Schema
+======================================================================
+[PASS] F1.trust     - Validated against SARIF 2.1.0 schema (2 diagnostic results)
+[PASS] F2.trust     - Validated against SARIF 2.1.0 schema (0 diagnostic results)
+[PASS] F3.trust     - Validated against SARIF 2.1.0 schema (0 diagnostic results)
+[PASS] F4.trust     - Validated against SARIF 2.1.0 schema (0 diagnostic results)
+[PASS] F5.trust     - Validated against SARIF 2.1.0 schema (1 diagnostic results)
+[PASS] F6.trust     - Validated against SARIF 2.1.0 schema (1 diagnostic results)
+[PASS] F7.trust     - Validated against SARIF 2.1.0 schema (1 diagnostic results)
+[PASS] F7b.trust    - Validated against SARIF 2.1.0 schema (1 diagnostic results)
+[PASS] X01.trust    - Validated against SARIF 2.1.0 schema (1 diagnostic results)
+[PASS] X02.trust    - Validated against SARIF 2.1.0 schema (1 diagnostic results)
+[PASS] X03.trust    - Validated against SARIF 2.1.0 schema (0 diagnostic results)
+[PASS] X04.trust    - Validated against SARIF 2.1.0 schema (0 diagnostic results)
+[PASS] X05.trust    - Validated against SARIF 2.1.0 schema (0 diagnostic results)
+[PASS] X06.trust    - Validated against SARIF 2.1.0 schema (1 diagnostic results)
+[PASS] X07.trust    - Validated against SARIF 2.1.0 schema (1 diagnostic results)
+[PASS] X08.trust    - Validated against SARIF 2.1.0 schema (0 diagnostic results)
+[PASS] X11.trust    - Validated against SARIF 2.1.0 schema (0 diagnostic results)
+[PASS] X14.trust    - Validated against SARIF 2.1.0 schema (1 diagnostic results)
+[PASS] X15.trust    - Validated against SARIF 2.1.0 schema (1 diagnostic results)
+======================================================================
+Overall Result: ALL PASSED
+======================================================================

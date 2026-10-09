@@ -1,0 +1,33 @@
+Command: C:\Users\rama rao\OneDrive\Desktop\TrustC\.venv-win\Scripts\python.exe scripts/run-browser-tests.py
+Exit Code: 0
+
+STDOUT:
+
+Running 14 tests using 1 worker
+
+  ok  1 [chromium] › e2e\a11y.spec.ts:5:3 › Real-Browser Rendered Accessibility Suite (Axe) › 01. Ready state has 0 axe accessibility violations (1.3s)
+  ok  2 [chromium] › e2e\a11y.spec.ts:16:3 › Real-Browser Rendered Accessibility Suite (Axe) › 02. Diagnostics state with actionable issue has 0 axe violations (1.7s)
+  ok  3 [chromium] › e2e\a11y.spec.ts:30:3 › Real-Browser Rendered Accessibility Suite (Axe) › 03. Fix preview state has 0 axe violations (1.7s)
+  ok  4 [chromium] › e2e\a11y.spec.ts:48:3 › Real-Browser Rendered Accessibility Suite (Axe) › 04. Clean check state has 0 axe violations (1.4s)
+  ok  5 [chromium] › e2e\a11y.spec.ts:62:3 › Real-Browser Rendered Accessibility Suite (Axe) › 05. Access tests results state has 0 axe violations (4.1s)
+  ok  6 [chromium] › e2e\a11y.spec.ts:83:3 › Real-Browser Rendered Accessibility Suite (Axe) › 06. Build evidence tab has 0 axe violations (1.9s)
+  ok  7 [chromium] › e2e\a11y.spec.ts:103:3 › Real-Browser Rendered Accessibility Suite (Axe) › 07. Keyboard navigation and shortcuts work without mouse (646ms)
+  ok  8 [chromium] › e2e\workbench.spec.ts:17:3 › TrustC Developer Workbench E2E Suite › 01. Ready state: initial layout and guidance (583ms)
+  ok  9 [chromium] › e2e\workbench.spec.ts:27:3 › TrustC Developer Workbench E2E Suite › 02. F1 to F2 full developer flow: check -> fix preview -> apply -> build -> test -> export (5.1s)
+  ok 10 [chromium] › e2e\workbench.spec.ts:125:3 › TrustC Developer Workbench E2E Suite › 03. F3 flow: ownership waiver policy review (3.5s)
+  ok 11 [chromium] › e2e\workbench.spec.ts:158:3 › TrustC Developer Workbench E2E Suite › 04. F4 flow: syntax error diagnostic location (627ms)
+  ok 12 [chromium] › e2e\workbench.spec.ts:172:3 › TrustC Developer Workbench E2E Suite › 05. Stale state: edit during or after run marks earlier revision (1.1s)
+  ok 13 [chromium] › e2e\workbench.spec.ts:194:3 › TrustC Developer Workbench E2E Suite › 06. Mode toggle and offline indicator (773ms)
+  ok 14 [chromium] › e2e\workbench.spec.ts:208:3 › TrustC Developer Workbench E2E Suite › 07. Responsive layouts: 390px narrow stacked and 150% zoom (1.5s)
+
+  14 passed (29.2s)
+=== TrustC Real-Browser Playwright & Axe Suite ===
+Starting live FastAPI UI server on http://127.0.0.1:64312...
+Server is healthy! Launching Playwright tests in Chromium...
+Running: C:\Program Files\nodejs\npx.cmd playwright test
+
+Playwright test run finished with exit code: 0
+Shutting down test UI server...
+
+STDERR:
+

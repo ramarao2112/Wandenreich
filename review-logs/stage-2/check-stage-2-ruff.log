@@ -1,0 +1,64 @@
+Command: C:\Users\rama rao\OneDrive\Desktop\TrustC\.venv-win\Scripts\python.exe scripts/check-stage.py 2 --linter ruff
+Exit Code: 1
+
+STDOUT:
+=== Stage 2 Gate: Grammar, positions, reference validation, IR, and wheel smoke ===
+Linter Toolchain: ruff
+Timestamp: 2026-10-07T19:38:27.608757+00:00
+
+[Gate 1/5] Running linter (ruff)...
+❌ [BLOCKED] Ruff failed to launch: OSError: [WinError 4551] An Application Control policy has blocked this file
+   Preserve Windows Application Control. Do not evade policy.
+   To use documented equivalent toolchain, pass: --linter flake8-isort
+
+[Gate 2/5] Running type checks (mypy)...
+✅ [PASS] mypy type check passed.
+
+[Gate 3/5] Running pytest test suite (-m stage1 or stage2 tests/contract/ tests/unit/test_fixtures.py tests/unit/test_parser.py tests/unit/test_gate_runner.py)...
+✅ [PASS] Pytest suite passed.
+
+[Gate 4/5] Running CLI parse assertions on F2 (exit 0) and F4 (exit 2)...
+✅ [PASS] CLI parse F2 exit 0 verified.
+✅ [PASS] CLI parse F4 exit 2 verified.
+
+[Gate 5/5] Running installed wheel smoke test outside repository...
+[2026-10-07T19:38:30.397990+00:00] Starting Stage 2 Wheel Smoke Test
+Repository Root: C:\Users\rama rao\OneDrive\Desktop\TrustC
+
+--- Step 1: Building wheel with command: C:\Users\rama rao\OneDrive\Desktop\TrustC\.venv-win\Scripts\python.exe -m build --wheel --outdir C:\Users\rama rao\OneDrive\Desktop\TrustC\dist ---
+PASS: Wheel built successfully: trustc-0.1.0-py3-none-any.whl (31838 bytes)
+
+--- Step 2: Inspecting wheel archive contents ---
+PASS: Archive contains all required resources (grammar size: 2517 bytes)
+
+--- Step 3: Creating fresh virtualenv in C:\Users\RAMARA~1\AppData\Local\Temp\trustc_smoke_venv_ovyub65s ---
+PASS: Fresh virtualenv initialized at C:\Users\RAMARA~1\AppData\Local\Temp\trustc_smoke_venv_ovyub65s
+
+--- Step 4: Installing wheel: C:\Users\RAMARA~1\AppData\Local\Temp\trustc_smoke_venv_ovyub65s\Scripts\python.exe -m pip install C:\Users\rama rao\OneDrive\Desktop\TrustC\dist\trustc-0.1.0-py3-none-any.whl ---
+PASS: Wheel installed in fresh environment (3.799s)
+
+--- Step 5: Verifying import isolation in C:\Users\RAMARA~1\AppData\Local\Temp\trustc_smoke_run_agctnoj7 ---
+Imported trustc module location: C:\Users\RAMARA~1\AppData\Local\Temp\trustc_smoke_venv_ovyub65s\Lib\site-packages\trustc\__init__.py
+PASS: Module verified imported from fresh virtualenv site-packages
+
+--- Step 6: Testing installed `trustc parse` entrypoint on F2 and F4 ---
+F2 run exit code: 0 (expected 0)
+PASS: F2 parsed cleanly with specHash ef146324f68fb20e98d2a653e0ca31ad29690d6ce4a31cc9e11a05ad38502884
+F4 run exit code: 2 (expected 2)
+PASS: F4 structured error verified at line 23 column 25 without traceback
+
+--- Step 7: Cleaning up test directories ---
+PASS: Cleaned up temporary virtualenv and test run directory
+
+[2026-10-07T19:38:41.808953+00:00] Stage 2 Wheel Smoke Test PASSED completely!
+✅ [PASS] Installed wheel smoke test passed outside repository.
+
+============================================================
+❌ Stage 2 gates BLOCKED by environment/policy (exit 1).
+============================================================
+
+STDERR:
+Actual environment location may have moved due to redirects, links or junctions.
+  Requested location: "C:\Users\RAMARA~1\AppData\Local\Temp\trustc_smoke_venv_ovyub65s\Scripts\python.exe"
+  Actual location:    "C:\Users\rama rao\AppData\Local\Temp\trustc_smoke_venv_ovyub65s\Scripts\python.exe"
+

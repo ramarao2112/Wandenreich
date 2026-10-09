@@ -1,0 +1,97 @@
+{
+  "schemaVersion": 2,
+  "specVersion": 0,
+  "specHash": "4e364036b90af9de7a8f883dc26dbd64068c08507928a4690b91c5d5ea22dc8a",
+  "command": "check",
+  "ms": 0,
+  "kind": "check",
+  "ok": false,
+  "exitCode": 1,
+  "specErrors": [],
+  "diagnostics": [
+    {
+      "ruleId": "TC-001",
+      "ruleName": "AUTH-REQUIRED",
+      "severity": "error",
+      "span": {
+        "line": 23,
+        "col": 1,
+        "endLine": 23,
+        "endCol": 8
+      },
+      "location": "endpoint GET /trips/{id}",
+      "endpoint": "GET /trips/{id}",
+      "message": "Endpoint 'GET /trips/{id}' is missing an authentication declaration (auth: required | public).",
+      "why": "Unauthenticated endpoints expose operations without verifying caller identity. By default, endpoints should require authentication unless explicitly declared public.",
+      "fix": {
+        "type": "diff",
+        "baseSpecHash": "4e364036b90af9de7a8f883dc26dbd64068c08507928a4690b91c5d5ea22dc8a",
+        "diff": "--- a/spec.trust\n+++ b/spec.trust\n@@ -22,6 +22,7 @@\n \n endpoint GET /trips/{id}:\n   resource: Trip\n+  auth: required\n   returns: Trip\n \n endpoint GET /users/{id}:\n",
+        "label": "Suggested restrictive default: require authentication"
+      }
+    },
+    {
+      "ruleId": "TC-003",
+      "ruleName": "SENSITIVE-LEAK",
+      "severity": "error",
+      "span": {
+        "line": 30,
+        "col": 3,
+        "endLine": 30,
+        "endCol": 10
+      },
+      "location": "endpoint GET /users/{id}",
+      "endpoint": "GET /users/{id}",
+      "message": "Endpoint 'GET /users/{id}' returns credential field(s) 'password_hash' in response.",
+      "why": "Credential fields (password, password_hash, tokens, keys) must never be returned in API responses to prevent credential exposure.",
+      "fix": {
+        "type": "prompt",
+        "text": "Narrow the response projection to exclude credentials: e.g. 'returns: User [id, email]'. Credential fields can never be returned, even with an expose declaration."
+      }
+    }
+  ],
+  "rules": [
+    {
+      "ruleId": "TC-001",
+      "ruleName": "AUTH-REQUIRED",
+      "status": "failed",
+      "checked": 3,
+      "violations": 1,
+      "summary": "1 endpoint(s) missing auth"
+    },
+    {
+      "ruleId": "TC-002",
+      "ruleName": "OWNERSHIP-CHECK",
+      "status": "passed",
+      "checked": 3,
+      "violations": 0,
+      "summary": "All endpoint authorization policies valid"
+    },
+    {
+      "ruleId": "TC-003",
+      "ruleName": "SENSITIVE-LEAK",
+      "status": "failed",
+      "checked": 3,
+      "violations": 1,
+      "summary": "1 sensitive leak(s)"
+    },
+    {
+      "ruleId": "TC-004",
+      "ruleName": "MASS-ASSIGNMENT",
+      "status": "passed",
+      "checked": 1,
+      "violations": 0,
+      "summary": "No server-controlled fields in request bodies"
+    },
+    {
+      "ruleId": "TC-005",
+      "ruleName": "SECRET-SCOPE",
+      "status": "passed",
+      "checked": 2,
+      "violations": 0,
+      "summary": "All required environment secrets declared"
+    }
+  ],
+  "rulesRun": 5,
+  "endpoints": 3
+}

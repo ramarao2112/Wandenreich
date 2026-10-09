@@ -1,0 +1,8 @@
+Command: C:\Users\rama rao\OneDrive\Desktop\TrustC\.venv-win\Scripts\python.exe -m mypy src/ tests/
+Exit Code: 0
+
+STDOUT:
+Success: no issues found in 29 source files
+
+STDERR:
+

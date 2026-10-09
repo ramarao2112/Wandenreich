@@ -1,0 +1,14 @@
+Processing ./.
+  Installing build dependencies: started
+  Installing build dependencies: finished with status 'done'
+  Getting requirements to build wheel: started
+  Getting requirements to build wheel: finished with status 'done'
+  Preparing metadata (pyproject.toml): started
+  Preparing metadata (pyproject.toml): finished with status 'done'
+Building wheels for collected packages: trustc
+  Building wheel for trustc (pyproject.toml): started
+  Building wheel for trustc (pyproject.toml): finished with status 'done'
+  Created wheel for trustc: filename=trustc-0.1.0-py3-none-any.whl size=15572 sha256=2adbda23d702b2a830fd5a789a6092b6753ee9c66a2b535a0e933f21d762b409
+  Stored in directory: /private/var/folders/kj/gdd9k17d6vl3vtjt2vffnk4m0000gn/T/pip-ephem-wheel-cache-kr7dc6on/wheels/b7/3d/e6/a268f48adb57ba82550b42ba770e8081805b76d021ba304af4
+Successfully built trustc
+Exit code: 0

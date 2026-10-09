@@ -1,0 +1,50 @@
+[
+  {
+    "id": "F1",
+    "title": "Trip Planner (Flawed)",
+    "subtitle": "Missing auth (TC-001) & sensitive leak (TC-003)",
+    "expectedCheck": "fail",
+    "expectedReview": false,
+    "spec": "resource User:\n  fields:\n    id: uuid\n    email: string\n    password_hash: string [sensitive]\n\nresource Trip:\n  fields:\n    id: uuid\n    destination: string\n    owner_id: uuid -> User.id\n\nsecrets:\n  DB_URL: env\n  JWT_SECRET: env\n\nendpoint POST /trips:\n  resource: Trip\n  auth: required\n  body: [destination]\n  returns: Trip\n\nendpoint GET /trips/{id}:\n  resource: Trip\n  returns: Trip\n\nendpoint GET /users/{id}:\n  resource: User\n  auth: required\n  returns: User\n"
+  },
+  {
+    "id": "F2",
+    "title": "Trip Planner (Owner-protected)",
+    "subtitle": "Owner-protected Trip access and self-only User access",
+    "expectedCheck": "pass",
+    "expectedReview": false,
+    "spec": "resource User:\n  fields:\n    id: uuid\n    email: string\n    password_hash: string [sensitive]\n\nresource Trip:\n  fields:\n    id: uuid\n    destination: string\n    owner_id: uuid -> User.id\n\nsecrets:\n  DB_URL: env\n  JWT_SECRET: env\n\nendpoint POST /trips:\n  resource: Trip\n  auth: required\n  body: [destination]\n  returns: Trip\n\nendpoint GET /trips/{id}:\n  resource: Trip\n  auth: required\n  returns: Trip\n\nendpoint GET /users/{id}:\n  resource: User\n  auth: required\n  returns: User [id, email]\n"
+  },
+  {
+    "id": "F3",
+    "title": "Trip Planner (Ownership Waiver)",
+    "subtitle": "Explicit waiver on PUT /trips/{id}/visibility",
+    "expectedCheck": "pass",
+    "expectedReview": true,
+    "spec": "resource User:\n  fields:\n    id: uuid\n    email: string\n    password_hash: string [sensitive]\n\nresource Trip:\n  fields:\n    id: uuid\n    destination: string\n    owner_id: uuid -> User.id\n    is_public: bool\n\nsecrets:\n  DB_URL: env\n  JWT_SECRET: env\n\nendpoint POST /trips:\n  resource: Trip\n  auth: required\n  body: [destination]\n  returns: Trip\n\nendpoint GET /trips/{id}:\n  resource: Trip\n  auth: required\n  returns: Trip\n\nendpoint GET /users/{id}:\n  resource: User\n  auth: required\n  returns: User [id, email]\n\nendpoint PUT /trips/{id}/visibility:\n  resource: Trip\n  auth: required\n  authorize: public\n  body: [is_public]\n"
+  },
+  {
+    "id": "F4",
+    "title": "Syntax Error Demo",
+    "subtitle": "Syntax error at line 23 column 25",
+    "expectedCheck": "fail",
+    "expectedReview": false,
+    "spec": "resource User:\n  fields:\n    id: uuid\n    email: string\n    password_hash: string [sensitive]\n\nresource Trip:\n  fields:\n    id: uuid\n    destination: string\n    owner_id: uuid -> User.id\n\nsecrets:\n  DB_URL: env\n  JWT_SECRET: env\n\nendpoint POST /trips:\n  resource: Trip\n  auth: required\n  body: [destination]\n  returns: Trip\n\nendpoint GET /trips/{id}\n  resource: Trip\n  returns: Trip\n\nendpoint GET /users/{id}:\n  resource: User\n  auth: required\n  returns: User\n"
+  },
+  {
+    "id": "F5",
+    "title": "Trip Planner (Mass Assignment)",
+    "subtitle": "Server-controlled owner_id in body (TC-004)",
+    "expectedCheck": "fail",
+    "expectedReview": false,
+    "spec": "resource User:\n  fields:\n    id: uuid\n    email: string\n    password_hash: string [sensitive]\n\nresource Trip:\n  fields:\n    id: uuid\n    destination: string\n    owner_id: uuid -> User.id\n\nsecrets:\n  DB_URL: env\n  JWT_SECRET: env\n\nendpoint POST /trips:\n  resource: Trip\n  auth: required\n  body: [destination, owner_id]\n  returns: Trip\n\nendpoint GET /trips/{id}:\n  resource: Trip\n  auth: required\n  returns: Trip\n\nendpoint GET /users/{id}:\n  resource: User\n  auth: required\n  returns: User [id, email]\n"
+  },
+  {
+    "id": "F6",
+    "title": "Trip Planner (Missing Secrets)",
+    "subtitle": "Missing JWT_SECRET declaration (TC-005)",
+    "expectedCheck": "fail",
+    "expectedReview": false,
+    "spec": "resource User:\n  fields:\n    id: uuid\n    email: string\n    password_hash: string [sensitive]\n\nresource Trip:\n  fields:\n    id: uuid\n    destination: string\n    owner_id: uuid -> User.id\n\nsecrets:\n  DB_URL: env\n\nendpoint POST /trips:\n  resource: Trip\n  auth: required\n  body: [destination]\n  returns: Trip\n\nendpoint GET /trips/{id}:\n  resource: Trip\n  auth: required\n  returns: Trip\n\nendpoint GET /users/{id}:\n  resource: User\n  auth: required\n  returns: User [id, email]\n"
+  }
+]

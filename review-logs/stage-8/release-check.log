@@ -1,0 +1,176 @@
+Command: C:\Users\rama rao\OneDrive\Desktop\TrustC\.venv-win\Scripts\python.exe scripts/release-check.py
+Exit Code: 0
+
+STDOUT:
+======================================================================
+TrustC Stage 8 — Full Release Validation & Demo Proofing Suite
+======================================================================
+
+[Step 1/8] Auditing Environment & Toolchain...
+  Python: 3.14.4 on win32
+  Commit: 01db2f5319759538ad25ff8ce2fec7de9474bd48 (dirty: True)
+✅ [PASS] Environment audit complete.
+
+[Step 2/8] Validating Wheel Packaging & Installation in Fresh Environment...
+[2026-10-09T18:32:27.536952+00:00] Starting Stage 7 Wheel Installation & Smoke Test
+Repository Root: C:\Users\rama rao\OneDrive\Desktop\TrustC
+
+--- Step 1: Building wheel with command: C:\Users\rama rao\OneDrive\Desktop\TrustC\.venv-win\Scripts\python.exe -m build --wheel --outdir C:\Users\rama rao\OneDrive\Desktop\TrustC\dist ---
+PASS: Wheel built successfully: trustc-0.1.0-py3-none-any.whl (104374 bytes)
+
+--- Step 2: Inspecting wheel archive contents ---
+PASS: Archive contains all required Stage 4 templates: 6 templates verified
+PASS: Archive contains all required resources (grammar size: 2517 bytes)
+
+--- Step 3: Creating fresh virtualenv in C:\Users\RAMARA~1\AppData\Local\Temp\trustc_smoke_venv_5rmsglwu ---
+PASS: Fresh virtualenv initialized at C:\Users\RAMARA~1\AppData\Local\Temp\trustc_smoke_venv_5rmsglwu
+
+--- Step 4: Installing wheel: C:\Users\RAMARA~1\AppData\Local\Temp\trustc_smoke_venv_5rmsglwu\Scripts\python.exe -m pip install C:\Users\rama rao\OneDrive\Desktop\TrustC\dist\trustc-0.1.0-py3-none-any.whl[harness,server] ---
+PASS: Wheel installed in fresh environment (11.547s)
+
+--- Step 5: Verifying import isolation in C:\Users\RAMARA~1\AppData\Local\Temp\trustc_smoke_run_lzqn4k4l ---
+Imported trustc module location: C:\Users\RAMARA~1\AppData\Local\Temp\trustc_smoke_venv_5rmsglwu\Lib\site-packages\trustc\__init__.py
+PASS: Module verified imported from fresh virtualenv site-packages
+
+--- Step 6: Testing installed `trustc parse` entrypoint on F2 and F4 ---
+F2 run exit code: 0 (expected 0)
+PASS: F2 parsed cleanly with specHash ef146324f68fb20e98d2a653e0ca31ad29690d6ce4a31cc9e11a05ad38502884
+F4 run exit code: 2 (expected 2)
+PASS: F4 structured error verified at line 23 column 25 without traceback
+
+--- Step 6b: Testing installed `trustc check` entrypoint on F2 and F1 ---
+Check F2 exit code: 0 (expected 0)
+PASS: Installed trustc check F2 verified exit 0
+Check F1 exit code: 1 (expected 1)
+PASS: Installed trustc check F1 verified exit 1
+
+--- Step 6c: Testing installed `trustc build` entrypoint on F2 ---
+Build F2 exit code: 0 (expected 0)
+PASS: Installed trustc build F2 verified exit 0 with all template assets
+
+--- Step 6d: Testing installed `trustc attack` entrypoint on F2 ---
+Attack F2 exit code: 0 (expected 0)
+PASS: Installed trustc attack F2 verified exit 0 with 6 expected, 0 review, 0 unexpected (2.916s)
+
+--- Step 6e: Testing installed `trustc serve --help` entrypoint ---
+Serve help exit code: 0 (expected 0)
+PASS: Installed trustc serve --help entrypoint verified
+
+--- Step 6f: Testing installed `trustc serve` outside repository ---
+PASS: /api/meta returned valid sessionId ef03dd02-0222-4c16-9322-a7d5fb149221
+PASS: /api/check verified cleanly via installed server
+PASS: /api/build completed with buildId 41953d2d-372a-4593-8c80-18bc1c4c70e4
+PASS: /api/builds/41953d2d-372a-4593-8c80-18bc1c4c70e4/out.zip verified (12 files)
+PASS: Installed server verified outside repository (meta, check, build, download)
+
+--- Step 7: Cleaning up test directories ---
+PASS: Cleaned up temporary virtualenv and test run directory
+
+[2026-10-09T18:32:54.615963+00:00] Stage 7 Wheel Installation & Smoke Test PASSED completely!
+✅ [PASS] Wheel packaging and clean virtualenv installation passed.
+
+[Step 3/8] Validating Standalone Generated App in Clean Isolated Virtualenv...
+✅ [PASS] Standalone generated app installed and executed cleanly in independent venv.
+
+[Step 4/8] Running Cumulative Stage Gates (Stages 1 through 7)...
+=== Stage 7 Gate: Developer workbench UI with real compiler/server integration ===
+Linter Toolchain: flake8-isort
+Timestamp: 2026-10-09T18:33:14.388091+00:00
+
+[Gate 1/5] Running documented equivalent linter (flake8 + isort)...
+✅ [PASS] flake8 (E, F, W rules) passed.
+✅ [PASS] isort (I rule / import sorting) passed on all files without warning.
+
+[Gate 2/5] Running type checks (mypy)...
+✅ [PASS] mypy type check passed.
+
+[Gate 3/5] Running pytest test suite (-m stage1 or stage2 or stage3 or stage4 or stage5 or stage6 tests/)...
+✅ [PASS] Pytest suite passed.
+
+[Gate 4/5] Running CLI parse assertions on F2 (exit 0) and F4 (exit 2)...
+✅ [PASS] CLI parse F2 exit 0 verified.
+✅ [PASS] CLI parse F4 exit 2 verified.
+
+[Gate 4b] Running CLI check, fix, and explain assertions...
+✅ [PASS] CLI check F2 exit 0 verified.
+✅ [PASS] CLI check F1 exit 1 verified.
+✅ [PASS] CLI check F4 exit 2 verified.
+✅ [PASS] CLI apply-fix F1 dry-run exit 0 verified.
+✅ [PASS] CLI explain TC-002 exit 0 verified.
+✅ [PASS] Published OASIS SARIF 2.1.0 schema validation passed for all fixtures.
+
+[Gate 4c] Running Stage 4 generated backend runtime smoke & build rollback...
+✅ [PASS] CLI build F2 exit 0 verified (8 Python files, valid manifest, and report).
+✅ [PASS] Stage 4 runtime smoke test passed (real DB, auth, injections, projections).
+✅ [PASS] CLI build F1 exit 1 refused and destination byte-identical.
+✅ [PASS] CLI build F4 exit 2 syntax error and destination byte-identical.
+
+[Gate 4d] Running Stage 5 live local access harness & mutation checks...
+✅ [PASS] CLI attack F2 verified: 6 as_expected, 0 review, 0 unexpected.
+✅ [PASS] CLI attack F3 verified: 8 as_expected, 1 review, 0 unexpected.
+✅ [PASS] CLI attack F1 refused (exit 1, app never started).
+✅ [PASS] CLI attack F4 syntax error (exit 2, app never started).
+✅ [PASS] CLI attack X08 verified: public GET/DELETE with isolated state.
+✅ [PASS] CLI attack X11 verified: 0 steps, explicit empty coverage.
+✅ [PASS] Mutation test verified: owner check removal correctly detected (exit 1).
+
+[Gate 4e] Running Stage 6 local API server smoke test...
+✅ [PASS] Stage 6 server smoke test passed (all 10 operations, SSE, zip, security).
+
+[Gate 4f] Running Stage 7 UI ESLint check (npm run lint)...
+✅ [PASS] Stage 7 UI ESLint check passed (0 errors).
+
+[Gate 4g] Running Stage 7 UI TypeScript typecheck (tsc --noEmit)...
+✅ [PASS] Stage 7 UI typecheck passed (0 errors).
+
+[Gate 4h] Running Stage 7 UI production bundle build (vite build)...
+✅ [PASS] Stage 7 UI production build passed (dist/ created).
+
+[Gate 4i] Running Stage 7 UI unit and axe accessibility tests (vitest run)...
+✅ [PASS] Stage 7 UI unit tests & axe accessibility checks passed (16 tests, 0 violations).
+
+[Gate 4j] Running Stage 7 UI & server static integration smoke test...
+✅ [PASS] Stage 7 UI server static integration smoke test passed (all 8 assertions: SPA routing, static assets, API isolation, live workflow).
+
+[Gate 4k] Running Stage 7 UI real-browser Playwright & Axe suite (scripts/run-browser-tests.py)...
+✅ [PASS] Stage 7 UI real-browser Playwright & Axe suite passed (14 real-browser tests in Chromium, 0 accessibility violations, 12 screenshots).
+
+============================================================
+✅ Stage 7 gates passed.
+============================================================
+✅ [PASS] All cumulative stage gates passed (30 checks).
+
+[Step 5/8] Verifying Offline & Local Typography Assets...
+  Bundled local fonts: ibm-plex-mono-latin-400-normal-CvHOgSBP.woff, ibm-plex-mono-latin-600-normal-DWFSQ4vo.woff, ibm-plex-sans-latin-400-normal-CYLoc0-x.woff, ibm-plex-sans-latin-600-normal-Cu4Hd6ag.woff, ibm-plex-mono-latin-400-normal-DMJ8VG8y.woff2, ibm-plex-mono-latin-600-normal-BgSNZQsw.woff2, ibm-plex-sans-latin-400-normal-CDDApCn2.woff2, ibm-plex-sans-latin-600-normal-CuJfVYMP.woff2
+✅ [PASS] All typography assets bundled locally; zero external CDN calls.
+
+[Step 6/8] Executing Failure & Resilience Drills...
+  PASS: F1 refusal (exit 1) preserved existing directory byte-identically.
+  PASS: F4 syntax error (exit 2) reported structured diagnostic without traceback.
+  PASS: Scoped reset script executed cleanly without killing unrelated processes.
+✅ [PASS] All failure and resilience drills passed.
+
+[Step 7/8] Scanning Release Package Files for Secrets & Credentials...
+  Scanned 68 release candidate files.
+✅ [PASS] Zero secrets or credentials detected across all package files.
+
+[Step 8/8] Measuring 3-Minute Demo Script Step Execution Timing...
+  F1 Check:  0.35s (expected exit 1: rc=1)
+  F2 Check:  0.386s (expected exit 0: rc=0)
+  F2 Build:  0.457s (expected exit 0: rc=0)
+  F2 Attack: 2.78s (expected exit 0: rc=0)
+  F3 Attack: 2.689s (expected exit 0: rc=0)
+  Total backend pipeline execution: 6.662s
+✅ [PASS] Demo actions execute smoothly with 165+ seconds of speaking runway.
+
+======================================================================
+✅ Stage 8 Release Validation PASSED completely!
+Total duration: 214.856s
+Report saved: C:\Users\rama rao\OneDrive\Desktop\TrustC\review-logs\stage-8\gate-result.json
+======================================================================
+
+STDERR:
+Actual environment location may have moved due to redirects, links or junctions.
+  Requested location: "C:\Users\RAMARA~1\AppData\Local\Temp\trustc_smoke_venv_5rmsglwu\Scripts\python.exe"
+  Actual location:    "C:\Users\rama rao\AppData\Local\Temp\trustc_smoke_venv_5rmsglwu\Scripts\python.exe"
+

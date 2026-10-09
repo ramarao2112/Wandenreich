@@ -1,0 +1,36 @@
+Command: C:\Users\rama rao\OneDrive\Desktop\TrustC\.venv-win\Scripts\python.exe -m pytest tests/unit/test_harness.py -v
+Exit Code: 0
+
+STDOUT:
+============================= test session starts =============================
+platform win32 -- Python 3.14.4, pytest-8.4.2, pluggy-1.6.0 -- C:\Users\rama rao\OneDrive\Desktop\TrustC\.venv-win\Scripts\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\rama rao\OneDrive\Desktop\TrustC
+configfile: pyproject.toml
+plugins: anyio-4.15.1, asyncio-1.4.0
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 18 items
+
+tests/unit/test_harness.py::test_f2_attack_harness_counts_and_exit_code PASSED [  5%]
+tests/unit/test_harness.py::test_f3_attack_harness_counts_and_declarations PASSED [ 11%]
+tests/unit/test_harness.py::test_mutation_testing_f2_detects_flaw_and_preserves_user_self PASSED [ 16%]
+tests/unit/test_harness.py::test_x08_public_owned_get_delete_with_isolated_state PASSED [ 22%]
+tests/unit/test_harness.py::test_x11_zero_eligible_item_endpoints_coverage PASSED [ 27%]
+tests/unit/test_harness.py::test_refused_and_syntax_error_specs_never_start_app PASSED [ 33%]
+tests/unit/test_harness.py::test_step_ids_are_canonical_unprefixed_uuids PASSED [ 38%]
+tests/unit/test_harness.py::test_s5_01_human_summary_matched_totals_rendering PASSED [ 44%]
+tests/unit/test_harness.py::test_normal_completion_lifecycle_and_single_final_event PASSED [ 50%]
+tests/unit/test_harness.py::test_active_cancellation_cleans_up_and_exits_130 PASSED [ 55%]
+tests/unit/test_harness.py::test_deadline_expiry_cleans_up_and_exits_124 PASSED [ 61%]
+tests/unit/test_harness.py::test_startup_readiness_failure_cleans_up_and_exits_3 PASSED [ 66%]
+tests/unit/test_harness.py::test_cleanup_failure_reports_sanitized_error_exit_3 PASSED [ 72%]
+tests/unit/test_harness.py::test_secret_and_token_redaction_in_attack_outputs PASSED [ 77%]
+tests/unit/test_harness.py::test_s6_03_exact_response_projections_f2 PASSED [ 83%]
+tests/unit/test_harness.py::test_s6_03_response_projection_extra_and_missing_field_detection PASSED [ 88%]
+tests/unit/test_harness.py::test_s6_03_x13_cross_route_schema_isolation PASSED [ 94%]
+tests/unit/test_harness.py::test_s6_03_permitted_sensitive_exposure_declaration_observation PASSED [100%]
+
+======================== 18 passed in 87.17s (0:01:27) ========================
+
+STDERR:
+

@@ -1,0 +1,11 @@
+Command: C:\Program Files\nodejs\npm.cmd run typecheck
+Exit Code: 0
+
+STDOUT:
+
+> trustc-ui@0.1.0 typecheck
+> tsc --noEmit
+
+
+STDERR:
+

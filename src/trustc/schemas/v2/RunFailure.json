@@ -1,0 +1,304 @@
+{
+  "$defs": {
+    "Diagnostic": {
+      "properties": {
+        "ruleId": {
+          "$ref": "#/$defs/RuleId"
+        },
+        "ruleName": {
+          "title": "Rulename",
+          "type": "string"
+        },
+        "severity": {
+          "$ref": "#/$defs/Severity"
+        },
+        "span": {
+          "$ref": "#/$defs/Span"
+        },
+        "location": {
+          "title": "Location",
+          "type": "string"
+        },
+        "endpoint": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Endpoint"
+        },
+        "message": {
+          "title": "Message",
+          "type": "string"
+        },
+        "why": {
+          "title": "Why",
+          "type": "string"
+        },
+        "fix": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/DiffFix"
+            },
+            {
+              "$ref": "#/$defs/PromptFix"
+            }
+          ],
+          "title": "Fix"
+        }
+      },
+      "required": [
+        "ruleId",
+        "ruleName",
+        "severity",
+        "span",
+        "location",
+        "message",
+        "why",
+        "fix"
+      ],
+      "title": "Diagnostic",
+      "type": "object"
+    },
+    "DiffFix": {
+      "properties": {
+        "type": {
+          "const": "diff",
+          "default": "diff",
+          "title": "Type",
+          "type": "string"
+        },
+        "baseSpecHash": {
+          "title": "Basespechash",
+          "type": "string"
+        },
+        "diff": {
+          "title": "Diff",
+          "type": "string"
+        },
+        "label": {
+          "title": "Label",
+          "type": "string"
+        }
+      },
+      "required": [
+        "baseSpecHash",
+        "diff",
+        "label"
+      ],
+      "title": "DiffFix",
+      "type": "object"
+    },
+    "PromptFix": {
+      "properties": {
+        "type": {
+          "const": "prompt",
+          "default": "prompt",
+          "title": "Type",
+          "type": "string"
+        },
+        "text": {
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "text"
+      ],
+      "title": "PromptFix",
+      "type": "object"
+    },
+    "RuleId": {
+      "enum": [
+        "TC-001",
+        "TC-002",
+        "TC-003",
+        "TC-004",
+        "TC-005"
+      ],
+      "title": "RuleId",
+      "type": "string"
+    },
+    "Severity": {
+      "enum": [
+        "error",
+        "warn"
+      ],
+      "title": "Severity",
+      "type": "string"
+    },
+    "Span": {
+      "description": "1-based source span with Unicode code-point columns.",
+      "properties": {
+        "line": {
+          "minimum": 1,
+          "title": "Line",
+          "type": "integer"
+        },
+        "col": {
+          "minimum": 1,
+          "title": "Col",
+          "type": "integer"
+        },
+        "endLine": {
+          "minimum": 1,
+          "title": "Endline",
+          "type": "integer"
+        },
+        "endCol": {
+          "minimum": 1,
+          "title": "Endcol",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "line",
+        "col",
+        "endLine",
+        "endCol"
+      ],
+      "title": "Span",
+      "type": "object"
+    },
+    "SpecError": {
+      "properties": {
+        "kind": {
+          "$ref": "#/$defs/SpecErrorKind"
+        },
+        "code": {
+          "title": "Code",
+          "type": "string"
+        },
+        "message": {
+          "title": "Message",
+          "type": "string"
+        },
+        "span": {
+          "$ref": "#/$defs/Span"
+        },
+        "snippet": {
+          "title": "Snippet",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "code",
+        "message",
+        "span",
+        "snippet"
+      ],
+      "title": "SpecError",
+      "type": "object"
+    },
+    "SpecErrorKind": {
+      "enum": [
+        "syntax",
+        "reference",
+        "unsupported"
+      ],
+      "title": "SpecErrorKind",
+      "type": "string"
+    }
+  },
+  "properties": {
+    "schemaVersion": {
+      "const": 2,
+      "default": 2,
+      "title": "Schemaversion",
+      "type": "integer"
+    },
+    "specVersion": {
+      "minimum": 0,
+      "title": "Specversion",
+      "type": "integer"
+    },
+    "specHash": {
+      "title": "Spechash",
+      "type": "string"
+    },
+    "command": {
+      "title": "Command",
+      "type": "string"
+    },
+    "ms": {
+      "minimum": 0,
+      "title": "Ms",
+      "type": "integer"
+    },
+    "kind": {
+      "enum": [
+        "build",
+        "attack"
+      ],
+      "title": "Kind",
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "refused",
+        "invalid_spec",
+        "error",
+        "cancelled",
+        "timed_out"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "exitCode": {
+      "enum": [
+        1,
+        2,
+        3,
+        124,
+        130
+      ],
+      "title": "Exitcode",
+      "type": "integer"
+    },
+    "specErrors": {
+      "items": {
+        "$ref": "#/$defs/SpecError"
+      },
+      "title": "Specerrors",
+      "type": "array"
+    },
+    "diagnostics": {
+      "items": {
+        "$ref": "#/$defs/Diagnostic"
+      },
+      "title": "Diagnostics",
+      "type": "array"
+    },
+    "error": {
+      "anyOf": [
+        {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Error"
+    }
+  },
+  "required": [
+    "specVersion",
+    "specHash",
+    "command",
+    "ms",
+    "kind",
+    "status",
+    "exitCode"
+  ],
+  "title": "RunFailure",
+  "type": "object"
+}

@@ -1,0 +1,63 @@
+Git Commit: 01db2f5319759538ad25ff8ce2fec7de9474bd48
+Working Tree Status:
+M .gitignore
+ M pyproject.toml
+ M scripts/check-stage.py
+ M src/trustc/cli.py
+ M src/trustc/contracts.py
+ M tests/contract/test_contracts.py
+ M tests/expected/decisions.py
+ M tests/unit/test_fixtures.py
+?? REVIEW-HANDOFF.md
+?? TrustC-Stage-Pack-v3/
+?? docs/decisions/
+?? docs/dependencies.md
+?? docs/fixtures-provenance.md
+?? docs/progress/
+?? docs/source-inventory.md
+?? pyrightconfig.json
+?? requirements.lock
+?? review-logs/
+?? scripts/record_stage_2_logs.py
+?? scripts/record_stage_3_logs.py
+?? scripts/record_stage_4_logs.py
+?? scripts/smoke-generated.py
+?? scripts/test_generated_install.py
+?? scripts/validate_sarif_schema.py
+?? scripts/wheel_smoke_test.py
+?? src/trustc/fixes.py
+?? src/trustc/generator.py
+?? src/trustc/grammars/
+?? src/trustc/ir.py
+?? src/trustc/manifest.py
+?? src/trustc/parser.py
+?? src/trustc/py.typed
+?? src/trustc/rule_docs/
+?? src/trustc/rules_doc.py
+?? src/trustc/schemas/
+?? src/trustc/seeder.py
+?? src/trustc/source.py
+?? src/trustc/templates/
+?? src/trustc/verifier.py
+?? tests/__init__.py
+?? tests/contract/test_drift.py
+?? tests/fixtures/X01.trust
+?? tests/fixtures/X02.trust
+?? tests/fixtures/X03.trust
+?? tests/fixtures/X04.trust
+?? tests/fixtures/X05.trust
+?? tests/fixtures/X06.trust
+?? tests/fixtures/X07.trust
+?? tests/fixtures/X14.trust
+?? tests/fixtures/X15.trust
+?? tests/unit/test_explain.py
+?? tests/unit/test_fixes.py
+?? tests/unit/test_gate_runner.py
+?? tests/unit/test_generator.py
+?? tests/unit/test_parser.py
+?? tests/unit/test_sarif.py
+?? tests/unit/test_verifier.py
+?? ui/
+
+Python Version: 3.14.4 (tags/v3.14.4:23116f9, Apr  7 2026, 14:10:54) [MSC v.1944 64 bit (AMD64)]
+Platform: win32

@@ -1,0 +1,10 @@
+--- a/spec.trust
++++ b/spec.trust
+@@ -22,6 +22,7 @@
+ 
+ endpoint GET /trips/{id}:
+   resource: Trip
++  auth: required
+   returns: Trip
+ 
+ endpoint GET /users/{id}:

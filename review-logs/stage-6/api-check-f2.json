@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 2,
+  "specVersion": 0,
+  "specHash": "ef146324f68fb20e98d2a653e0ca31ad29690d6ce4a31cc9e11a05ad38502884",
+  "command": "check",
+  "ms": 20,
+  "kind": "check",
+  "ok": true,
+  "exitCode": 0,
+  "specErrors": [],
+  "diagnostics": [],
+  "rules": [
+    {
+      "ruleId": "TC-001",
+      "ruleName": "AUTH-REQUIRED",
+      "status": "passed",
+      "checked": 3,
+      "violations": 0,
+      "summary": "All endpoints declare authentication"
+    },
+    {
+      "ruleId": "TC-002",
+      "ruleName": "OWNERSHIP-CHECK",
+      "status": "passed",
+      "checked": 3,
+      "violations": 0,
+      "summary": "All endpoint authorization policies valid"
+    },
+    {
+      "ruleId": "TC-003",
+      "ruleName": "SENSITIVE-LEAK",
+      "status": "passed",
+      "checked": 3,
+      "violations": 0,
+      "summary": "No sensitive or credential leaks in responses"
+    },
+    {
+      "ruleId": "TC-004",
+      "ruleName": "MASS-ASSIGNMENT",
+      "status": "passed",
+      "checked": 1,
+      "violations": 0,
+      "summary": "No server-controlled fields in request bodies"
+    },
+    {
+      "ruleId": "TC-005",
+      "ruleName": "SECRET-SCOPE",
+      "status": "passed",
+      "checked": 2,
+      "violations": 0,
+      "summary": "All required environment secrets declared"
+    }
+  ],
+  "rulesRun": 5,
+  "endpoints": 3
+}

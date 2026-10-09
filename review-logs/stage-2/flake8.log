@@ -1,0 +1,7 @@
+Command: C:\Users\rama rao\OneDrive\Desktop\TrustC\.venv-win\Scripts\python.exe -m flake8 src/ tests/ --max-line-length=100 --extend-ignore=E203,W503
+Exit Code: 0
+
+STDOUT:
+
+STDERR:
+

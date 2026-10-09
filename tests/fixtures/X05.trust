@@ -1,0 +1,15 @@
+resource User:
+  fields:
+    id: uuid
+    email: string
+    ssn: string [sensitive]
+
+secrets:
+  DB_URL: env
+  JWT_SECRET: env
+
+endpoint GET /users/{id}:
+  resource: User
+  auth: required
+  expose: [ssn]
+  returns: User [id, email, ssn]

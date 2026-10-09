@@ -1,0 +1,175 @@
+{
+  "schemaVersion": 2,
+  "specVersion": 0,
+  "specHash": "ef146324f68fb20e98d2a653e0ca31ad29690d6ce4a31cc9e11a05ad38502884",
+  "command": "trustc attack tests/fixtures/F2.trust",
+  "ms": 1655,
+  "kind": "attack",
+  "status": "completed",
+  "exitCode": 0,
+  "buildId": "da49ccbb-d7b8-44bb-bc39-dc4bd7c99852",
+  "artifactHash": "b9bbdbe95b047e229cd32adc39d53a18056fd3afa049eb27366dd1933388170a",
+  "steps": [
+    {
+      "stepId": "f41e00ab-03e7-4f4e-aa37-be360fbd9c90",
+      "endpoint": "GET /trips/{id}",
+      "actor": "anonymous",
+      "method": "GET",
+      "path": "/trips/33333333-3333-3333-3333-333333333333",
+      "expect": 401,
+      "got": 401,
+      "outcome": "as_expected",
+      "reason": null,
+      "declarationIds": [],
+      "checks": [
+        {
+          "name": "status_code",
+          "expected": "401",
+          "actual": "401",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "stepId": "338a4f12-116b-490e-b18a-246bc8a3446d",
+      "endpoint": "GET /trips/{id}",
+      "actor": "second_user",
+      "method": "GET",
+      "path": "/trips/33333333-3333-3333-3333-333333333333",
+      "expect": 403,
+      "got": 403,
+      "outcome": "as_expected",
+      "reason": null,
+      "declarationIds": [],
+      "checks": [
+        {
+          "name": "status_code",
+          "expected": "403",
+          "actual": "403",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "stepId": "9261d75d-7c1c-4246-9538-0ae68208e6c9",
+      "endpoint": "GET /trips/{id}",
+      "actor": "owner",
+      "method": "GET",
+      "path": "/trips/33333333-3333-3333-3333-333333333333",
+      "expect": 200,
+      "got": 200,
+      "outcome": "as_expected",
+      "reason": null,
+      "declarationIds": [],
+      "checks": [
+        {
+          "name": "status_code",
+          "expected": "200",
+          "actual": "200",
+          "passed": true
+        },
+        {
+          "name": "credential_protection",
+          "expected": "no credentials in body",
+          "actual": "clean body",
+          "passed": true
+        },
+        {
+          "name": "response_projection",
+          "expected": "exact fields: ['destination', 'id', 'owner_id']",
+          "actual": "exact fields: ['destination', 'id', 'owner_id']",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "stepId": "d0e86040-1b98-4418-9958-7a5f537a59c7",
+      "endpoint": "GET /users/{id}",
+      "actor": "anonymous",
+      "method": "GET",
+      "path": "/users/11111111-1111-1111-1111-111111111111",
+      "expect": 401,
+      "got": 401,
+      "outcome": "as_expected",
+      "reason": null,
+      "declarationIds": [],
+      "checks": [
+        {
+          "name": "status_code",
+          "expected": "401",
+          "actual": "401",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "stepId": "46d23def-ca51-40c6-a588-8ebec09885ae",
+      "endpoint": "GET /users/{id}",
+      "actor": "second_user",
+      "method": "GET",
+      "path": "/users/11111111-1111-1111-1111-111111111111",
+      "expect": 403,
+      "got": 403,
+      "outcome": "as_expected",
+      "reason": null,
+      "declarationIds": [],
+      "checks": [
+        {
+          "name": "status_code",
+          "expected": "403",
+          "actual": "403",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "stepId": "c84bb4c1-68a4-4039-9df0-3ffb739cbb1b",
+      "endpoint": "GET /users/{id}",
+      "actor": "owner",
+      "method": "GET",
+      "path": "/users/11111111-1111-1111-1111-111111111111",
+      "expect": 200,
+      "got": 200,
+      "outcome": "as_expected",
+      "reason": null,
+      "declarationIds": [],
+      "checks": [
+        {
+          "name": "status_code",
+          "expected": "200",
+          "actual": "200",
+          "passed": true
+        },
+        {
+          "name": "credential_protection",
+          "expected": "no credentials in body",
+          "actual": "clean body",
+          "passed": true
+        },
+        {
+          "name": "response_projection",
+          "expected": "exact fields: ['email', 'id']",
+          "actual": "exact fields: ['email', 'id']",
+          "passed": true
+        }
+      ]
+    }
+  ],
+  "asExpected": 6,
+  "review": 0,
+  "unexpected": 0,
+  "total": 6,
+  "coverage": {
+    "testedEndpoints": [
+      "GET /trips/{id}",
+      "GET /users/{id}"
+    ],
+    "excludedEndpoints": [
+      {
+        "endpoint": "POST /trips",
+        "reason": "collection/create endpoint excluded from item-only access harness"
+      }
+    ]
+  },
+  "declarationObservations": []
+}

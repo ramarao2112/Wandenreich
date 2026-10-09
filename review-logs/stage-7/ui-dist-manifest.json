@@ -1,0 +1,57 @@
+{
+  "files": [
+    {
+      "path": "assets/codemirror-ByUWjOLM.js",
+      "bytes": 397713
+    },
+    {
+      "path": "assets/ibm-plex-mono-latin-400-normal-CvHOgSBP.woff",
+      "bytes": 13144
+    },
+    {
+      "path": "assets/ibm-plex-mono-latin-400-normal-DMJ8VG8y.woff2",
+      "bytes": 14708
+    },
+    {
+      "path": "assets/ibm-plex-mono-latin-600-normal-BgSNZQsw.woff2",
+      "bytes": 15620
+    },
+    {
+      "path": "assets/ibm-plex-mono-latin-600-normal-DWFSQ4vo.woff",
+      "bytes": 13208
+    },
+    {
+      "path": "assets/ibm-plex-sans-latin-400-normal-CDDApCn2.woff2",
+      "bytes": 22588
+    },
+    {
+      "path": "assets/ibm-plex-sans-latin-400-normal-CYLoc0-x.woff",
+      "bytes": 22104
+    },
+    {
+      "path": "assets/ibm-plex-sans-latin-600-normal-Cu4Hd6ag.woff",
+      "bytes": 23876
+    },
+    {
+      "path": "assets/ibm-plex-sans-latin-600-normal-CuJfVYMP.woff2",
+      "bytes": 24252
+    },
+    {
+      "path": "assets/index-CJbncKWN.css",
+      "bytes": 2575
+    },
+    {
+      "path": "assets/index-CXBo-EeR.js",
+      "bytes": 92849
+    },
+    {
+      "path": "assets/vendor-Cxi_VyKz.js",
+      "bytes": 141485
+    },
+    {
+      "path": "index.html",
+      "bytes": 694
+    }
+  ],
+  "totalFiles": 13
+}

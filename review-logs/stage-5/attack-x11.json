@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 2,
+  "specVersion": 0,
+  "specHash": "af4573d3bf94bf5024156a591c3b54855e76275dffe9ff455ada66a77d8a1897",
+  "command": "trustc attack tests/fixtures/X11.trust",
+  "ms": 2618,
+  "kind": "attack",
+  "status": "completed",
+  "exitCode": 0,
+  "buildId": "7609f1fd-c6c2-4f4e-90d7-4d5b82fc5c11",
+  "artifactHash": "8c86965fad3c8bf789f7b9246d9965dc4bf0a7cf1961c48ad1b555c09cbac1e6",
+  "steps": [],
+  "asExpected": 0,
+  "review": 0,
+  "unexpected": 0,
+  "total": 0,
+  "coverage": {
+    "testedEndpoints": [],
+    "excludedEndpoints": [
+      {
+        "endpoint": "POST /items",
+        "reason": "collection/create endpoint excluded from item-only access harness"
+      },
+      {
+        "endpoint": "GET /items",
+        "reason": "collection/create endpoint excluded from item-only access harness"
+      }
+    ]
+  },
+  "declarationObservations": []
+}

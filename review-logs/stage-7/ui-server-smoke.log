@@ -1,0 +1,19 @@
+Command: C:\Users\rama rao\OneDrive\Desktop\TrustC\.venv-win\Scripts\python.exe scripts/smoke-ui-server.py
+Exit Code: 0
+
+STDOUT:
+=== Stage 7 UI and Server Smoke Test ===
+Starting TrustC server on port 64297 with static_dir=C:\Users\rama rao\OneDrive\Desktop\TrustC\ui\dist...
+  [1/8] Server online. Session ID: 8a5525b2-988d-4ff1-85df-8d1df13f4e1c
+  [2/8] Root path (/) serves UI index.html successfully.
+  [3/8] Static bundle /assets/codemirror-ByUWjOLM.js served with 397713 bytes.
+  [4/8] Non-file route (/diagnostics) correctly falls back to SPA index.html.
+  [5/8] API path isolation verified: /api/unknown returns JSON 404, not index.html.
+  [6/8] Catalog /api/examples returned 6 examples.
+  [7/8] Invariant checking (/api/check) verified for F1 (refused) and F2 (passed).
+  [8/8] Build execution and zip download verified (12 files in archive).
+
+All 8 smoke test assertions PASSED!
+
+STDERR:
+

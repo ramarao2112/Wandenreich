@@ -1,0 +1,204 @@
+Command: C:\Users\rama rao\OneDrive\Desktop\TrustC\.venv-win\Scripts\python.exe -m trustc.cli parse tests/fixtures/F2.trust
+Exit Code: 0
+
+STDOUT:
+{
+  "schemaVersion": 2,
+  "specHash": "ef146324f68fb20e98d2a653e0ca31ad29690d6ce4a31cc9e11a05ad38502884",
+  "resources": [
+    {
+      "name": "User",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "sensitive": false,
+          "isCredential": false,
+          "span": {
+            "line": 3,
+            "col": 5,
+            "endLine": 3,
+            "endCol": 7
+          }
+        },
+        {
+          "name": "email",
+          "type": "string",
+          "sensitive": false,
+          "isCredential": false,
+          "span": {
+            "line": 4,
+            "col": 5,
+            "endLine": 4,
+            "endCol": 10
+          }
+        },
+        {
+          "name": "password_hash",
+          "type": "string",
+          "sensitive": true,
+          "isCredential": true,
+          "span": {
+            "line": 5,
+            "col": 5,
+            "endLine": 5,
+            "endCol": 18
+          }
+        }
+      ],
+      "ownership": null,
+      "span": {
+        "line": 1,
+        "col": 1,
+        "endLine": 1,
+        "endCol": 9
+      }
+    },
+    {
+      "name": "Trip",
+      "fields": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "sensitive": false,
+          "isCredential": false,
+          "span": {
+            "line": 9,
+            "col": 5,
+            "endLine": 9,
+            "endCol": 7
+          }
+        },
+        {
+          "name": "destination",
+          "type": "string",
+          "sensitive": false,
+          "isCredential": false,
+          "span": {
+            "line": 10,
+            "col": 5,
+            "endLine": 10,
+            "endCol": 16
+          }
+        },
+        {
+          "name": "owner_id",
+          "type": "uuid",
+          "sensitive": false,
+          "isCredential": false,
+          "span": {
+            "line": 11,
+            "col": 5,
+            "endLine": 11,
+            "endCol": 13
+          }
+        }
+      ],
+      "ownership": {
+        "field": "owner_id",
+        "targetResource": "User",
+        "targetField": "id",
+        "span": {
+          "line": 11,
+          "col": 5,
+          "endLine": 11,
+          "endCol": 13
+        }
+      },
+      "span": {
+        "line": 7,
+        "col": 1,
+        "endLine": 7,
+        "endCol": 9
+      }
+    }
+  ],
+  "secrets": [
+    {
+      "name": "DB_URL",
+      "span": {
+        "line": 14,
+        "col": 3,
+        "endLine": 14,
+        "endCol": 9
+      }
+    },
+    {
+      "name": "JWT_SECRET",
+      "span": {
+        "line": 15,
+        "col": 3,
+        "endLine": 15,
+        "endCol": 13
+      }
+    }
+  ],
+  "endpoints": [
+    {
+      "method": "POST",
+      "path": "/trips",
+      "resource": "Trip",
+      "operation": "create",
+      "auth": "required",
+      "inferredMode": "owner",
+      "ownerWaived": false,
+      "span": {
+        "line": 17,
+        "col": 1,
+        "endLine": 17,
+        "endCol": 9
+      },
+      "body": [
+        "destination"
+      ],
+      "returns": {
+        "resource": "Trip",
+        "projection": null
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/trips/{id}",
+      "resource": "Trip",
+      "operation": "read",
+      "auth": "required",
+      "inferredMode": "owner",
+      "ownerWaived": false,
+      "span": {
+        "line": 23,
+        "col": 1,
+        "endLine": 23,
+        "endCol": 9
+      },
+      "returns": {
+        "resource": "Trip",
+        "projection": null
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/users/{id}",
+      "resource": "User",
+      "operation": "read",
+      "auth": "required",
+      "inferredMode": "self",
+      "ownerWaived": false,
+      "span": {
+        "line": 28,
+        "col": 1,
+        "endLine": 28,
+        "endCol": 9
+      },
+      "returns": {
+        "resource": "User",
+        "projection": [
+          "id",
+          "email"
+        ]
+      }
+    }
+  ]
+}
+
+STDERR:
+

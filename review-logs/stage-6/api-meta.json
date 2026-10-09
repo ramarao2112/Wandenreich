@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 2,
+  "sessionId": "d5e7ae25-1824-44f5-bbdf-a590e5994264",
+  "version": "0.1.0",
+  "port": 8787,
+  "target": "fastapi",
+  "rules": [
+    {
+      "id": "TC-001",
+      "name": "AUTH-REQUIRED"
+    },
+    {
+      "id": "TC-002",
+      "name": "OWNERSHIP-CHECK"
+    },
+    {
+      "id": "TC-003",
+      "name": "SENSITIVE-LEAK"
+    },
+    {
+      "id": "TC-004",
+      "name": "MASS-ASSIGNMENT"
+    },
+    {
+      "id": "TC-005",
+      "name": "SECRET-SCOPE"
+    }
+  ]
+}

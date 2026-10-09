@@ -1,0 +1,1124 @@
+{
+  "$defs": {
+    "Actor": {
+      "enum": [
+        "anonymous",
+        "second_user",
+        "owner"
+      ],
+      "title": "Actor",
+      "type": "string"
+    },
+    "ActorPayload": {
+      "properties": {
+        "type": {
+          "const": "actor",
+          "default": "actor",
+          "title": "Type",
+          "type": "string"
+        },
+        "step": {
+          "$ref": "#/$defs/AttackStep"
+        }
+      },
+      "required": [
+        "step"
+      ],
+      "title": "ActorPayload",
+      "type": "object"
+    },
+    "AttackCheck": {
+      "properties": {
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "expected": {
+          "title": "Expected",
+          "type": "string"
+        },
+        "actual": {
+          "title": "Actual",
+          "type": "string"
+        },
+        "passed": {
+          "title": "Passed",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "name",
+        "expected",
+        "actual",
+        "passed"
+      ],
+      "title": "AttackCheck",
+      "type": "object"
+    },
+    "AttackCompleted": {
+      "properties": {
+        "schemaVersion": {
+          "const": 2,
+          "default": 2,
+          "title": "Schemaversion",
+          "type": "integer"
+        },
+        "specVersion": {
+          "minimum": 0,
+          "title": "Specversion",
+          "type": "integer"
+        },
+        "specHash": {
+          "title": "Spechash",
+          "type": "string"
+        },
+        "command": {
+          "title": "Command",
+          "type": "string"
+        },
+        "ms": {
+          "minimum": 0,
+          "title": "Ms",
+          "type": "integer"
+        },
+        "kind": {
+          "const": "attack",
+          "default": "attack",
+          "title": "Kind",
+          "type": "string"
+        },
+        "status": {
+          "const": "completed",
+          "default": "completed",
+          "title": "Status",
+          "type": "string"
+        },
+        "exitCode": {
+          "default": 0,
+          "enum": [
+            0,
+            1
+          ],
+          "title": "Exitcode",
+          "type": "integer"
+        },
+        "buildId": {
+          "title": "Buildid",
+          "type": "string"
+        },
+        "artifactHash": {
+          "title": "Artifacthash",
+          "type": "string"
+        },
+        "steps": {
+          "items": {
+            "$ref": "#/$defs/AttackStep"
+          },
+          "title": "Steps",
+          "type": "array"
+        },
+        "asExpected": {
+          "minimum": 0,
+          "title": "Asexpected",
+          "type": "integer"
+        },
+        "review": {
+          "minimum": 0,
+          "title": "Review",
+          "type": "integer"
+        },
+        "unexpected": {
+          "minimum": 0,
+          "title": "Unexpected",
+          "type": "integer"
+        },
+        "total": {
+          "minimum": 0,
+          "title": "Total",
+          "type": "integer"
+        },
+        "coverage": {
+          "$ref": "#/$defs/AttackCoverage"
+        },
+        "declarationObservations": {
+          "items": {
+            "$ref": "#/$defs/DeclarationObservation"
+          },
+          "title": "Declarationobservations",
+          "type": "array"
+        }
+      },
+      "required": [
+        "specVersion",
+        "specHash",
+        "command",
+        "ms",
+        "buildId",
+        "artifactHash",
+        "asExpected",
+        "review",
+        "unexpected",
+        "total",
+        "coverage"
+      ],
+      "title": "AttackCompleted",
+      "type": "object"
+    },
+    "AttackCoverage": {
+      "properties": {
+        "testedEndpoints": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Testedendpoints",
+          "type": "array"
+        },
+        "excludedEndpoints": {
+          "items": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object"
+          },
+          "title": "Excludedendpoints",
+          "type": "array"
+        }
+      },
+      "title": "AttackCoverage",
+      "type": "object"
+    },
+    "AttackStep": {
+      "properties": {
+        "stepId": {
+          "title": "Stepid",
+          "type": "string"
+        },
+        "endpoint": {
+          "title": "Endpoint",
+          "type": "string"
+        },
+        "actor": {
+          "$ref": "#/$defs/Actor"
+        },
+        "method": {
+          "title": "Method",
+          "type": "string"
+        },
+        "path": {
+          "title": "Path",
+          "type": "string"
+        },
+        "expect": {
+          "title": "Expect",
+          "type": "integer"
+        },
+        "got": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Got"
+        },
+        "outcome": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Outcome"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Reason"
+        },
+        "declarationIds": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Declarationids",
+          "type": "array"
+        },
+        "checks": {
+          "items": {
+            "$ref": "#/$defs/AttackCheck"
+          },
+          "title": "Checks",
+          "type": "array"
+        }
+      },
+      "required": [
+        "stepId",
+        "endpoint",
+        "actor",
+        "method",
+        "path",
+        "expect"
+      ],
+      "title": "AttackStep",
+      "type": "object"
+    },
+    "BuildEvidence": {
+      "properties": {
+        "schemaVersion": {
+          "const": 2,
+          "default": 2,
+          "title": "Schemaversion",
+          "type": "integer"
+        },
+        "buildId": {
+          "title": "Buildid",
+          "type": "string"
+        },
+        "specHash": {
+          "title": "Spechash",
+          "type": "string"
+        },
+        "specVersion": {
+          "minimum": 0,
+          "title": "Specversion",
+          "type": "integer"
+        },
+        "compilerVersion": {
+          "title": "Compilerversion",
+          "type": "string"
+        },
+        "templateVersion": {
+          "title": "Templateversion",
+          "type": "string"
+        },
+        "rules": {
+          "items": {
+            "$ref": "#/$defs/RuleResult"
+          },
+          "title": "Rules",
+          "type": "array"
+        },
+        "endpointPolicies": {
+          "items": {
+            "$ref": "#/$defs/EndpointPolicy"
+          },
+          "title": "Endpointpolicies",
+          "type": "array"
+        },
+        "structuralRestrictions": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Structuralrestrictions",
+          "type": "array"
+        },
+        "declarations": {
+          "items": {
+            "$ref": "#/$defs/Declaration"
+          },
+          "title": "Declarations",
+          "type": "array"
+        },
+        "limitations": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Limitations",
+          "type": "array"
+        }
+      },
+      "required": [
+        "buildId",
+        "specHash",
+        "specVersion",
+        "compilerVersion",
+        "templateVersion"
+      ],
+      "title": "BuildEvidence",
+      "type": "object"
+    },
+    "BuildSuccess": {
+      "properties": {
+        "schemaVersion": {
+          "const": 2,
+          "default": 2,
+          "title": "Schemaversion",
+          "type": "integer"
+        },
+        "specVersion": {
+          "minimum": 0,
+          "title": "Specversion",
+          "type": "integer"
+        },
+        "specHash": {
+          "title": "Spechash",
+          "type": "string"
+        },
+        "command": {
+          "title": "Command",
+          "type": "string"
+        },
+        "ms": {
+          "minimum": 0,
+          "title": "Ms",
+          "type": "integer"
+        },
+        "kind": {
+          "const": "build",
+          "default": "build",
+          "title": "Kind",
+          "type": "string"
+        },
+        "status": {
+          "const": "completed",
+          "default": "completed",
+          "title": "Status",
+          "type": "string"
+        },
+        "exitCode": {
+          "const": 0,
+          "default": 0,
+          "title": "Exitcode",
+          "type": "integer"
+        },
+        "buildId": {
+          "title": "Buildid",
+          "type": "string"
+        },
+        "files": {
+          "items": {
+            "$ref": "#/$defs/GeneratedFile"
+          },
+          "title": "Files",
+          "type": "array"
+        },
+        "evidence": {
+          "$ref": "#/$defs/BuildEvidence"
+        }
+      },
+      "required": [
+        "specVersion",
+        "specHash",
+        "command",
+        "ms",
+        "buildId",
+        "evidence"
+      ],
+      "title": "BuildSuccess",
+      "type": "object"
+    },
+    "Declaration": {
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "endpoint": {
+          "title": "Endpoint",
+          "type": "string"
+        },
+        "span": {
+          "$ref": "#/$defs/Span"
+        },
+        "kind": {
+          "$ref": "#/$defs/DeclarationKind"
+        },
+        "reason": {
+          "title": "Reason",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "endpoint",
+        "span",
+        "kind",
+        "reason"
+      ],
+      "title": "Declaration",
+      "type": "object"
+    },
+    "DeclarationKind": {
+      "enum": [
+        "public_auth",
+        "ownership_waiver",
+        "sensitive_exposure"
+      ],
+      "title": "DeclarationKind",
+      "type": "string"
+    },
+    "DeclarationObservation": {
+      "properties": {
+        "declarationId": {
+          "title": "Declarationid",
+          "type": "string"
+        },
+        "stepIds": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Stepids",
+          "type": "array"
+        },
+        "state": {
+          "$ref": "#/$defs/DeclarationObservationState"
+        }
+      },
+      "required": [
+        "declarationId",
+        "state"
+      ],
+      "title": "DeclarationObservation",
+      "type": "object"
+    },
+    "DeclarationObservationState": {
+      "enum": [
+        "observed",
+        "not_tested"
+      ],
+      "title": "DeclarationObservationState",
+      "type": "string"
+    },
+    "Diagnostic": {
+      "properties": {
+        "ruleId": {
+          "$ref": "#/$defs/RuleId"
+        },
+        "ruleName": {
+          "title": "Rulename",
+          "type": "string"
+        },
+        "severity": {
+          "$ref": "#/$defs/Severity"
+        },
+        "span": {
+          "$ref": "#/$defs/Span"
+        },
+        "location": {
+          "title": "Location",
+          "type": "string"
+        },
+        "endpoint": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Endpoint"
+        },
+        "message": {
+          "title": "Message",
+          "type": "string"
+        },
+        "why": {
+          "title": "Why",
+          "type": "string"
+        },
+        "fix": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/DiffFix"
+            },
+            {
+              "$ref": "#/$defs/PromptFix"
+            }
+          ],
+          "title": "Fix"
+        }
+      },
+      "required": [
+        "ruleId",
+        "ruleName",
+        "severity",
+        "span",
+        "location",
+        "message",
+        "why",
+        "fix"
+      ],
+      "title": "Diagnostic",
+      "type": "object"
+    },
+    "DiffFix": {
+      "properties": {
+        "type": {
+          "const": "diff",
+          "default": "diff",
+          "title": "Type",
+          "type": "string"
+        },
+        "baseSpecHash": {
+          "title": "Basespechash",
+          "type": "string"
+        },
+        "diff": {
+          "title": "Diff",
+          "type": "string"
+        },
+        "label": {
+          "title": "Label",
+          "type": "string"
+        }
+      },
+      "required": [
+        "baseSpecHash",
+        "diff",
+        "label"
+      ],
+      "title": "DiffFix",
+      "type": "object"
+    },
+    "EndpointMode": {
+      "enum": [
+        "owner",
+        "self",
+        "login_only",
+        "public"
+      ],
+      "title": "EndpointMode",
+      "type": "string"
+    },
+    "EndpointPolicy": {
+      "properties": {
+        "endpoint": {
+          "title": "Endpoint",
+          "type": "string"
+        },
+        "mode": {
+          "$ref": "#/$defs/EndpointMode"
+        },
+        "ownerWaived": {
+          "title": "Ownerwaived",
+          "type": "boolean"
+        },
+        "sensitiveFields": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Sensitivefields",
+          "type": "array"
+        }
+      },
+      "required": [
+        "endpoint",
+        "mode",
+        "ownerWaived"
+      ],
+      "title": "EndpointPolicy",
+      "type": "object"
+    },
+    "ForcedLine": {
+      "properties": {
+        "line": {
+          "minimum": 1,
+          "title": "Line",
+          "type": "integer"
+        },
+        "specSpan": {
+          "$ref": "#/$defs/Span"
+        },
+        "kind": {
+          "$ref": "#/$defs/ForcedLineKind"
+        }
+      },
+      "required": [
+        "line",
+        "specSpan",
+        "kind"
+      ],
+      "title": "ForcedLine",
+      "type": "object"
+    },
+    "ForcedLineKind": {
+      "enum": [
+        "route",
+        "auth",
+        "owner-set",
+        "query",
+        "owner-check",
+        "self-check"
+      ],
+      "title": "ForcedLineKind",
+      "type": "string"
+    },
+    "GeneratedFile": {
+      "properties": {
+        "path": {
+          "title": "Path",
+          "type": "string"
+        },
+        "content": {
+          "title": "Content",
+          "type": "string"
+        },
+        "forced": {
+          "items": {
+            "$ref": "#/$defs/ForcedLine"
+          },
+          "title": "Forced",
+          "type": "array"
+        }
+      },
+      "required": [
+        "path",
+        "content"
+      ],
+      "title": "GeneratedFile",
+      "type": "object"
+    },
+    "LogLine": {
+      "properties": {
+        "t": {
+          "title": "T",
+          "type": "integer"
+        },
+        "phase": {
+          "title": "Phase",
+          "type": "string"
+        },
+        "text": {
+          "title": "Text",
+          "type": "string"
+        },
+        "ms": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ms"
+        }
+      },
+      "required": [
+        "t",
+        "phase",
+        "text"
+      ],
+      "title": "LogLine",
+      "type": "object"
+    },
+    "LogPayload": {
+      "properties": {
+        "type": {
+          "const": "log",
+          "default": "log",
+          "title": "Type",
+          "type": "string"
+        },
+        "log": {
+          "$ref": "#/$defs/LogLine"
+        }
+      },
+      "required": [
+        "log"
+      ],
+      "title": "LogPayload",
+      "type": "object"
+    },
+    "Outcome": {
+      "enum": [
+        "as_expected",
+        "review",
+        "unexpected"
+      ],
+      "title": "Outcome",
+      "type": "string"
+    },
+    "PhasePayload": {
+      "properties": {
+        "type": {
+          "const": "phase",
+          "default": "phase",
+          "title": "Type",
+          "type": "string"
+        },
+        "phase": {
+          "$ref": "#/$defs/PhaseType"
+        },
+        "state": {
+          "$ref": "#/$defs/PhaseState"
+        }
+      },
+      "required": [
+        "phase",
+        "state"
+      ],
+      "title": "PhasePayload",
+      "type": "object"
+    },
+    "PhaseState": {
+      "enum": [
+        "started",
+        "finished"
+      ],
+      "title": "PhaseState",
+      "type": "string"
+    },
+    "PhaseType": {
+      "enum": [
+        "verify",
+        "render",
+        "publish",
+        "start",
+        "seed",
+        "request",
+        "cleanup"
+      ],
+      "title": "PhaseType",
+      "type": "string"
+    },
+    "PromptFix": {
+      "properties": {
+        "type": {
+          "const": "prompt",
+          "default": "prompt",
+          "title": "Type",
+          "type": "string"
+        },
+        "text": {
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "text"
+      ],
+      "title": "PromptFix",
+      "type": "object"
+    },
+    "ResultPayload": {
+      "properties": {
+        "type": {
+          "const": "result",
+          "default": "result",
+          "title": "Type",
+          "type": "string"
+        },
+        "result": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/BuildSuccess"
+            },
+            {
+              "$ref": "#/$defs/AttackCompleted"
+            },
+            {
+              "$ref": "#/$defs/RunFailure"
+            }
+          ],
+          "title": "Result"
+        }
+      },
+      "required": [
+        "result"
+      ],
+      "title": "ResultPayload",
+      "type": "object"
+    },
+    "RuleId": {
+      "enum": [
+        "TC-001",
+        "TC-002",
+        "TC-003",
+        "TC-004",
+        "TC-005"
+      ],
+      "title": "RuleId",
+      "type": "string"
+    },
+    "RuleResult": {
+      "properties": {
+        "ruleId": {
+          "$ref": "#/$defs/RuleId"
+        },
+        "ruleName": {
+          "title": "Rulename",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "passed",
+            "failed",
+            "not_applicable"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "checked": {
+          "minimum": 0,
+          "title": "Checked",
+          "type": "integer"
+        },
+        "violations": {
+          "minimum": 0,
+          "title": "Violations",
+          "type": "integer"
+        },
+        "summary": {
+          "title": "Summary",
+          "type": "string"
+        }
+      },
+      "required": [
+        "ruleId",
+        "ruleName",
+        "status",
+        "checked",
+        "violations",
+        "summary"
+      ],
+      "title": "RuleResult",
+      "type": "object"
+    },
+    "RunFailure": {
+      "properties": {
+        "schemaVersion": {
+          "const": 2,
+          "default": 2,
+          "title": "Schemaversion",
+          "type": "integer"
+        },
+        "specVersion": {
+          "minimum": 0,
+          "title": "Specversion",
+          "type": "integer"
+        },
+        "specHash": {
+          "title": "Spechash",
+          "type": "string"
+        },
+        "command": {
+          "title": "Command",
+          "type": "string"
+        },
+        "ms": {
+          "minimum": 0,
+          "title": "Ms",
+          "type": "integer"
+        },
+        "kind": {
+          "enum": [
+            "build",
+            "attack"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "refused",
+            "invalid_spec",
+            "error",
+            "cancelled",
+            "timed_out"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "exitCode": {
+          "enum": [
+            1,
+            2,
+            3,
+            124,
+            130
+          ],
+          "title": "Exitcode",
+          "type": "integer"
+        },
+        "specErrors": {
+          "items": {
+            "$ref": "#/$defs/SpecError"
+          },
+          "title": "Specerrors",
+          "type": "array"
+        },
+        "diagnostics": {
+          "items": {
+            "$ref": "#/$defs/Diagnostic"
+          },
+          "title": "Diagnostics",
+          "type": "array"
+        },
+        "error": {
+          "anyOf": [
+            {
+              "additionalProperties": {
+                "type": "string"
+              },
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Error"
+        }
+      },
+      "required": [
+        "specVersion",
+        "specHash",
+        "command",
+        "ms",
+        "kind",
+        "status",
+        "exitCode"
+      ],
+      "title": "RunFailure",
+      "type": "object"
+    },
+    "Severity": {
+      "enum": [
+        "error",
+        "warn"
+      ],
+      "title": "Severity",
+      "type": "string"
+    },
+    "Span": {
+      "description": "1-based source span with Unicode code-point columns.",
+      "properties": {
+        "line": {
+          "minimum": 1,
+          "title": "Line",
+          "type": "integer"
+        },
+        "col": {
+          "minimum": 1,
+          "title": "Col",
+          "type": "integer"
+        },
+        "endLine": {
+          "minimum": 1,
+          "title": "Endline",
+          "type": "integer"
+        },
+        "endCol": {
+          "minimum": 1,
+          "title": "Endcol",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "line",
+        "col",
+        "endLine",
+        "endCol"
+      ],
+      "title": "Span",
+      "type": "object"
+    },
+    "SpecError": {
+      "properties": {
+        "kind": {
+          "$ref": "#/$defs/SpecErrorKind"
+        },
+        "code": {
+          "title": "Code",
+          "type": "string"
+        },
+        "message": {
+          "title": "Message",
+          "type": "string"
+        },
+        "span": {
+          "$ref": "#/$defs/Span"
+        },
+        "snippet": {
+          "title": "Snippet",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "code",
+        "message",
+        "span",
+        "snippet"
+      ],
+      "title": "SpecError",
+      "type": "object"
+    },
+    "SpecErrorKind": {
+      "enum": [
+        "syntax",
+        "reference",
+        "unsupported"
+      ],
+      "title": "SpecErrorKind",
+      "type": "string"
+    }
+  },
+  "properties": {
+    "schemaVersion": {
+      "const": 2,
+      "default": 2,
+      "title": "Schemaversion",
+      "type": "integer"
+    },
+    "runId": {
+      "title": "Runid",
+      "type": "string"
+    },
+    "specVersion": {
+      "minimum": 0,
+      "title": "Specversion",
+      "type": "integer"
+    },
+    "specHash": {
+      "title": "Spechash",
+      "type": "string"
+    },
+    "seq": {
+      "minimum": 1,
+      "title": "Seq",
+      "type": "integer"
+    },
+    "payload": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/PhasePayload"
+        },
+        {
+          "$ref": "#/$defs/LogPayload"
+        },
+        {
+          "$ref": "#/$defs/ActorPayload"
+        },
+        {
+          "$ref": "#/$defs/ResultPayload"
+        }
+      ],
+      "title": "Payload"
+    }
+  },
+  "required": [
+    "runId",
+    "specVersion",
+    "specHash",
+    "seq",
+    "payload"
+  ],
+  "title": "RunEvent",
+  "type": "object"
+}

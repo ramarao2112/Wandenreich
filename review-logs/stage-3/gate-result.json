@@ -1,0 +1,264 @@
+{
+  "stage": 3,
+  "description": "Security rules, check, diff fixes, explain, and SARIF output",
+  "linter_toolchain": "flake8-isort",
+  "overall_status": "PASS",
+  "overall_exit_code": 0,
+  "timestamp_start": "2026-10-08T10:31:42.975126+00:00",
+  "timestamp_end": "2026-10-08T10:32:00.733555+00:00",
+  "total_duration_seconds": 17.758,
+  "steps": [
+    {
+      "name": "lint_flake8",
+      "command": [
+        "C:\\Users\\rama rao\\OneDrive\\Desktop\\TrustC\\.venv-win\\Scripts\\python.exe",
+        "-m",
+        "flake8",
+        "src/",
+        "tests/",
+        "--max-line-length=100",
+        "--extend-ignore=E203,W503"
+      ],
+      "cwd": "C:\\Users\\rama rao\\OneDrive\\Desktop\\TrustC",
+      "start_time": "2026-10-08T10:31:42.975147+00:00",
+      "end_time": "2026-10-08T10:31:44.179806+00:00",
+      "duration_seconds": 1.205,
+      "exit_code": 0,
+      "launch_exception": null,
+      "status": "PASS",
+      "stdout_snippet": "",
+      "stderr_snippet": ""
+    },
+    {
+      "name": "lint_isort",
+      "command": [
+        "C:\\Users\\rama rao\\OneDrive\\Desktop\\TrustC\\.venv-win\\Scripts\\python.exe",
+        "-X",
+        "utf8",
+        "-m",
+        "isort",
+        "--check",
+        "--diff",
+        "src/",
+        "tests/"
+      ],
+      "cwd": "C:\\Users\\rama rao\\OneDrive\\Desktop\\TrustC",
+      "start_time": "2026-10-08T10:31:44.179846+00:00",
+      "end_time": "2026-10-08T10:31:44.402720+00:00",
+      "duration_seconds": 0.223,
+      "exit_code": 0,
+      "launch_exception": null,
+      "status": "PASS",
+      "stdout_snippet": "",
+      "stderr_snippet": ""
+    },
+    {
+      "name": "type_check_mypy",
+      "command": [
+        "C:\\Users\\rama rao\\OneDrive\\Desktop\\TrustC\\.venv-win\\Scripts\\python.exe",
+        "-m",
+        "mypy",
+        "src/",
+        "tests/"
+      ],
+      "cwd": "C:\\Users\\rama rao\\OneDrive\\Desktop\\TrustC",
+      "start_time": "2026-10-08T10:31:44.402753+00:00",
+      "end_time": "2026-10-08T10:31:44.773904+00:00",
+      "duration_seconds": 0.371,
+      "exit_code": 0,
+      "launch_exception": null,
+      "status": "PASS",
+      "stdout_snippet": "tests\\contract\\test_drift.py:231: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]\nSuccess: no issues found in 23 source files\n",
+      "stderr_snippet": ""
+    },
+    {
+      "name": "test_pytest",
+      "command": [
+        "C:\\Users\\rama rao\\OneDrive\\Desktop\\TrustC\\.venv-win\\Scripts\\python.exe",
+        "-m",
+        "pytest",
+        "-v",
+        "--tb=short",
+        "-m",
+        "stage1 or stage2 or stage3",
+        "tests/"
+      ],
+      "cwd": "C:\\Users\\rama rao\\OneDrive\\Desktop\\TrustC",
+      "start_time": "2026-10-08T10:31:44.773939+00:00",
+      "end_time": "2026-10-08T10:31:46.214226+00:00",
+      "duration_seconds": 1.44,
+      "exit_code": 0,
+      "launch_exception": null,
+      "status": "PASS",
+      "stdout_snippet": "============================= test session starts =============================\nplatform win32 -- Python 3.14.4, pytest-8.4.2, pluggy-1.6.0 -- C:\\Users\\rama rao\\OneDrive\\Desktop\\TrustC\\.venv-win\\Scripts\\python.exe\ncachedir: .pytest_cache\nrootdir: C:\\Users\\rama rao\\OneDrive\\Desktop\\TrustC\nconfigfile: pyproject.toml\nplugins: anyio-4.15.1, asyncio-1.4.0\nasyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function\ncollecting ... collected ",
+      "stderr_snippet": ""
+    },
+    {
+      "name": "cli_parse_f2",
+      "command": [
+        "C:\\Users\\rama rao\\OneDrive\\Desktop\\TrustC\\.venv-win\\Scripts\\python.exe",
+        "-m",
+        "trustc.cli",
+        "parse",
+        "tests/fixtures/F2.trust"
+      ],
+      "cwd": "C:\\Users\\rama rao\\OneDrive\\Desktop\\TrustC",
+      "start_time": "2026-10-08T10:31:46.214269+00:00",
+      "end_time": "2026-10-08T10:31:46.384317+00:00",
+      "duration_seconds": 0.17,
+      "exit_code": 0,
+      "launch_exception": null,
+      "status": "PASS",
+      "stdout_snippet": "{\n  \"schemaVersion\": 2,\n  \"specHash\": \"ef146324f68fb20e98d2a653e0ca31ad29690d6ce4a31cc9e11a05ad38502884\",\n  \"resources\": [\n    {\n      \"name\": \"User\",\n      \"fields\": [\n        {\n          \"name\": \"id\",\n          \"type\": \"uuid\",\n          \"sensitive\": false,\n          \"isCredential\": false,\n          \"span\": {\n            \"line\": 3,\n            \"col\": 5,\n            \"endLine\": 3,\n            \"endCol\": 7\n          }\n        },\n        {\n          \"name\": \"email\",\n          \"type\": \"string\",\n     ",
+      "stderr_snippet": ""
+    },
+    {
+      "name": "cli_parse_f4",
+      "command": [
+        "C:\\Users\\rama rao\\OneDrive\\Desktop\\TrustC\\.venv-win\\Scripts\\python.exe",
+        "-m",
+        "trustc.cli",
+        "parse",
+        "tests/fixtures/F4.trust"
+      ],
+      "cwd": "C:\\Users\\rama rao\\OneDrive\\Desktop\\TrustC",
+      "start_time": "2026-10-08T10:31:46.384346+00:00",
+      "end_time": "2026-10-08T10:31:46.551131+00:00",
+      "duration_seconds": 0.167,
+      "exit_code": 2,
+      "launch_exception": null,
+      "status": "PASS",
+      "stdout_snippet": "",
+      "stderr_snippet": "{\n  \"schemaVersion\": 2,\n  \"specHash\": \"3811bfb2e8bce846f95ab75840c751de48b103c4ea5db2c76f9f4e0a97c6c946\",\n  \"exitCode\": 2,\n  \"specErrors\": [\n    {\n      \"kind\": \"syntax\",\n      \"code\": \"PARSE_ERROR\",\n      \"message\": \"Syntax error at line 23, column 25: unexpected '\\n'. Expected: ':'\",\n      \"span\": {\n        \"line\": 23,\n        \"col\": 25,\n        \"endLine\": 23,\n        \"endCol\": 26\n      },\n      \"snippet\": \"endpoint GET /trips/{id}\"\n    }\n  ]\n}\n"
+    },
+    {
+      "name": "cli_check_f2",
+      "command": [
+        "C:\\Users\\rama rao\\OneDrive\\Desktop\\TrustC\\.venv-win\\Scripts\\python.exe",
+        "-m",
+        "trustc.cli",
+        "check",
+        "tests/fixtures/F2.trust"
+      ],
+      "cwd": "C:\\Users\\rama rao\\OneDrive\\Desktop\\TrustC",
+      "start_time": "2026-10-08T10:31:46.551168+00:00",
+      "end_time": "2026-10-08T10:31:46.836999+00:00",
+      "duration_seconds": 0.286,
+      "exit_code": 0,
+      "launch_exception": null,
+      "status": "PASS",
+      "stdout_snippet": "{\n  \"schemaVersion\": 2,\n  \"specVersion\": 0,\n  \"specHash\": \"ef146324f68fb20e98d2a653e0ca31ad29690d6ce4a31cc9e11a05ad38502884\",\n  \"command\": \"check\",\n  \"ms\": 25,\n  \"kind\": \"check\",\n  \"ok\": true,\n  \"exitCode\": 0,\n  \"specErrors\": [],\n  \"diagnostics\": [],\n  \"rules\": [\n    {\n      \"ruleId\": \"TC-001\",\n      \"ruleName\": \"AUTH-REQUIRED\",\n      \"status\": \"passed\",\n      \"checked\": 3,\n      \"violations\": 0,\n      \"summary\": \"All endpoints declare authentication\"\n    },\n    {\n      \"ruleId\": \"TC-002\",\n     ",
+      "stderr_snippet": ""
+    },
+    {
+      "name": "cli_check_f1",
+      "command": [
+        "C:\\Users\\rama rao\\OneDrive\\Desktop\\TrustC\\.venv-win\\Scripts\\python.exe",
+        "-m",
+        "trustc.cli",
+        "check",
+        "tests/fixtures/F1.trust"
+      ],
+      "cwd": "C:\\Users\\rama rao\\OneDrive\\Desktop\\TrustC",
+      "start_time": "2026-10-08T10:31:46.837027+00:00",
+      "end_time": "2026-10-08T10:31:47.122898+00:00",
+      "duration_seconds": 0.286,
+      "exit_code": 1,
+      "launch_exception": null,
+      "status": "PASS",
+      "stdout_snippet": "{\n  \"schemaVersion\": 2,\n  \"specVersion\": 0,\n  \"specHash\": \"4e364036b90af9de7a8f883dc26dbd64068c08507928a4690b91c5d5ea22dc8a\",\n  \"command\": \"check\",\n  \"ms\": 25,\n  \"kind\": \"check\",\n  \"ok\": false,\n  \"exitCode\": 1,\n  \"specErrors\": [],\n  \"diagnostics\": [\n    {\n      \"ruleId\": \"TC-001\",\n      \"ruleName\": \"AUTH-REQUIRED\",\n      \"severity\": \"error\",\n      \"span\": {\n        \"line\": 23,\n        \"col\": 1,\n        \"endLine\": 23,\n        \"endCol\": 8\n      },\n      \"location\": \"endpoint GET /trips/{id}\",\n    ",
+      "stderr_snippet": ""
+    },
+    {
+      "name": "cli_check_f4",
+      "command": [
+        "C:\\Users\\rama rao\\OneDrive\\Desktop\\TrustC\\.venv-win\\Scripts\\python.exe",
+        "-m",
+        "trustc.cli",
+        "check",
+        "tests/fixtures/F4.trust"
+      ],
+      "cwd": "C:\\Users\\rama rao\\OneDrive\\Desktop\\TrustC",
+      "start_time": "2026-10-08T10:31:47.122928+00:00",
+      "end_time": "2026-10-08T10:31:47.410171+00:00",
+      "duration_seconds": 0.287,
+      "exit_code": 2,
+      "launch_exception": null,
+      "status": "PASS",
+      "stdout_snippet": "{\n  \"schemaVersion\": 2,\n  \"specVersion\": 0,\n  \"specHash\": \"3811bfb2e8bce846f95ab75840c751de48b103c4ea5db2c76f9f4e0a97c6c946\",\n  \"command\": \"check\",\n  \"ms\": 24,\n  \"kind\": \"check\",\n  \"ok\": false,\n  \"exitCode\": 2,\n  \"specErrors\": [\n    {\n      \"kind\": \"syntax\",\n      \"code\": \"PARSE_ERROR\",\n      \"message\": \"Syntax error at line 23, column 25: unexpected '\\n'. Expected: ':'\",\n      \"span\": {\n        \"line\": 23,\n        \"col\": 25,\n        \"endLine\": 23,\n        \"endCol\": 26\n      },\n      \"snippet\": ",
+      "stderr_snippet": ""
+    },
+    {
+      "name": "cli_apply_fix_f1",
+      "command": [
+        "C:\\Users\\rama rao\\OneDrive\\Desktop\\TrustC\\.venv-win\\Scripts\\python.exe",
+        "-m",
+        "trustc.cli",
+        "apply-fix",
+        "tests/fixtures/F1.trust",
+        "--rule",
+        "TC-001",
+        "--dry-run"
+      ],
+      "cwd": "C:\\Users\\rama rao\\OneDrive\\Desktop\\TrustC",
+      "start_time": "2026-10-08T10:31:47.410201+00:00",
+      "end_time": "2026-10-08T10:31:47.693407+00:00",
+      "duration_seconds": 0.283,
+      "exit_code": 0,
+      "launch_exception": null,
+      "status": "PASS",
+      "stdout_snippet": "--- a/spec.trust\n+++ b/spec.trust\n@@ -22,6 +22,7 @@\n \n endpoint GET /trips/{id}:\n   resource: Trip\n+  auth: required\n   returns: Trip\n \n endpoint GET /users/{id}:\n",
+      "stderr_snippet": ""
+    },
+    {
+      "name": "cli_explain_tc002",
+      "command": [
+        "C:\\Users\\rama rao\\OneDrive\\Desktop\\TrustC\\.venv-win\\Scripts\\python.exe",
+        "-m",
+        "trustc.cli",
+        "explain",
+        "TC-002"
+      ],
+      "cwd": "C:\\Users\\rama rao\\OneDrive\\Desktop\\TrustC",
+      "start_time": "2026-10-08T10:31:47.693438+00:00",
+      "end_time": "2026-10-08T10:31:47.785765+00:00",
+      "duration_seconds": 0.092,
+      "exit_code": 0,
+      "launch_exception": null,
+      "status": "PASS",
+      "stdout_snippet": "# TC-002: OWNERSHIP-CHECK\n\n## Overview\n- **Rule ID:** `TC-002`\n- **Rule Name:** `OWNERSHIP-CHECK`\n- **Severity:** `Error`\n- **Target:** Endpoint authorization policies\n\n## Trigger\nAn endpoint declares an invalid, unsupported, or contradictory authorization policy per compiler specification \u00a7B4:\n1. **Role-only policy (`role_only: NAME`):** RBAC is unsupported in TrustSpec v1.\n2. **Wrong field equality in `authorize:`:** An equality predicate (`FIELD == current_user.id`) names an existing field th",
+      "stderr_snippet": ""
+    },
+    {
+      "name": "sarif_schema_validation",
+      "command": [
+        "C:\\Users\\rama rao\\OneDrive\\Desktop\\TrustC\\.venv-win\\Scripts\\python.exe",
+        "scripts/validate_sarif_schema.py"
+      ],
+      "cwd": "C:\\Users\\rama rao\\OneDrive\\Desktop\\TrustC",
+      "start_time": "2026-10-08T10:31:47.785791+00:00",
+      "end_time": "2026-10-08T10:31:48.584355+00:00",
+      "duration_seconds": 0.799,
+      "exit_code": 0,
+      "launch_exception": null,
+      "status": "PASS",
+      "stdout_snippet": "Loading published OASIS SARIF 2.1.0 schema from: C:\\Users\\rama rao\\OneDrive\\Desktop\\TrustC\\src\\trustc\\schemas\\sarif-schema-2.1.0.json\nSchema ID:    https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json\nSchema Title: Static Analysis Results Format (SARIF) Version 2.1.0 JSON Schema\n\nValidating 17 canonical fixtures against SARIF 2.1.0 schema...\n[PASS] F1.trust     - Validated against SARIF 2.1.0 schema (2 diagnostic results)\n[PASS] F2.trust     - Validated ",
+      "stderr_snippet": ""
+    },
+    {
+      "name": "wheel_smoke_test",
+      "command": [
+        "scripts/wheel_smoke_test.py"
+      ],
+      "cwd": "C:\\Users\\rama rao\\OneDrive\\Desktop\\TrustC",
+      "start_time": "2026-10-08T10:31:48.584388+00:00",
+      "end_time": "2026-10-08T10:32:00.733481+00:00",
+      "duration_seconds": 12.149,
+      "exit_code": 0,
+      "launch_exception": null,
+      "status": "PASS",
+      "stdout_snippet": "[{\"name\": \"build_wheel\", \"command\": [\"C:\\\\Users\\\\rama rao\\\\OneDrive\\\\Desktop\\\\TrustC\\\\.venv-win\\\\Scripts\\\\python.exe\", \"-m\", \"build\", \"--wheel\", \"--outdir\", \"C:\\\\Users\\\\rama rao\\\\OneDrive\\\\Desktop\\\\TrustC\\\\dist\"], \"exit_code\": 0, \"duration_seconds\": 3.023, \"status\": \"PASS\"}, {\"name\": \"inspect_archive\", \"status\": \"PASS\", \"verified_entries\": [\"trustc/grammars/trustspec.lark\", \"trustc/schemas/v2/CheckResult.json\", \"trustc/schemas/v2/BuildSuccess.json\", \"trustc/schemas/v2/AttackCompleted.json\", \"tru",
+      "stderr_snippet": ""
+    }
+  ]
+}

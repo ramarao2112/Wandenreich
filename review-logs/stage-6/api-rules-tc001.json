@@ -1,0 +1,9 @@
+{
+  "id": "TC-001",
+  "name": "AUTH-REQUIRED",
+  "checks": "Every endpoint must declare an explicit authentication policy ('auth: required' or 'auth: public').",
+  "flaw": "Missing explicit authentication decision ('auth: required' or 'auth: public').",
+  "fixType": "diff",
+  "refused": "endpoint GET /trips/{id}:\n  resource: Trip\n  returns: Trip",
+  "accepted": "endpoint GET /trips/{id}:\n  resource: Trip\n  auth: required\n  returns: Trip"
+}

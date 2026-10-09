@@ -1,0 +1,129 @@
+{
+  "stage": 2,
+  "description": "Grammar, positions, reference validation, IR, and wheel smoke",
+  "linter_toolchain": "ruff",
+  "overall_status": "BLOCKED",
+  "overall_exit_code": 1,
+  "timestamp_start": "2026-10-07T19:37:28.857522+00:00",
+  "timestamp_end": "2026-10-07T19:37:44.320359+00:00",
+  "total_duration_seconds": 15.463,
+  "steps": [
+    {
+      "name": "lint_ruff",
+      "command": [
+        "C:\\Users\\rama rao\\OneDrive\\Desktop\\TrustC\\.venv-win\\Scripts\\python.exe",
+        "-m",
+        "ruff",
+        "check",
+        "src/",
+        "tests/"
+      ],
+      "cwd": "C:\\Users\\rama rao\\OneDrive\\Desktop\\TrustC",
+      "start_time": "2026-10-07T19:37:28.857552+00:00",
+      "end_time": "2026-10-07T19:37:30.967106+00:00",
+      "duration_seconds": 2.11,
+      "exit_code": 1,
+      "launch_exception": "OSError: [WinError 4551] An Application Control policy has blocked this file",
+      "status": "BLOCKED",
+      "stdout_snippet": "",
+      "stderr_snippet": "Traceback (most recent call last):\n  File \"<frozen runpy>\", line 198, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"C:\\Users\\rama rao\\OneDrive\\Desktop\\TrustC\\.venv-win\\Lib\\site-packages\\ruff\\__main__.py\", line 27, in <module>\n    _run()\n    ~~~~^^\n  File \"C:\\Users\\rama rao\\OneDrive\\Desktop\\TrustC\\.venv-win\\Lib\\site-packages\\ruff\\__main__.py\", line 17, in _run\n    completed_process = subprocess.run([ruff, *sys.argv[1:]], check=False)\n  File \"C:\\Users\\rama rao\\AppDa"
+    },
+    {
+      "name": "type_check_mypy",
+      "command": [
+        "C:\\Users\\rama rao\\OneDrive\\Desktop\\TrustC\\.venv-win\\Scripts\\python.exe",
+        "-m",
+        "mypy",
+        "src/",
+        "tests/"
+      ],
+      "cwd": "C:\\Users\\rama rao\\OneDrive\\Desktop\\TrustC",
+      "start_time": "2026-10-07T19:37:30.967162+00:00",
+      "end_time": "2026-10-07T19:37:31.337365+00:00",
+      "duration_seconds": 0.37,
+      "exit_code": 0,
+      "launch_exception": null,
+      "status": "PASS",
+      "stdout_snippet": "tests\\contract\\test_drift.py:231: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]\nSuccess: no issues found in 16 source files\n",
+      "stderr_snippet": ""
+    },
+    {
+      "name": "test_pytest",
+      "command": [
+        "C:\\Users\\rama rao\\OneDrive\\Desktop\\TrustC\\.venv-win\\Scripts\\python.exe",
+        "-m",
+        "pytest",
+        "-v",
+        "--tb=short",
+        "-m",
+        "stage1 or stage2",
+        "tests/contract/",
+        "tests/unit/test_fixtures.py",
+        "tests/unit/test_parser.py",
+        "tests/unit/test_gate_runner.py"
+      ],
+      "cwd": "C:\\Users\\rama rao\\OneDrive\\Desktop\\TrustC",
+      "start_time": "2026-10-07T19:37:31.337414+00:00",
+      "end_time": "2026-10-07T19:37:32.312565+00:00",
+      "duration_seconds": 0.975,
+      "exit_code": 0,
+      "launch_exception": null,
+      "status": "PASS",
+      "stdout_snippet": "============================= test session starts =============================\nplatform win32 -- Python 3.14.4, pytest-8.4.2, pluggy-1.6.0 -- C:\\Users\\rama rao\\OneDrive\\Desktop\\TrustC\\.venv-win\\Scripts\\python.exe\ncachedir: .pytest_cache\nrootdir: C:\\Users\\rama rao\\OneDrive\\Desktop\\TrustC\nconfigfile: pyproject.toml\nplugins: anyio-4.15.1, asyncio-1.4.0\nasyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function\ncollecting ... collected ",
+      "stderr_snippet": ""
+    },
+    {
+      "name": "cli_parse_f2",
+      "command": [
+        "C:\\Users\\rama rao\\OneDrive\\Desktop\\TrustC\\.venv-win\\Scripts\\python.exe",
+        "-m",
+        "trustc.cli",
+        "parse",
+        "tests/fixtures/F2.trust"
+      ],
+      "cwd": "C:\\Users\\rama rao\\OneDrive\\Desktop\\TrustC",
+      "start_time": "2026-10-07T19:37:32.312617+00:00",
+      "end_time": "2026-10-07T19:37:32.486502+00:00",
+      "duration_seconds": 0.174,
+      "exit_code": 0,
+      "launch_exception": null,
+      "status": "PASS",
+      "stdout_snippet": "{\n  \"schemaVersion\": 2,\n  \"specHash\": \"ef146324f68fb20e98d2a653e0ca31ad29690d6ce4a31cc9e11a05ad38502884\",\n  \"resources\": [\n    {\n      \"name\": \"User\",\n      \"fields\": [\n        {\n          \"name\": \"id\",\n          \"type\": \"uuid\",\n          \"sensitive\": false,\n          \"isCredential\": false,\n          \"span\": {\n            \"line\": 3,\n            \"col\": 5,\n            \"endLine\": 3,\n            \"endCol\": 7\n          }\n        },\n        {\n          \"name\": \"email\",\n          \"type\": \"string\",\n     ",
+      "stderr_snippet": ""
+    },
+    {
+      "name": "cli_parse_f4",
+      "command": [
+        "C:\\Users\\rama rao\\OneDrive\\Desktop\\TrustC\\.venv-win\\Scripts\\python.exe",
+        "-m",
+        "trustc.cli",
+        "parse",
+        "tests/fixtures/F4.trust"
+      ],
+      "cwd": "C:\\Users\\rama rao\\OneDrive\\Desktop\\TrustC",
+      "start_time": "2026-10-07T19:37:32.486542+00:00",
+      "end_time": "2026-10-07T19:37:32.650704+00:00",
+      "duration_seconds": 0.164,
+      "exit_code": 2,
+      "launch_exception": null,
+      "status": "PASS",
+      "stdout_snippet": "",
+      "stderr_snippet": "{\n  \"schemaVersion\": 2,\n  \"specHash\": \"3811bfb2e8bce846f95ab75840c751de48b103c4ea5db2c76f9f4e0a97c6c946\",\n  \"exitCode\": 2,\n  \"specErrors\": [\n    {\n      \"kind\": \"syntax\",\n      \"code\": \"PARSE_ERROR\",\n      \"message\": \"Syntax error at line 23, column 25: unexpected '\\n'. Expected: ':'\",\n      \"span\": {\n        \"line\": 23,\n        \"col\": 25,\n        \"endLine\": 23,\n        \"endCol\": 26\n      },\n      \"snippet\": \"endpoint GET /trips/{id}\"\n    }\n  ]\n}\n"
+    },
+    {
+      "name": "wheel_smoke_test",
+      "command": [
+        "scripts/wheel_smoke_test.py"
+      ],
+      "cwd": "C:\\Users\\rama rao\\OneDrive\\Desktop\\TrustC",
+      "start_time": "2026-10-07T19:37:32.650748+00:00",
+      "end_time": "2026-10-07T19:37:44.320277+00:00",
+      "duration_seconds": 11.67,
+      "exit_code": 0,
+      "launch_exception": null,
+      "status": "PASS",
+      "stdout_snippet": "[{\"name\": \"build_wheel\", \"command\": [\"C:\\\\Users\\\\rama rao\\\\OneDrive\\\\Desktop\\\\TrustC\\\\.venv-win\\\\Scripts\\\\python.exe\", \"-m\", \"build\", \"--wheel\", \"--outdir\", \"C:\\\\Users\\\\rama rao\\\\OneDrive\\\\Desktop\\\\TrustC\\\\dist\"], \"exit_code\": 0, \"duration_seconds\": 2.995, \"status\": \"PASS\"}, {\"name\": \"inspect_archive\", \"status\": \"PASS\", \"verified_entries\": [\"trustc/grammars/trustspec.lark\", \"trustc/schemas/v2/CheckResult.json\", \"trustc/schemas/v2/BuildSuccess.json\", \"trustc/schemas/v2/AttackCompleted.json\", \"tru",
+      "stderr_snippet": ""
+    }
+  ]
+}

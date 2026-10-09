@@ -39,6 +39,8 @@ ui/.vite/
 
 # Generated output
 out/
+.trustc-smoke/
+*.db
 
 # Lock files (keep these tracked)
 # package-lock.json

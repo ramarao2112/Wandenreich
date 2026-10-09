@@ -1,0 +1,7 @@
+Command: C:\Users\rama rao\OneDrive\Desktop\TrustC\.venv-win\Scripts\python.exe -X utf8 -m isort --check --diff src/ tests/ scripts/
+Exit Code: 0
+
+STDOUT:
+
+STDERR:
+

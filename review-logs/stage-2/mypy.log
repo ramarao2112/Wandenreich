@@ -1,0 +1,9 @@
+Command: C:\Users\rama rao\OneDrive\Desktop\TrustC\.venv-win\Scripts\python.exe -m mypy src/ tests/
+Exit Code: 0
+
+STDOUT:
+tests\contract\test_drift.py:231: note: By default the bodies of untyped functions are not checked, consider using --check-untyped-defs  [annotation-unchecked]
+Success: no issues found in 16 source files
+
+STDERR:
+

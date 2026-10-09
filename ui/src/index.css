@@ -1,0 +1,85 @@
+:root {
+  --color-canvas: #0C111B;
+  --color-panel: #121A27;
+  --color-raised: #1A2535;
+  --color-border: #2B384B;
+  --color-text-primary: #EDF2FA;
+  --color-text-secondary: #ACBBCE;
+  --color-teal: #63DFD0;
+  --color-teal-hover: #4ecdbf;
+  --color-teal-dim: rgba(99, 223, 208, 0.15);
+  --color-success: #87E2AF;
+  --color-success-dim: rgba(135, 226, 175, 0.15);
+  --color-review: #F3C47E;
+  --color-review-dim: rgba(243, 196, 126, 0.15);
+  --color-error: #FF8795;
+  --color-error-dim: rgba(255, 135, 149, 0.15);
+  --color-dark-ink: #0C111B;
+
+  --font-sans: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: 'IBM Plex Mono', 'Cascadia Code', 'Fira Code', Menlo, Monaco, Consolas, monospace;
+
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--color-canvas);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+}
+
+button, input, select, textarea {
+  font-family: inherit;
+  font-size: inherit;
+}
+
+button:focus-visible,
+[tabindex]:focus-visible,
+input:focus-visible,
+select:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--color-teal);
+  outline-offset: 2px;
+}
+
+/* Screen reader only utility */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-panel);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-raised);
+}

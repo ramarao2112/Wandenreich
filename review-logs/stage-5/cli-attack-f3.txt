@@ -1,0 +1,19 @@
+Command: C:\Users\rama rao\OneDrive\Desktop\TrustC\.venv-win\Scripts\python.exe -m trustc.cli attack tests/fixtures/F3.trust
+Exit Code: 0
+
+STDOUT:
+  [actor: anonymous  ] GET /trips/33333333-3333-3333-3333-333333333333 -> 401 (expected 401) [as_expected]
+  [actor: second_user] GET /trips/33333333-3333-3333-3333-333333333333 -> 403 (expected 403) [as_expected]
+  [actor: owner      ] GET /trips/33333333-3333-3333-3333-333333333333 -> 200 (expected 200) [as_expected]
+  [actor: anonymous  ] GET /users/11111111-1111-1111-1111-111111111111 -> 401 (expected 401) [as_expected]
+  [actor: second_user] GET /users/11111111-1111-1111-1111-111111111111 -> 403 (expected 403) [as_expected]
+  [actor: owner      ] GET /users/11111111-1111-1111-1111-111111111111 -> 200 (expected 200) [as_expected]
+  [actor: anonymous  ] PUT /trips/33333333-3333-3333-3333-333333333333/visibility -> 401 (expected 401) [as_expected]
+  [actor: second_user] PUT /trips/33333333-3333-3333-3333-333333333333/visibility -> 200 (expected 200) [review]
+  [actor: owner      ] PUT /trips/33333333-3333-3333-3333-333333333333/visibility -> 200 (expected 200) [as_expected]
+
+Attack complete:
+  9 matched expectations · 1 policy review · 0 failed
+
+STDERR:
+

@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 2,
+  "buildId": "fe4ac51b-1cb4-48b3-bd05-f73051bda1d7",
+  "specHash": "ef146324f68fb20e98d2a653e0ca31ad29690d6ce4a31cc9e11a05ad38502884",
+  "specVersion": 0,
+  "compilerVersion": "0.1.0",
+  "templateVersion": "1.0.0",
+  "algorithm": "sha256-length-prefixed-v1",
+  "artifactDigest": "b9bbdbe95b047e229cd32adc39d53a18056fd3afa049eb27366dd1933388170a",
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 1544,
+      "sha256": "a8eeb97a6706419d5f205dbefdcd8dc56a27992928c008e0f3fc542c8b0f9951"
+    },
+    {
+      "path": "auth.py",
+      "bytes": 3172,
+      "sha256": "13b3a63a78494210723fe72d2b7c0d56339663988b1408477f4a6fb960ce902e"
+    },
+    {
+      "path": "db.py",
+      "bytes": 1117,
+      "sha256": "afdc48c1240604931db9fefd77a9cc785f64bef37c00496b31cbf4ac1fb690ca"
+    },
+    {
+      "path": "main.py",
+      "bytes": 1018,
+      "sha256": "67db28c79b26e84ae71fcdbfcc08baab4250c273204481e40fe745ad9125e75a"
+    },
+    {
+      "path": "models.py",
+      "bytes": 1171,
+      "sha256": "33c3cc526dc2d8ccdb050556dc5b095e4ff6312b450b236121b23addc48b7722"
+    },
+    {
+      "path": "requirements.txt",
+      "bytes": 142,
+      "sha256": "2637612fc173c43eba21c41991f2019d789fdbf38a9a1f494ab4e728702d9f2b"
+    },
+    {
+      "path": "routers/__init__.py",
+      "bytes": 159,
+      "sha256": "e78dd6a8ace15a02044fab8275528a59e84eae2fe1dc92eecf0f68043ad80e75"
+    },
+    {
+      "path": "routers/trips.py",
+      "bytes": 1970,
+      "sha256": "4c78287c1df60d01d6dfbd970eaae2abd33ebeed0e0185f5e2e9ed0bdb81b4b1"
+    },
+    {
+      "path": "routers/users.py",
+      "bytes": 1395,
+      "sha256": "00818d4437429be069ab94c7b9ded1dd0bff6a96d16e0ab5eb542f10b14ffe8b"
+    },
+    {
+      "path": "schemas.py",
+      "bytes": 1003,
+      "sha256": "04188fd57b596c8e991f6bb7743c24ce8bf8e60defa06f554900662b1debdb46"
+    }
+  ]
+}

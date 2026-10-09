@@ -1,0 +1,298 @@
+{
+  "$defs": {
+    "Actor": {
+      "enum": [
+        "anonymous",
+        "second_user",
+        "owner"
+      ],
+      "title": "Actor",
+      "type": "string"
+    },
+    "AttackCheck": {
+      "properties": {
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "expected": {
+          "title": "Expected",
+          "type": "string"
+        },
+        "actual": {
+          "title": "Actual",
+          "type": "string"
+        },
+        "passed": {
+          "title": "Passed",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "name",
+        "expected",
+        "actual",
+        "passed"
+      ],
+      "title": "AttackCheck",
+      "type": "object"
+    },
+    "AttackCoverage": {
+      "properties": {
+        "testedEndpoints": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Testedendpoints",
+          "type": "array"
+        },
+        "excludedEndpoints": {
+          "items": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object"
+          },
+          "title": "Excludedendpoints",
+          "type": "array"
+        }
+      },
+      "title": "AttackCoverage",
+      "type": "object"
+    },
+    "AttackStep": {
+      "properties": {
+        "stepId": {
+          "title": "Stepid",
+          "type": "string"
+        },
+        "endpoint": {
+          "title": "Endpoint",
+          "type": "string"
+        },
+        "actor": {
+          "$ref": "#/$defs/Actor"
+        },
+        "method": {
+          "title": "Method",
+          "type": "string"
+        },
+        "path": {
+          "title": "Path",
+          "type": "string"
+        },
+        "expect": {
+          "title": "Expect",
+          "type": "integer"
+        },
+        "got": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Got"
+        },
+        "outcome": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Outcome"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Reason"
+        },
+        "declarationIds": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Declarationids",
+          "type": "array"
+        },
+        "checks": {
+          "items": {
+            "$ref": "#/$defs/AttackCheck"
+          },
+          "title": "Checks",
+          "type": "array"
+        }
+      },
+      "required": [
+        "stepId",
+        "endpoint",
+        "actor",
+        "method",
+        "path",
+        "expect"
+      ],
+      "title": "AttackStep",
+      "type": "object"
+    },
+    "DeclarationObservation": {
+      "properties": {
+        "declarationId": {
+          "title": "Declarationid",
+          "type": "string"
+        },
+        "stepIds": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Stepids",
+          "type": "array"
+        },
+        "state": {
+          "$ref": "#/$defs/DeclarationObservationState"
+        }
+      },
+      "required": [
+        "declarationId",
+        "state"
+      ],
+      "title": "DeclarationObservation",
+      "type": "object"
+    },
+    "DeclarationObservationState": {
+      "enum": [
+        "observed",
+        "not_tested"
+      ],
+      "title": "DeclarationObservationState",
+      "type": "string"
+    },
+    "Outcome": {
+      "enum": [
+        "as_expected",
+        "review",
+        "unexpected"
+      ],
+      "title": "Outcome",
+      "type": "string"
+    }
+  },
+  "properties": {
+    "schemaVersion": {
+      "const": 2,
+      "default": 2,
+      "title": "Schemaversion",
+      "type": "integer"
+    },
+    "specVersion": {
+      "minimum": 0,
+      "title": "Specversion",
+      "type": "integer"
+    },
+    "specHash": {
+      "title": "Spechash",
+      "type": "string"
+    },
+    "command": {
+      "title": "Command",
+      "type": "string"
+    },
+    "ms": {
+      "minimum": 0,
+      "title": "Ms",
+      "type": "integer"
+    },
+    "kind": {
+      "const": "attack",
+      "default": "attack",
+      "title": "Kind",
+      "type": "string"
+    },
+    "status": {
+      "const": "completed",
+      "default": "completed",
+      "title": "Status",
+      "type": "string"
+    },
+    "exitCode": {
+      "default": 0,
+      "enum": [
+        0,
+        1
+      ],
+      "title": "Exitcode",
+      "type": "integer"
+    },
+    "buildId": {
+      "title": "Buildid",
+      "type": "string"
+    },
+    "artifactHash": {
+      "title": "Artifacthash",
+      "type": "string"
+    },
+    "steps": {
+      "items": {
+        "$ref": "#/$defs/AttackStep"
+      },
+      "title": "Steps",
+      "type": "array"
+    },
+    "asExpected": {
+      "minimum": 0,
+      "title": "Asexpected",
+      "type": "integer"
+    },
+    "review": {
+      "minimum": 0,
+      "title": "Review",
+      "type": "integer"
+    },
+    "unexpected": {
+      "minimum": 0,
+      "title": "Unexpected",
+      "type": "integer"
+    },
+    "total": {
+      "minimum": 0,
+      "title": "Total",
+      "type": "integer"
+    },
+    "coverage": {
+      "$ref": "#/$defs/AttackCoverage"
+    },
+    "declarationObservations": {
+      "items": {
+        "$ref": "#/$defs/DeclarationObservation"
+      },
+      "title": "Declarationobservations",
+      "type": "array"
+    }
+  },
+  "required": [
+    "specVersion",
+    "specHash",
+    "command",
+    "ms",
+    "buildId",
+    "artifactHash",
+    "asExpected",
+    "review",
+    "unexpected",
+    "total",
+    "coverage"
+  ],
+  "title": "AttackCompleted",
+  "type": "object"
+}

@@ -1,0 +1,25 @@
+{
+  "workflowVersion": 3,
+  "schemaVersion": 2,
+  "lastCompletedStage": 8,
+  "activeStage": "complete",
+  "milestone": "Stage 8 complete: Release validation passed, standalone environment verified, zero secrets, demo rehearsal timing recorded, TrustC-final-review.zip and FINAL-REVIEW.md packaged",
+  "status": "PASS",
+  "sourceRevision": "HEAD",
+  "contentFingerprint": "stage-8-release-verified",
+  "mandatoryGates": [
+    "python scripts/check-stage.py 8 --linter flake8-isort",
+    "python scripts/release-check.py",
+    "python scripts/package-release.py",
+    "python scripts/run-browser-tests.py",
+    "python scripts/smoke-ui-server.py",
+    "npm.cmd --prefix ui run lint",
+    "npm.cmd --prefix ui run typecheck",
+    "npm.cmd --prefix ui run build",
+    "npm.cmd --prefix ui test"
+  ],
+  "blockers": [],
+  "nextAction": "Core stages 1 through 8 complete. Upload TrustC-final-review.zip for final independent review.",
+  "optionalAiStatus": "DEFERRED",
+  "independentReview": "PENDING"
+}

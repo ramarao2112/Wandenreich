@@ -1,0 +1,133 @@
+{
+  "$schema": "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "trustc",
+          "version": "0.1.0",
+          "informationUri": "https://github.com/ramarao2112/TrustC",
+          "rules": [
+            {
+              "id": "TC-001",
+              "name": "AUTH-REQUIRED",
+              "shortDescription": {
+                "text": "Endpoint missing authentication declaration"
+              },
+              "fullDescription": {
+                "text": "Every endpoint must declare either 'auth: required' or 'auth: public'. Unauthenticated endpoints expose operations without verifying caller identity."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "helpUri": "https://github.com/ramarao2112/TrustC/blob/main/docs/rules/TC-001.md"
+            },
+            {
+              "id": "TC-002",
+              "name": "OWNERSHIP-CHECK",
+              "shortDescription": {
+                "text": "Invalid, unsupported, or contradictory authorization policy"
+              },
+              "fullDescription": {
+                "text": "Enforces supported authorization policies per specification B4: role-based policies, wrong field equality predicates, public owned creation, authorize on owned creation, and public or waived User operations are rejected. Waivers apply to list, read, update, and delete operations on owned resources; creation always assigns caller."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "helpUri": "https://github.com/ramarao2112/TrustC/blob/main/docs/rules/TC-002.md"
+            },
+            {
+              "id": "TC-003",
+              "name": "SENSITIVE-LEAK",
+              "shortDescription": {
+                "text": "Sensitive or credential field returned without permitted exposure"
+              },
+              "fullDescription": {
+                "text": "Credential fields (password_hash, tokens, keys) can never be returned in responses. Ordinary sensitive fields require explicit expose declarations in responses."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "helpUri": "https://github.com/ramarao2112/TrustC/blob/main/docs/rules/TC-003.md"
+            },
+            {
+              "id": "TC-004",
+              "name": "MASS-ASSIGNMENT",
+              "shortDescription": {
+                "text": "Server-controlled id, ownership, or credential field in request body"
+              },
+              "fullDescription": {
+                "text": "Primary keys, ownership edges, and credential fields cannot be client-writable. Allowing these in request bodies permits mass assignment / parameter tampering."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "helpUri": "https://github.com/ramarao2112/TrustC/blob/main/docs/rules/TC-004.md"
+            },
+            {
+              "id": "TC-005",
+              "name": "SECRET-SCOPE",
+              "shortDescription": {
+                "text": "Missing required DB_URL or JWT_SECRET environment secret reference"
+              },
+              "fullDescription": {
+                "text": "Generated services require DB_URL and JWT_SECRET environment references. Declaring both ensures proper environment-variable configuration without hardcoding."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "helpUri": "https://github.com/ramarao2112/TrustC/blob/main/docs/rules/TC-005.md"
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "TC-001",
+          "level": "error",
+          "message": {
+            "text": "Endpoint 'GET /trips/{id}' is missing an authentication declaration (auth: required | public)."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "spec.trust"
+                },
+                "region": {
+                  "startLine": 23,
+                  "startColumn": 1,
+                  "endLine": 23,
+                  "endColumn": 8
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "TC-003",
+          "level": "error",
+          "message": {
+            "text": "Endpoint 'GET /users/{id}' returns credential field(s) 'password_hash' in response."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "spec.trust"
+                },
+                "region": {
+                  "startLine": 30,
+                  "startColumn": 3,
+                  "endLine": 30,
+                  "endColumn": 10
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

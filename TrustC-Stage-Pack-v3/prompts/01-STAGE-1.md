@@ -1,0 +1,3 @@
+# Stage 1 prompt (for manual resume if needed)
+
+Continue TrustC using docs/handoff-v3/stage-1-setup-and-fixtures.md, A/B/C/D, 02-EXECUTION-RULES.md and 03-GATE-MATRIX.md. Inspect existing code and progress. Repair any incomplete prerequisites first. Implement this stage, run and fix its required checks plus completed-stage regression gates, and save actual evidence and checkpoint files. Preserve unrelated work and canonical fixtures; do not change expected results merely to match code. After PASS, automatically continue to the next core stage without requesting ChatGPT review. At Stage 8 completion create the final archive using 04-FINAL-REVIEW-HANDOFF.md. Keep independent review PENDING; optional Stage 9 remains separate.

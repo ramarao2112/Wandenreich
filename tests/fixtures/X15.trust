@@ -1,0 +1,13 @@
+# Comment with non-ASCII: café résumé 🚀
+resource User:
+  fields:
+    id: uuid
+    email: string
+
+secrets:
+  DB_URL: env
+  JWT_SECRET: env
+
+endpoint GET /users/{id}:
+  resource: User
+  returns: User

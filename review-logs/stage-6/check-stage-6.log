@@ -1,0 +1,115 @@
+Command: C:\Users\rama rao\OneDrive\Desktop\TrustC\.venv-win\Scripts\python.exe scripts/check-stage.py 6 --linter flake8-isort
+Exit Code: 0
+
+STDOUT:
+=== Stage 6 Gate: Local API server, streaming protocol, and artifact lifecycle ===
+Linter Toolchain: flake8-isort
+Timestamp: 2026-10-09T15:42:59.884157+00:00
+
+[Gate 1/5] Running documented equivalent linter (flake8 + isort)...
+✅ [PASS] flake8 (E, F, W rules) passed.
+✅ [PASS] isort (I rule / import sorting) passed on all files without warning.
+
+[Gate 2/5] Running type checks (mypy)...
+✅ [PASS] mypy type check passed.
+
+[Gate 3/5] Running pytest test suite (-m stage1 or stage2 or stage3 or stage4 or stage5 or stage6 tests/)...
+✅ [PASS] Pytest suite passed.
+
+[Gate 4/5] Running CLI parse assertions on F2 (exit 0) and F4 (exit 2)...
+✅ [PASS] CLI parse F2 exit 0 verified.
+✅ [PASS] CLI parse F4 exit 2 verified.
+
+[Gate 4b] Running CLI check, fix, and explain assertions...
+✅ [PASS] CLI check F2 exit 0 verified.
+✅ [PASS] CLI check F1 exit 1 verified.
+✅ [PASS] CLI check F4 exit 2 verified.
+✅ [PASS] CLI apply-fix F1 dry-run exit 0 verified.
+✅ [PASS] CLI explain TC-002 exit 0 verified.
+✅ [PASS] Published OASIS SARIF 2.1.0 schema validation passed for all fixtures.
+
+[Gate 4c] Running Stage 4 generated backend runtime smoke & build rollback...
+✅ [PASS] CLI build F2 exit 0 verified (8 Python files, valid manifest, and report).
+✅ [PASS] Stage 4 runtime smoke test passed (real DB, auth, injections, projections).
+✅ [PASS] CLI build F1 exit 1 refused and destination byte-identical.
+✅ [PASS] CLI build F4 exit 2 syntax error and destination byte-identical.
+
+[Gate 4d] Running Stage 5 live local access harness & mutation checks...
+✅ [PASS] CLI attack F2 verified: 6 as_expected, 0 review, 0 unexpected.
+✅ [PASS] CLI attack F3 verified: 8 as_expected, 1 review, 0 unexpected.
+✅ [PASS] CLI attack F1 refused (exit 1, app never started).
+✅ [PASS] CLI attack F4 syntax error (exit 2, app never started).
+✅ [PASS] CLI attack X08 verified: public GET/DELETE with isolated state.
+✅ [PASS] CLI attack X11 verified: 0 steps, explicit empty coverage.
+✅ [PASS] Mutation test verified: owner check removal correctly detected (exit 1).
+
+[Gate 4e] Running Stage 6 local API server smoke test...
+✅ [PASS] Stage 6 server smoke test passed (all 10 operations, SSE, zip, security).
+
+[Gate 5/5] Running installed wheel smoke test outside repository...
+[2026-10-09T15:44:26.962461+00:00] Starting Stage 6 Wheel Installation & Smoke Test
+Repository Root: C:\Users\rama rao\OneDrive\Desktop\TrustC
+
+--- Step 1: Building wheel with command: C:\Users\rama rao\OneDrive\Desktop\TrustC\.venv-win\Scripts\python.exe -m build --wheel --outdir C:\Users\rama rao\OneDrive\Desktop\TrustC\dist ---
+PASS: Wheel built successfully: trustc-0.1.0-py3-none-any.whl (104374 bytes)
+
+--- Step 2: Inspecting wheel archive contents ---
+PASS: Archive contains all required Stage 4 templates: 6 templates verified
+PASS: Archive contains all required resources (grammar size: 2517 bytes)
+
+--- Step 3: Creating fresh virtualenv in C:\Users\RAMARA~1\AppData\Local\Temp\trustc_smoke_venv_wp3sbhv8 ---
+PASS: Fresh virtualenv initialized at C:\Users\RAMARA~1\AppData\Local\Temp\trustc_smoke_venv_wp3sbhv8
+
+--- Step 4: Installing wheel: C:\Users\RAMARA~1\AppData\Local\Temp\trustc_smoke_venv_wp3sbhv8\Scripts\python.exe -m pip install C:\Users\rama rao\OneDrive\Desktop\TrustC\dist\trustc-0.1.0-py3-none-any.whl[harness,server] ---
+PASS: Wheel installed in fresh environment (8.982s)
+
+--- Step 5: Verifying import isolation in C:\Users\RAMARA~1\AppData\Local\Temp\trustc_smoke_run_6ndwfsom ---
+Imported trustc module location: C:\Users\RAMARA~1\AppData\Local\Temp\trustc_smoke_venv_wp3sbhv8\Lib\site-packages\trustc\__init__.py
+PASS: Module verified imported from fresh virtualenv site-packages
+
+--- Step 6: Testing installed `trustc parse` entrypoint on F2 and F4 ---
+F2 run exit code: 0 (expected 0)
+PASS: F2 parsed cleanly with specHash ef146324f68fb20e98d2a653e0ca31ad29690d6ce4a31cc9e11a05ad38502884
+F4 run exit code: 2 (expected 2)
+PASS: F4 structured error verified at line 23 column 25 without traceback
+
+--- Step 6b: Testing installed `trustc check` entrypoint on F2 and F1 ---
+Check F2 exit code: 0 (expected 0)
+PASS: Installed trustc check F2 verified exit 0
+Check F1 exit code: 1 (expected 1)
+PASS: Installed trustc check F1 verified exit 1
+
+--- Step 6c: Testing installed `trustc build` entrypoint on F2 ---
+Build F2 exit code: 0 (expected 0)
+PASS: Installed trustc build F2 verified exit 0 with all template assets
+
+--- Step 6d: Testing installed `trustc attack` entrypoint on F2 ---
+Attack F2 exit code: 0 (expected 0)
+PASS: Installed trustc attack F2 verified exit 0 with 6 expected, 0 review, 0 unexpected (2.022s)
+
+--- Step 6e: Testing installed `trustc serve --help` entrypoint ---
+Serve help exit code: 0 (expected 0)
+PASS: Installed trustc serve --help entrypoint verified
+
+--- Step 6f: Testing installed `trustc serve` outside repository ---
+PASS: /api/meta returned valid sessionId 8fba7ad2-3116-42a1-92fd-456b6aa4fe34
+PASS: /api/check verified cleanly via installed server
+PASS: /api/build completed with buildId e2bf9069-1b85-4825-b1d5-1e30e6642723
+PASS: /api/builds/e2bf9069-1b85-4825-b1d5-1e30e6642723/out.zip verified (12 files)
+PASS: Installed server verified outside repository (meta, check, build, download)
+
+--- Step 7: Cleaning up test directories ---
+PASS: Cleaned up temporary virtualenv and test run directory
+
+[2026-10-09T15:44:47.779656+00:00] Stage 6 Wheel Installation & Smoke Test PASSED completely!
+✅ [PASS] Installed wheel smoke test passed outside repository.
+
+============================================================
+✅ Stage 6 gates passed.
+============================================================
+
+STDERR:
+Actual environment location may have moved due to redirects, links or junctions.
+  Requested location: "C:\Users\RAMARA~1\AppData\Local\Temp\trustc_smoke_venv_wp3sbhv8\Scripts\python.exe"
+  Actual location:    "C:\Users\rama rao\AppData\Local\Temp\trustc_smoke_venv_wp3sbhv8\Scripts\python.exe"
+
