@@ -154,4 +154,49 @@ describe('UI Components', () => {
     expect(screen.getByText('14ms')).toBeTruthy();
     expect(screen.getByText(/Save as spec.trust for CLI:/i)).toBeTruthy();
   });
+
+  it('R04: EvidenceTab renders failure warning when unexpected > 0 and never false success', () => {
+    const failedAttack = {
+      ...MOCK_ATTACK_F2,
+      unexpected: 1,
+      exitCode: 1 as const,
+    };
+
+    useWorkbenchStore.setState({
+      buildResult: MOCK_BUILD_F2,
+      buildHash: 'ef146324f68fb20e98d2a653e0ca31ad29690d6ce4a31cc9e11a05ad38502884',
+      buildId: 'mock-build-f2-8787',
+      attackResult: failedAttack,
+      attackHash: 'ef146324f68fb20e98d2a653e0ca31ad29690d6ce4a31cc9e11a05ad38502884',
+      attackBuildId: 'mock-build-f2-8787',
+    });
+
+    render(<EvidenceTab />);
+
+    // Must show failure text
+    expect(screen.getByText(/Access violations detected: 1 unexpected disclosures or failures/i)).toBeTruthy();
+    // Must NOT show false success wording
+    expect(screen.queryByText(/All actor requests conformed to specified isolation boundaries/i)).toBeNull();
+  });
+
+  it('R04: EvidenceTab renders review warning when review > 0', () => {
+    const reviewAttack = {
+      ...MOCK_ATTACK_F2,
+      review: 1,
+      exitCode: 0 as const,
+    };
+
+    useWorkbenchStore.setState({
+      buildResult: MOCK_BUILD_F2,
+      buildHash: 'ef146324f68fb20e98d2a653e0ca31ad29690d6ce4a31cc9e11a05ad38502884',
+      buildId: 'mock-build-f2-8787',
+      attackResult: reviewAttack,
+      attackHash: 'ef146324f68fb20e98d2a653e0ca31ad29690d6ce4a31cc9e11a05ad38502884',
+      attackBuildId: 'mock-build-f2-8787',
+    });
+
+    render(<EvidenceTab />);
+
+    expect(screen.getByText(/Policy review required: 1 request\(s\) exercised explicit waivers/i)).toBeTruthy();
+  });
 });

@@ -117,11 +117,24 @@ export class ApiClient {
     return res.json();
   }
 
+  private mockRuns: Map<
+    string,
+    { kind: 'build' | 'attack'; specHash: string; specVersion: number; buildId: string }
+  > = new Map();
+
   async buildApp(spec: string, specVersion: number, mode: DataMode): Promise<RunAccepted> {
     if (mode === 'mock' || mode === 'recorded') {
       const shash = await computeSpecHash(spec);
+      const runId = `mock-build-run-${Date.now()}`;
+      const buildId = `mock-build-${Date.now()}`;
+      this.mockRuns.set(runId, {
+        kind: 'build',
+        specHash: shash,
+        specVersion,
+        buildId,
+      });
       return {
-        runId: `mock-build-run-${Date.now()}`,
+        runId,
         specVersion,
         specHash: shash,
       };
@@ -147,8 +160,15 @@ export class ApiClient {
   ): Promise<RunAccepted> {
     if (mode === 'mock' || mode === 'recorded') {
       const shash = await computeSpecHash(spec);
+      const runId = `mock-attack-run-${Date.now()}`;
+      this.mockRuns.set(runId, {
+        kind: 'attack',
+        specHash: shash,
+        specVersion,
+        buildId,
+      });
       return {
-        runId: `mock-attack-run-${Date.now()}`,
+        runId,
         specVersion,
         specHash: shash,
       };
@@ -168,17 +188,40 @@ export class ApiClient {
 
   async getRunStatus(runId: string, mode: DataMode): Promise<RunStatusResponse> {
     if (mode === 'mock' || mode === 'recorded') {
-      if (runId.includes('build')) {
+      const info = this.mockRuns.get(runId);
+      if (runId.includes('build') || info?.kind === 'build') {
+        const buildId = info?.buildId || 'mock-build-f2-8787';
+        const specHash = info?.specHash || 'ef146324f68fb20e98d2a653e0ca31ad29690d6ce4a31cc9e11a05ad38502884';
+        const specVersion = info?.specVersion ?? 0;
         return {
           runId,
           state: 'terminal',
-          result: MOCK_BUILD_F2,
+          result: {
+            ...MOCK_BUILD_F2,
+            buildId,
+            specHash,
+            specVersion,
+            evidence: {
+              ...MOCK_BUILD_F2.evidence,
+              buildId,
+              specHash,
+              specVersion,
+            },
+          },
         };
       }
+      const buildId = info?.buildId || 'mock-build-f2-8787';
+      const specHash = info?.specHash || 'ef146324f68fb20e98d2a653e0ca31ad29690d6ce4a31cc9e11a05ad38502884';
+      const specVersion = info?.specVersion ?? 0;
       return {
         runId,
         state: 'terminal',
-        result: MOCK_ATTACK_F2,
+        result: {
+          ...MOCK_ATTACK_F2,
+          buildId,
+          specHash,
+          specVersion,
+        },
       };
     }
 
@@ -193,9 +236,13 @@ export class ApiClient {
     if (mode === 'mock' || mode === 'recorded') {
       return;
     }
-    await fetch(`${this.baseUrl}/api/runs/${runId}`, {
+    const res = await fetch(`${this.baseUrl}/api/runs/${runId}`, {
       method: 'DELETE',
     });
+    if (!res.ok && res.status !== 404 && res.status !== 204 && res.status !== 202) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error?.message || `Cancellation failed: ${res.statusText}`);
+    }
   }
 
   subscribeRunEvents(
@@ -206,15 +253,37 @@ export class ApiClient {
     mode: DataMode
   ): () => void {
     if (mode === 'mock' || mode === 'recorded') {
-      // Simulate events asynchronously in mock mode
-      const isBuild = runId.includes('build');
+      const info = this.mockRuns.get(runId);
+      const isBuild = runId.includes('build') || info?.kind === 'build';
       const timer = setTimeout(() => {
-        const resultPayload = isBuild ? MOCK_BUILD_F2 : MOCK_ATTACK_F2;
+        const buildId = info?.buildId || 'mock-build-f2-8787';
+        const specHash = info?.specHash || 'ef146324f68fb20e98d2a653e0ca31ad29690d6ce4a31cc9e11a05ad38502884';
+        const specVersion = info?.specVersion ?? 0;
+        const resultPayload = isBuild
+          ? {
+              ...MOCK_BUILD_F2,
+              buildId,
+              specHash,
+              specVersion,
+              evidence: {
+                ...MOCK_BUILD_F2.evidence,
+                buildId,
+                specHash,
+                specVersion,
+              },
+            }
+          : {
+              ...MOCK_ATTACK_F2,
+              buildId,
+              specHash,
+              specVersion,
+            };
+
         onEvent({
           schemaVersion: 2,
           runId,
-          specVersion: 0,
-          specHash: '',
+          specVersion,
+          specHash,
           seq: 1,
           payload: {
             type: 'result',
@@ -226,14 +295,32 @@ export class ApiClient {
       return () => clearTimeout(timer);
     }
 
+    const seenSeqs = new Set<number>();
+    let isClosed = false;
+    let pollInterval: ReturnType<typeof setInterval> | null = null;
+
     const eventSource = new EventSource(`${this.baseUrl}/api/runs/${runId}/events`);
 
+    const cleanup = () => {
+      isClosed = true;
+      if (pollInterval) {
+        clearInterval(pollInterval);
+        pollInterval = null;
+      }
+      eventSource.close();
+    };
+
     eventSource.addEventListener('trustc', (e: MessageEvent) => {
+      if (isClosed) return;
       try {
         const ev: RunEvent = JSON.parse(e.data);
+        if (seenSeqs.has(ev.seq)) {
+          return; // Deduplicate by seq
+        }
+        seenSeqs.add(ev.seq);
         onEvent(ev);
         if (ev.payload.type === 'result') {
-          eventSource.close();
+          cleanup();
           onDone();
         }
       } catch (err) {
@@ -242,13 +329,29 @@ export class ApiClient {
     });
 
     eventSource.onerror = (err) => {
-      eventSource.close();
-      onError(err);
+      if (isClosed) return;
+      // Do not close immediately if reconnecting
+      if (eventSource.readyState === EventSource.CLOSED) {
+        // Fallback polling for terminal status if SSE connection closed prematurely
+        if (!pollInterval) {
+          pollInterval = setInterval(async () => {
+            if (isClosed) return;
+            try {
+              const status = await this.getRunStatus(runId, mode);
+              if (status.state === 'terminal') {
+                cleanup();
+                onDone();
+              }
+            } catch {
+              cleanup();
+              onError(err);
+            }
+          }, 1000);
+        }
+      }
     };
 
-    return () => {
-      eventSource.close();
-    };
+    return cleanup;
   }
 
   getZipDownloadUrl(buildId: string): string {

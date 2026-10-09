@@ -83,7 +83,7 @@ Rather than relying on after-the-fact runtime scanning or manual code review, Tr
 
 ### Prerequisites
 
-- **Python**: 3.10, 3.11, or 3.12
+- **Python**: 3.10, 3.11, 3.12, 3.13, or 3.14 (tested on Windows Python 3.14.4 and Linux Python 3.12)
 - **Node.js**: 18.x or 20.x (only required for building the UI from source)
 - **Git**
 

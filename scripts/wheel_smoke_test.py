@@ -125,6 +125,10 @@ def run_wheel_smoke_test(
         required_entries.append("trustc/server.py")
         required_entries.append("trustc/schemas/v2/ServerMeta.json")
         required_entries.append("trustc/schemas/v2/RunEvent.json")
+    if stage >= 8:
+        required_entries.append("trustc/examples/F1.trust")
+        required_entries.append("trustc/examples/F2.trust")
+        required_entries.append("trustc/ui_dist/index.html")
 
     missing = [entry for entry in required_entries if entry not in namelist]
     if missing:
@@ -593,6 +597,32 @@ def run_wheel_smoke_test(
                 return 1, {"overall_status": "FAIL", "steps": steps_record}
 
             log(f"PASS: /api/meta returned valid sessionId {meta_data.get('sessionId')}")
+
+            if stage >= 8:
+                # Verify packaged UI root is served
+                ui_req = urllib.request.Request(f"{base_url}/")
+                with urllib.request.urlopen(ui_req, timeout=5.0) as resp:
+                    if resp.status != 200:
+                        log(f"FAIL: GET / expected status 200, got {resp.status}")
+                        return 1, {"overall_status": "FAIL", "steps": steps_record}
+                    ui_body = resp.read().decode("utf-8")
+                    if "<!doctype html" not in ui_body.lower() and "<html" not in ui_body.lower():
+                        log(f"FAIL: GET / did not return HTML markup: {ui_body[:200]}")
+                        return 1, {"overall_status": "FAIL", "steps": steps_record}
+                log("PASS: GET / verified serving packaged UI HTML")
+
+                # Verify packaged examples via /api/examples
+                ex_req = urllib.request.Request(f"{base_url}/api/examples")
+                with urllib.request.urlopen(ex_req, timeout=5.0) as resp:
+                    if resp.status != 200:
+                        log(f"FAIL: GET /api/examples expected status 200, got {resp.status}")
+                        return 1, {"overall_status": "FAIL", "steps": steps_record}
+                    ex_data = json.loads(resp.read().decode("utf-8"))
+                    f2_spec_obj = next((e for e in ex_data if e.get("id") == "F2"), None)
+                    if not f2_spec_obj or "resource User" not in f2_spec_obj.get("spec", ""):
+                        log(f"FAIL: /api/examples did not contain valid F2 example: {ex_data}")
+                        return 1, {"overall_status": "FAIL", "steps": steps_record}
+                log(f"PASS: GET /api/examples verified serving {len(ex_data)} packaged examples")
 
             # 2. Test /api/check with F2 spec
             f2_spec_content = (temp_run_dir / "F2.trust").read_text(encoding="utf-8")

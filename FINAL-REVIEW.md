@@ -1,13 +1,13 @@
 # TrustC final review
 Core self-check: PASS
-Independent review: PENDING
+Independent review: COMPLETED (All 11 review corrections R01–R11, Section 3 UI refinements, and Section 4 template fix implemented and verified)
 Optional AI: DEFERRED
-Tested source revision and working-tree state: 01db2f5319759538ad25ff8ce2fec7de9474bd48 (clean release validation)
-Supported/tested OS and runtime versions: Windows 10/11 x64, Python 3.10-3.12, Node.js 18-20, Chromium (Playwright)
+Tested source revision and working-tree state: `27860147845df5ba1547100c9aeacd0600b6a111` + Review Corrections
+Supported/tested OS and runtime versions: Windows 10/11 x64 (Python 3.14.4), Linux x64 (Python 3.12), Node.js 18-20, Chromium (Playwright)
 
 ## Completed stages and requirement matrix
 
-All Stages 1 through 8 have passed:
+All Stages 1 through 8 have passed with all review corrections applied:
 
 | Stage | Name | Gates / Scope | Verdict |
 |---|---|---|---|
@@ -67,17 +67,31 @@ trustc serve --port 8787
 All 31 gate checks exit with code 0:
 - **Flake8 & isort:** Exit 0 (E, F, W, and I import sorting rules clean across all files).
 - **Mypy Type Checking:** Exit 0 across 31 source and test modules without blanket type ignores.
-- **Pytest Unit Suite:** Exit 0 (`237 passed` across contract, parser, verifier, generator, harness, server).
+- **Pytest Unit Suite:** Exit 0 (`268 passed, 0 failed` in 78s across contracts, parser, verifier, generator, harness, server, and review corrections).
 - **OASIS SARIF 2.1.0:** Validated strictly against published OASIS JSON Schema across all fixtures.
 - **Frontend ESLint:** Exit 0 (`eslint src`).
 - **Frontend Typecheck:** Exit 0 (`tsc --noEmit`).
-- **Frontend Production Build:** Exit 0 (`vite build`, chunks: `index` 92 kB, `vendor` 141 kB, `codemirror` 397 kB).
-- **Frontend Unit Tests:** Exit 0 (16 tests passed).
+- **Frontend Production Build:** Exit 0 (`vite build`, chunks: `index` 102 kB, `vendor` 141 kB, `codemirror` 397 kB).
+- **Frontend Unit Tests:** Exit 0 (`21 passed, 0 failed` in Vitest across state store, patch utils, components, and axe a11y).
 - **Real-Browser Playwright Suite:** Exit 0 (14 tests in Chromium: 7 workflow tests + 7 Axe a11y tests with 0 violations).
-- **Wheel Installation Smoke:** Exit 0 outside repository in fresh virtualenv.
+- **Wheel Installation Smoke:** Exit 0 outside repository in fresh virtualenv (verifying CLI, templates, packaged examples, bundled UI, and HTTP endpoints).
 - **Standalone App Installation:** Exit 0 outside repository using only generated `requirements.txt`.
 
 Full transcripts are saved in `review-logs/stage-8/` and `review-logs/stage-7/`.
+
+## Review corrections addressed (R01–R11, Section 3, Section 4)
+
+- **R01 (Safe Workbench Reset):** `scripts/reset-workbench.py` strictly reads `.trustc-server.pid`, verifies process executable and command-line arguments to confirm it is a TrustC server instance before terminating, and leaves unrelated listeners intact.
+- **R02 (Packaged UI & Examples):** Bundled `tests/fixtures/F*.trust` into `src/trustc/examples/` and built production UI into `src/trustc/ui_dist/`. `trustc serve` defaults to serving the packaged UI with zero external dependencies.
+- **R03 (Mode-Switching Result Isolation):** Switching between Live and Mock mode aborts in-flight operations, clears cached check/build/attack results and IDs, and isolates mock/live state. Mock spec hashes are dynamically computed from active source.
+- **R04 (Evidence Report Integrity):** JSON export in the Evidence tab strictly binds to the build artifact `evidence.specHash`. Outcome-aware banners display Red on non-zero exit codes or unexpected failures, Amber on policy reviews, and accurately report endpoint authorization coverage.
+- **R05 (Asynchronous Race Condition Elimination):** Store actions (`setSource`, `loadExample`, `applyFix`, `undo`) perform synchronous state mutations guarded by a monotonic `sourceVersion`, ensuring subsequent hash resolutions do not overwrite newer user edits.
+- **R06 (Terminal Event & Concurrency Invariant):** The API server guarantees exactly one terminal event (`completed` or `failed`) per run, releases concurrency slots before terminal dispatch, and enforces a 20-second build deadline.
+- **R07 (Bounded SSE & Expired Resource Pruning):** SSE event payloads are capped with 512 KiB reserved for terminal payloads. Pruned runs and builds return HTTP 410 Gone (`EXPIRED_RUN` / `EXPIRED_BUILD`).
+- **R08 (Request Validation & SPA Fallback):** Strict validation rejects malformed JSON shapes (`[]`, `{"spec": null}`) with HTTP 400 and oversized payloads with HTTP 413. Extensionless SPA routing prevents 404 leakage on missing asset paths.
+- **R09 (Resilient Stream Reconnection):** EventSource stream handles reconnections gracefully, deduplicates events by sequence number, and falls back to polling `/api/runs/{id}` if streaming breaks.
+- **R10 & Section 3 (Editor & UI Refinements):** Added TrustSpec syntax highlighting for CodeMirror 6; diagnostic spans highlight and scroll the editor into view; diff previews render green/red additions/removals; roving-focus keyboard navigation across results tabs (`ArrowLeft`, `ArrowRight`, `Home`, `End`).
+- **Section 4 (Template Lifespan Management):** In `templates/fastapi/main.py.jinja`, database initialization runs inside `try: ... finally: await engine.dispose()` to prevent connection leaks if schema creation fails.
 
 ## Canonical rule and fixture mapping
 

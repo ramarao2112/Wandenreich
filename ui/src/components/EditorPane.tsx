@@ -1,8 +1,68 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useRef, useEffect } from 'react';
 import CodeMirror from '@uiw/react-codemirror';
-import { EditorView } from '@codemirror/view';
+import { EditorView, Decoration, MatchDecorator, ViewPlugin } from '@codemirror/view';
 import { useWorkbenchStore } from '../state/workbenchStore';
 import { FileCode, Undo2, Check, AlertTriangle, Eye, X, Info } from 'lucide-react';
+
+const keywordMatcher = new MatchDecorator({
+  regexp: /\b(endpoint|resource|fields|secrets|auth|authorize|returns|expose|body|required|public|env)\b/g,
+  decoration: Decoration.mark({ class: 'cm-trustc-keyword' }),
+});
+
+const typeMatcher = new MatchDecorator({
+  regexp: /\b(uuid|string|int|boolean)\b/g,
+  decoration: Decoration.mark({ class: 'cm-trustc-type' }),
+});
+
+const builtinMatcher = new MatchDecorator({
+  regexp: /\b(current_user|owner|id)\b/g,
+  decoration: Decoration.mark({ class: 'cm-trustc-builtin' }),
+});
+
+const commentMatcher = new MatchDecorator({
+  regexp: /#.*$/gm,
+  decoration: Decoration.mark({ class: 'cm-trustc-comment' }),
+});
+
+const trustSpecHighlightPlugin = ViewPlugin.define(
+  (view) => ({
+    decorations: keywordMatcher.createDeco(view),
+    update(u) {
+      this.decorations = keywordMatcher.updateDeco(u, this.decorations);
+    },
+  }),
+  { decorations: (v) => v.decorations }
+);
+
+const typeHighlightPlugin = ViewPlugin.define(
+  (view) => ({
+    decorations: typeMatcher.createDeco(view),
+    update(u) {
+      this.decorations = typeMatcher.updateDeco(u, this.decorations);
+    },
+  }),
+  { decorations: (v) => v.decorations }
+);
+
+const builtinHighlightPlugin = ViewPlugin.define(
+  (view) => ({
+    decorations: builtinMatcher.createDeco(view),
+    update(u) {
+      this.decorations = builtinMatcher.updateDeco(u, this.decorations);
+    },
+  }),
+  { decorations: (v) => v.decorations }
+);
+
+const commentHighlightPlugin = ViewPlugin.define(
+  (view) => ({
+    decorations: commentMatcher.createDeco(view),
+    update(u) {
+      this.decorations = commentMatcher.updateDeco(u, this.decorations);
+    },
+  }),
+  { decorations: (v) => v.decorations }
+);
 
 export const EditorPane: React.FC = () => {
   const {
@@ -17,14 +77,39 @@ export const EditorPane: React.FC = () => {
     undoStack,
     undo,
     selectedDiagnosticIndex,
+    selectedSourceSpan,
   } = useWorkbenchStore();
 
   const [cursorPos, setCursorPos] = useState({ line: 1, col: 1 });
+  const editorViewRef = useRef<EditorView | null>(null);
+
+  // R10: Dispatch selection and scroll when selectedSourceSpan changes
+  useEffect(() => {
+    if (!selectedSourceSpan || !editorViewRef.current) return;
+    const view = editorViewRef.current;
+    const doc = view.state.doc;
+    const targetLineNum = Math.min(Math.max(1, selectedSourceSpan.line), doc.lines);
+    const line = doc.line(targetLineNum);
+    const from = Math.min(line.from + Math.max(0, selectedSourceSpan.col - 1), line.to);
+
+    let to = from;
+    if (selectedSourceSpan.endLine && selectedSourceSpan.endCol) {
+      const endLineNum = Math.min(Math.max(1, selectedSourceSpan.endLine), doc.lines);
+      const endLine = doc.line(endLineNum);
+      to = Math.min(endLine.from + Math.max(0, selectedSourceSpan.endCol - 1), endLine.to);
+    }
+    if (to < from) to = from;
+
+    view.dispatch({
+      selection: { anchor: from, head: to },
+      scrollIntoView: true,
+    });
+  }, [selectedSourceSpan]);
 
   // Staleness check
   const isStale = Boolean(checkResult && checkHash && checkHash !== sourceHash);
 
-  // Custom dark theme matching workbench tokens
+  // Custom dark theme matching workbench tokens with syntax coloring
   const editorTheme = useMemo(() => {
     return EditorView.theme({
       '&': {
@@ -45,6 +130,9 @@ export const EditorPane: React.FC = () => {
       '&.cm-focused .cm-selectionBackground, .cm-selectionBackground, .cm-content ::selection': {
         backgroundColor: 'rgba(99, 223, 208, 0.25) !important',
       },
+      '.cm-selectionMatch': {
+        backgroundColor: 'transparent !important',
+      },
       '.cm-gutters': {
         backgroundColor: '#121A27',
         color: '#ACBBCE',
@@ -61,6 +149,20 @@ export const EditorPane: React.FC = () => {
       '.cm-line': {
         lineHeight: '22px',
       },
+      '.cm-trustc-keyword': {
+        color: '#63DFD0',
+        fontWeight: '600',
+      },
+      '.cm-trustc-type': {
+        color: '#A5B4FC',
+      },
+      '.cm-trustc-builtin': {
+        color: '#F3C47E',
+      },
+      '.cm-trustc-comment': {
+        color: '#64748B',
+        fontStyle: 'italic',
+      },
     }, { dark: true });
   }, []);
 
@@ -69,6 +171,10 @@ export const EditorPane: React.FC = () => {
       EditorView.contentAttributes.of({
         'aria-label': 'TrustSpec specification code',
       }),
+      trustSpecHighlightPlugin,
+      typeHighlightPlugin,
+      builtinHighlightPlugin,
+      commentHighlightPlugin,
     ];
   }, []);
 
@@ -218,7 +324,7 @@ export const EditorPane: React.FC = () => {
               </button>
             </div>
           </div>
-          <pre
+          <div
             tabIndex={0}
             aria-label="Unified diff preview"
             style={{
@@ -229,12 +335,51 @@ export const EditorPane: React.FC = () => {
               borderRadius: 'var(--radius-sm)',
               border: '1px solid var(--color-border)',
               overflowX: 'auto',
-              maxHeight: '120px',
+              maxHeight: '220px',
               color: 'var(--color-text-primary)',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '2px',
             }}
           >
-            {diffPreview.diff}
-          </pre>
+            {diffPreview.diff.split('\n').map((line, idx) => {
+              const isAdd = line.startsWith('+') && !line.startsWith('+++');
+              const isDel = line.startsWith('-') && !line.startsWith('---');
+              const isHunk = line.startsWith('@@');
+
+              let bg = 'transparent';
+              let color = 'inherit';
+              let fontWeight = 400;
+
+              if (isAdd) {
+                bg = 'rgba(99, 223, 208, 0.15)';
+                color = '#63DFD0';
+                fontWeight = 600;
+              } else if (isDel) {
+                bg = 'rgba(255, 135, 149, 0.15)';
+                color = '#FF8795';
+              } else if (isHunk) {
+                color = '#F3C47E';
+                fontWeight = 600;
+              }
+
+              return (
+                <div
+                  key={idx}
+                  style={{
+                    backgroundColor: bg,
+                    color: color,
+                    fontWeight: fontWeight,
+                    padding: '2px 6px',
+                    borderRadius: '2px',
+                    whiteSpace: 'pre',
+                  }}
+                >
+                  {line}
+                </div>
+              );
+            })}
+          </div>
         </div>
       )}
 
@@ -270,6 +415,9 @@ export const EditorPane: React.FC = () => {
           height="100%"
           theme={editorTheme}
           extensions={editorExtensions}
+          onCreateEditor={(view) => {
+            editorViewRef.current = view;
+          }}
           basicSetup={{
             lineNumbers: true,
             highlightActiveLineGutter: true,
@@ -287,7 +435,7 @@ export const EditorPane: React.FC = () => {
             rectangularSelection: true,
             crosshairCursor: true,
             highlightActiveLine: true,
-            highlightSelectionMatches: true,
+            highlightSelectionMatches: false,
             closeBracketsKeymap: true,
             defaultKeymap: true,
             searchKeymap: true,

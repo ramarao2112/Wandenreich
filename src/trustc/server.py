@@ -3,7 +3,10 @@
 from __future__ import annotations
 
 import asyncio
+import json
+import os
 import shutil
+import sys
 import tempfile
 import threading
 import time
@@ -48,6 +51,8 @@ MAX_SPEC_TEXT_BYTES = 262144
 MAX_RUN_EVENTS = 4096
 # Maximum buffered bytes per run
 MAX_RUN_EVENT_BYTES = 4194304
+# Reserved bytes for terminal result payload (512 KiB)
+RESERVED_TERMINAL_BYTES = 524288
 # Retention time for completed runs/builds (15 minutes)
 RETENTION_SECONDS = 900.0
 
@@ -104,32 +109,45 @@ class RunRecord:
 
     def add_event(self, payload: Any) -> Optional[RunEvent]:
         with self.lock:
-            # Check capacity before adding event (preserve capacity for result)
             is_result = getattr(payload, "type", "") == "result"
-            if not is_result:
-                if (
-                    len(self.events) >= MAX_RUN_EVENTS - 1
-                    or self.total_event_bytes >= MAX_RUN_EVENT_BYTES
-                ):
-                    return None
-
-            self.seq_counter += 1
+            candidate_seq = self.seq_counter + 1
             ev = RunEvent(
                 schemaVersion=2,
                 runId=self.run_id,
                 specVersion=self.spec_version,
                 specHash=self.spec_hash,
-                seq=self.seq_counter,
+                seq=candidate_seq,
                 payload=payload,
             )
             ev_bytes = len(ev.model_dump_json(by_alias=True).encode("utf-8"))
+
+            if is_result:
+                # Terminal result: enforce hard maximum cap
+                if (self.total_event_bytes + ev_bytes) > MAX_RUN_EVENT_BYTES:
+                    return None
+            else:
+                # Non-terminal event: enforce event count and byte budget
+                # reserving space for terminal result
+                over_budget = (
+                    self.total_event_bytes + ev_bytes + RESERVED_TERMINAL_BYTES
+                ) > MAX_RUN_EVENT_BYTES
+                if len(self.events) >= MAX_RUN_EVENTS - 1 or over_budget:
+                    return None
+
+            self.seq_counter = candidate_seq
             self.total_event_bytes += ev_bytes
             self.events.append(ev)
 
-            # Notify active listeners
+            # Notify active listeners with bounded queue handling
             for q in list(self.listeners):
                 try:
                     q.put_nowait(ev)
+                except asyncio.QueueFull:
+                    try:
+                        q.get_nowait()
+                        q.put_nowait(ev)
+                    except Exception:
+                        pass
                 except Exception:
                     pass
             return ev
@@ -156,6 +174,43 @@ class ServerState:
         self.active_run_id: Optional[str] = None
         self.runs: Dict[str, RunRecord] = {}
         self.builds: Dict[str, BuildRecord] = {}
+        self.expired_run_ids: Dict[str, float] = {}
+        self.expired_build_ids: Dict[str, float] = {}
+
+    def cleanup_expired(self, now: Optional[float] = None) -> None:
+        """Enforce bounded retention on runs and builds, pruning disk artifacts."""
+        if now is None:
+            now = time.time()
+
+        # Prune old tombstones (> 1 hour)
+        cutoff_tombstones = now - 3600.0
+        self.expired_run_ids = {
+            rid: exp for rid, exp in self.expired_run_ids.items() if exp > cutoff_tombstones
+        }
+        self.expired_build_ids = {
+            bid: exp for bid, exp in self.expired_build_ids.items() if exp > cutoff_tombstones
+        }
+
+        # 1. Prune expired runs
+        expired_runs = [rid for rid, r in list(self.runs.items()) if r.is_expired(now)]
+        for rid in expired_runs:
+            self.runs.pop(rid, None)
+            self.expired_run_ids[rid] = now
+
+        # 2. Prune expired builds and delete their artifacts on disk
+        expired_builds = [
+            bid for bid, b in list(self.builds.items())
+            if (now - b.created_at) > RETENTION_SECONDS
+        ]
+        for bid in expired_builds:
+            b = self.builds.pop(bid, None)
+            self.expired_build_ids[bid] = now
+            if b:
+                shutil.rmtree(b.artifact_dir, ignore_errors=True)
+                try:
+                    b.zip_path.unlink(missing_ok=True)
+                except Exception:
+                    pass
 
 
 # ---------------------------------------------------------------------------
@@ -267,9 +322,20 @@ RULES_DOC_DATA: Dict[str, Dict[str, Any]] = {
 
 
 def _find_fixture_content(name: str) -> str:
+    # 1. Try bundled package resources in trustc.examples
+    try:
+        from importlib.resources import files
+        pkg_example = files("trustc").joinpath("examples").joinpath(name)
+        if pkg_example.is_file():
+            return pkg_example.read_text(encoding="utf-8")
+    except Exception:
+        pass
+
+    # 2. Check candidate filesystem paths for local repo checkouts
     candidates = [
         Path(f"tests/fixtures/{name}"),
         Path(__file__).resolve().parent.parent.parent / "tests" / "fixtures" / name,
+        Path(__file__).resolve().parent / "examples" / name,
         Path(f"TrustC-Stage-Pack-v3/fixtures/{name}"),
         Path(__file__).resolve().parent.parent.parent / "TrustC-Stage-Pack-v3" / "fixtures" / name,
     ]
@@ -277,6 +343,137 @@ def _find_fixture_content(name: str) -> str:
         if c.is_file():
             return c.read_text(encoding="utf-8")
     return ""
+
+
+def get_default_static_dir() -> Optional[Path]:
+    """Locate bundled or repository static UI assets."""
+    # 1. Check bundled package directory trustc/ui_dist
+    try:
+        from importlib.resources import files
+        pkg_ui = files("trustc").joinpath("ui_dist")
+        pkg_index = pkg_ui.joinpath("index.html")
+        if pkg_index.is_file():
+            p = Path(str(pkg_ui))
+            if p.is_dir() and (p / "index.html").is_file():
+                return p
+    except Exception:
+        pass
+
+    # 2. Check trustc/ui_dist relative to server.py
+    direct_ui = Path(__file__).resolve().parent / "ui_dist"
+    if direct_ui.is_dir() and (direct_ui / "index.html").is_file():
+        return direct_ui
+
+    # 3. Check local repo checkout ui/dist
+    repo_ui_dist = Path(__file__).resolve().parent.parent.parent / "ui" / "dist"
+    if repo_ui_dist.is_dir() and (repo_ui_dist / "index.html").is_file():
+        return repo_ui_dist
+
+    return None
+
+
+async def _read_json_body(request: Request) -> tuple[Any, Optional[JSONResponse]]:
+    """Read request body safely enforcing MAX_REQUEST_BODY_BYTES and parse JSON."""
+    try:
+        body_bytes = await request.body()
+    except Exception as exc:
+        return None, JSONResponse(
+            status_code=400,
+            content={
+                "error": {
+                    "code": "READ_ERROR",
+                    "message": f"Failed to read request body: {exc}",
+                }
+            },
+        )
+    if len(body_bytes) > MAX_REQUEST_BODY_BYTES:
+        return None, JSONResponse(
+            status_code=413,
+            content={
+                "error": {
+                    "code": "PAYLOAD_TOO_LARGE",
+                    "message": "Request body exceeds maximum size of 1 MiB",
+                }
+            },
+        )
+    try:
+        data = json.loads(body_bytes.decode("utf-8"))
+        return data, None
+    except UnicodeDecodeError:
+        return None, JSONResponse(
+            status_code=400,
+            content={
+                "error": {
+                    "code": "INVALID_ENCODING",
+                    "message": "Request body must be valid UTF-8",
+                }
+            },
+        )
+    except Exception:
+        return None, JSONResponse(
+            status_code=400,
+            content={"error": {"code": "MALFORMED_JSON", "message": "Invalid JSON body"}},
+        )
+
+
+def _validate_spec_payload(body: Any) -> tuple[str, int, Optional[JSONResponse]]:
+    """Validate request JSON body shape and fields for check/build/attack."""
+    if not isinstance(body, dict):
+        return "", 0, JSONResponse(
+            status_code=400,
+            content={
+                "error": {
+                    "code": "INVALID_PAYLOAD",
+                    "message": "Request body must be a JSON object",
+                }
+            },
+        )
+    if "spec" not in body:
+        return "", 0, JSONResponse(
+            status_code=400,
+            content={"error": {"code": "MISSING_SPEC", "message": "Field 'spec' is required"}},
+        )
+    raw_spec = body.get("spec")
+    if not isinstance(raw_spec, str):
+        return "", 0, JSONResponse(
+            status_code=400,
+            content={
+                "error": {
+                    "code": "INVALID_SPEC_TYPE",
+                    "message": "Field 'spec' must be a string",
+                }
+            },
+        )
+    if len(raw_spec.encode("utf-8")) > MAX_SPEC_TEXT_BYTES:
+        return "", 0, JSONResponse(
+            status_code=413,
+            content={
+                "error": {
+                    "code": "PAYLOAD_TOO_LARGE",
+                    "message": (
+                        "Specification exceeds maximum allowed size of "
+                        f"{MAX_SPEC_TEXT_BYTES} bytes"
+                    ),
+                }
+            },
+        )
+    spec_ver = 0
+    if "specVersion" in body:
+        sv = body["specVersion"]
+        if type(sv) is bool or not isinstance(sv, int) or sv < 0:
+            return "", 0, JSONResponse(
+                status_code=400,
+                content={
+                    "error": {
+                        "code": "INVALID_SPEC_VERSION",
+                        "message": (
+                            "Field 'specVersion' must be a non-negative integer"
+                        ),
+                    }
+                },
+            )
+        spec_ver = sv
+    return raw_spec, spec_ver, None
 
 
 def load_example_specs() -> List[ExampleSpec]:
@@ -341,6 +538,9 @@ def create_app(
     port: int = 8787,
     static_dir: Optional[Path] = None,
 ) -> FastAPI:
+    if static_dir is None:
+        static_dir = get_default_static_dir()
+
     state = ServerState(workspace_dir=workspace_dir, port=port)
     app = FastAPI(
         title="TrustC Local Server",
@@ -390,16 +590,39 @@ def create_app(
 
         # 3. Content-Length Header check
         content_length = request.headers.get("content-length")
-        if content_length and int(content_length) > MAX_REQUEST_BODY_BYTES:
-            return JSONResponse(
-                status_code=413,
-                content={
-                    "error": {
-                        "code": "PAYLOAD_TOO_LARGE",
-                        "message": "Request body exceeds maximum size of 1 MiB",
-                    }
-                },
-            )
+        if content_length is not None:
+            try:
+                cl_val = int(content_length)
+                if cl_val < 0:
+                    return JSONResponse(
+                        status_code=400,
+                        content={
+                            "error": {
+                                "code": "INVALID_CONTENT_LENGTH",
+                                "message": "Content-Length header must be non-negative",
+                            }
+                        },
+                    )
+                if cl_val > MAX_REQUEST_BODY_BYTES:
+                    return JSONResponse(
+                        status_code=413,
+                        content={
+                            "error": {
+                                "code": "PAYLOAD_TOO_LARGE",
+                                "message": "Request body exceeds maximum size of 1 MiB",
+                            }
+                        },
+                    )
+            except ValueError:
+                return JSONResponse(
+                    status_code=400,
+                    content={
+                        "error": {
+                            "code": "INVALID_CONTENT_LENGTH",
+                            "message": "Malformed Content-Length header",
+                        }
+                    },
+                )
 
         # Preflight OPTIONS handler
         if request.method == "OPTIONS":
@@ -487,36 +710,14 @@ def create_app(
                 },
             )
 
-        try:
-            body = await request.json()
-        except Exception:
-            return JSONResponse(
-                status_code=400,
-                content={"error": {"code": "MALFORMED_JSON", "message": "Invalid JSON body"}},
-            )
+        body, err_resp = await _read_json_body(request)
+        if err_resp:
+            return err_resp
 
-        if not isinstance(body, dict) or "spec" not in body:
-            return JSONResponse(
-                status_code=400,
-                content={"error": {"code": "MISSING_SPEC", "message": "Field 'spec' is required"}},
-            )
+        raw_spec, spec_ver, err_resp = _validate_spec_payload(body)
+        if err_resp:
+            return err_resp
 
-        raw_spec = body.get("spec", "")
-        if len(raw_spec.encode("utf-8")) > MAX_SPEC_TEXT_BYTES:
-            return JSONResponse(
-                status_code=413,
-                content={
-                    "error": {
-                        "code": "PAYLOAD_TOO_LARGE",
-                        "message": (
-                            f"Specification exceeds maximum allowed size of "
-                            f"{MAX_SPEC_TEXT_BYTES} bytes"
-                        ),
-                    }
-                },
-            )
-
-        spec_ver = int(body.get("specVersion", 0))
         fmt = request.query_params.get("format", "json")
 
         # 5-second deadline for check
@@ -559,30 +760,36 @@ def create_app(
                 },
             )
 
-        try:
-            body = await request.json()
-        except Exception:
+        body, err_resp = await _read_json_body(request)
+        if err_resp:
+            return err_resp
+
+        raw_spec, spec_ver, err_resp = _validate_spec_payload(body)
+        if err_resp:
+            return err_resp
+
+        target = body.get("target", "fastapi")
+        if not isinstance(target, str):
             return JSONResponse(
                 status_code=400,
-                content={"error": {"code": "MALFORMED_JSON", "message": "Invalid JSON body"}},
-            )
-
-        raw_spec = body.get("spec", "")
-        if len(raw_spec.encode("utf-8")) > MAX_SPEC_TEXT_BYTES:
-            return JSONResponse(
-                status_code=413,
                 content={
                     "error": {
-                        "code": "PAYLOAD_TOO_LARGE",
-                        "message": (
-                            f"Specification exceeds maximum allowed size of "
-                            f"{MAX_SPEC_TEXT_BYTES} bytes"
-                        ),
+                        "code": "INVALID_TARGET",
+                        "message": "Field 'target' must be a string",
+                    }
+                },
+            )
+        if target != "fastapi":
+            return JSONResponse(
+                status_code=400,
+                content={
+                    "error": {
+                        "code": "UNSUPPORTED_TARGET",
+                        "message": f"Unsupported target '{target}'",
                     }
                 },
             )
 
-        spec_ver = int(body.get("specVersion", 0))
         norm_spec = normalize_source(raw_spec)
         shash = spec_hash(norm_spec)
 
@@ -612,14 +819,17 @@ def create_app(
         # Worker thread for build job
         def build_worker() -> None:
             t0 = time.time()
+            BUILD_TIMEOUT = 20.0
             staging_run_dir = state.staging_dir / run_id
             staging_run_dir.mkdir(parents=True, exist_ok=True)
             staging_app_dir = staging_run_dir / "app"
+            final_result: Optional[RunResult] = None
 
             try:
-                run_record.add_event(PhasePayload(phase=PhaseType.VERIFY, state=PhaseState.STARTED))
-
-                # Pre-verify check
+                # 1. Pre-verify check
+                run_record.add_event(
+                    PhasePayload(phase=PhaseType.VERIFY, state=PhaseState.STARTED)
+                )
                 check_res = check_text(norm_spec, spec_ver)
                 run_record.add_event(
                     PhasePayload(phase=PhaseType.VERIFY, state=PhaseState.FINISHED)
@@ -628,7 +838,7 @@ def create_app(
                 if not check_res.ok:
                     ms = int((time.time() - t0) * 1000)
                     fail_code: Literal[1, 2] = 1 if check_res.exit_code == 1 else 2
-                    failure = RunFailure(
+                    final_result = RunFailure(
                         schemaVersion=2,
                         specVersion=spec_ver,
                         specHash=shash,
@@ -640,51 +850,12 @@ def create_app(
                         specErrors=check_res.spec_errors,
                         diagnostics=check_res.diagnostics,
                     )
-                    run_record.result = failure
-                    run_record.state = "terminal"
-                    run_record.completed_at = time.time()
-                    run_record.add_event(ResultPayload(result=failure))
                     return
 
-                # Render phase
-                run_record.add_event(PhasePayload(phase=PhaseType.RENDER, state=PhaseState.STARTED))
-                spec_file = staging_run_dir / "spec.trust"
-                spec_file.write_text(norm_spec, encoding="utf-8")
-                try:
-                    build_res = build_app(
-                        spec_file,
-                        staging_app_dir,
-                        spec_version=spec_ver,
-                    )
-                except Exception as exc:
+                # Check cancellation or timeout
+                if run_record.cancelled or (time.time() - t0) > BUILD_TIMEOUT:
                     ms = int((time.time() - t0) * 1000)
-                    failure = RunFailure(
-                        schemaVersion=2,
-                        specVersion=spec_ver,
-                        specHash=shash,
-                        command="build",
-                        ms=ms,
-                        kind="build",
-                        status="error",
-                        exitCode=3,
-                        specErrors=[],
-                        diagnostics=[],
-                        error={"code": "BUILD_FAILED", "message": str(exc)},
-                    )
-                    run_record.result = failure
-                    run_record.state = "terminal"
-                    run_record.completed_at = time.time()
-                    run_record.add_event(ResultPayload(result=failure))
-                    return
-
-                run_record.add_event(
-                    PhasePayload(phase=PhaseType.RENDER, state=PhaseState.FINISHED)
-                )
-
-                # Check if cancelled before publish
-                if run_record.cancelled:
-                    ms = int((time.time() - t0) * 1000)
-                    failure = RunFailure(
+                    final_result = RunFailure(
                         schemaVersion=2,
                         specVersion=spec_ver,
                         specHash=shash,
@@ -696,18 +867,48 @@ def create_app(
                         specErrors=[],
                         diagnostics=[],
                     )
-                    run_record.result = failure
-                    run_record.state = "terminal"
-                    run_record.completed_at = time.time()
-                    run_record.add_event(ResultPayload(result=failure))
                     return
 
-                # Publish phase
+                # 2. Render phase
+                run_record.add_event(
+                    PhasePayload(phase=PhaseType.RENDER, state=PhaseState.STARTED)
+                )
+                spec_file = staging_run_dir / "spec.trust"
+                spec_file.write_text(norm_spec, encoding="utf-8")
+                build_res = build_app(
+                    spec_file,
+                    staging_app_dir,
+                    spec_version=spec_ver,
+                )
+                run_record.add_event(
+                    PhasePayload(phase=PhaseType.RENDER, state=PhaseState.FINISHED)
+                )
+
+                # Check cancellation or timeout before publish
+                if run_record.cancelled or (time.time() - t0) > BUILD_TIMEOUT:
+                    ms = int((time.time() - t0) * 1000)
+                    final_result = RunFailure(
+                        schemaVersion=2,
+                        specVersion=spec_ver,
+                        specHash=shash,
+                        command="build",
+                        ms=ms,
+                        kind="build",
+                        status="cancelled",
+                        exitCode=130,
+                        specErrors=[],
+                        diagnostics=[],
+                    )
+                    return
+
+                # 3. Publish phase
                 run_record.add_event(
                     PhasePayload(phase=PhaseType.PUBLISH, state=PhaseState.STARTED)
                 )
                 build_id = build_res.build_id
                 published_build_dir = state.builds_dir / build_id
+                if published_build_dir.exists():
+                    shutil.rmtree(published_build_dir, ignore_errors=True)
                 shutil.copytree(staging_app_dir, published_build_dir)
 
                 # Generate out.zip with relative paths only
@@ -728,29 +929,92 @@ def create_app(
                         seen_entries.add("trustc-report.json")
                         zf.writestr("trustc-report.json", rep_path.read_text(encoding="utf-8"))
 
-                # Index published build
-                build_rec = BuildRecord(
-                    build_id=build_id,
-                    spec_hash_val=shash,
-                    spec_version=spec_ver,
-                    artifact_dir=published_build_dir,
-                    zip_path=zip_path,
-                )
-                state.builds[build_id] = build_rec
+                # Check cancellation atomically right before committing build
+                with run_record.lock:
+                    if run_record.cancelled or (time.time() - t0) > BUILD_TIMEOUT:
+                        shutil.rmtree(published_build_dir, ignore_errors=True)
+                        try:
+                            zip_path.unlink(missing_ok=True)
+                        except Exception:
+                            pass
+                        ms = int((time.time() - t0) * 1000)
+                        final_result = RunFailure(
+                            schemaVersion=2,
+                            specVersion=spec_ver,
+                            specHash=shash,
+                            command="build",
+                            ms=ms,
+                            kind="build",
+                            status="cancelled",
+                            exitCode=130,
+                            specErrors=[],
+                            diagnostics=[],
+                        )
+                        return
+
+                    # Index published build
+                    build_rec = BuildRecord(
+                        build_id=build_id,
+                        spec_hash_val=shash,
+                        spec_version=spec_ver,
+                        artifact_dir=published_build_dir,
+                        zip_path=zip_path,
+                    )
+                    state.builds[build_id] = build_rec
 
                 run_record.add_event(
                     PhasePayload(phase=PhaseType.PUBLISH, state=PhaseState.FINISHED)
                 )
+                final_result = build_res
 
-                run_record.result = build_res
-                run_record.state = "terminal"
-                run_record.completed_at = time.time()
-                run_record.add_event(ResultPayload(result=build_res))
-
+            except Exception as exc:
+                ms = int((time.time() - t0) * 1000)
+                final_result = RunFailure(
+                    schemaVersion=2,
+                    specVersion=spec_ver,
+                    specHash=shash,
+                    command="build",
+                    ms=ms,
+                    kind="build",
+                    status="error",
+                    exitCode=3,
+                    specErrors=[],
+                    diagnostics=[],
+                    error={"code": "BUILD_FAILED", "message": str(exc)},
+                )
             finally:
+                # 1. Clean staging directory
                 shutil.rmtree(staging_run_dir, ignore_errors=True)
+                # 2. Release worker lock and active run id FIRST
                 state.active_run_id = None
-                state.worker_lock.release()
+                try:
+                    state.worker_lock.release()
+                except RuntimeError:
+                    pass
+
+                # 3. Atomically finalize run record and emit single terminal ResultPayload
+                if final_result is None:
+                    final_result = RunFailure(
+                        schemaVersion=2,
+                        specVersion=spec_ver,
+                        specHash=shash,
+                        command="build",
+                        ms=int((time.time() - t0) * 1000),
+                        kind="build",
+                        status="error",
+                        exitCode=3,
+                        specErrors=[],
+                        diagnostics=[],
+                        error={
+                            "code": "UNKNOWN_ERROR",
+                            "message": "Worker terminated unexpectedly",
+                        },
+                    )
+                with run_record.lock:
+                    run_record.result = final_result
+                    run_record.completed_at = time.time()
+                    run_record.state = "terminal"
+                run_record.add_event(ResultPayload(result=final_result))
 
         th = threading.Thread(target=build_worker, daemon=True)
         run_record.worker_thread = th
@@ -782,36 +1046,32 @@ def create_app(
                 },
             )
 
-        try:
-            body = await request.json()
-        except Exception:
-            return JSONResponse(
-                status_code=400,
-                content={"error": {"code": "MALFORMED_JSON", "message": "Invalid JSON body"}},
-            )
+        body, err_resp = await _read_json_body(request)
+        if err_resp:
+            return err_resp
 
-        raw_spec = body.get("spec", "")
-        if len(raw_spec.encode("utf-8")) > MAX_SPEC_TEXT_BYTES:
-            return JSONResponse(
-                status_code=413,
-                content={
-                    "error": {
-                        "code": "PAYLOAD_TOO_LARGE",
-                        "message": (
-                            f"Specification exceeds maximum allowed size of "
-                            f"{MAX_SPEC_TEXT_BYTES} bytes"
-                        ),
-                    }
-                },
-            )
+        raw_spec, spec_ver, err_resp = _validate_spec_payload(body)
+        if err_resp:
+            return err_resp
 
-        spec_ver = int(body.get("specVersion", 0))
         norm_spec = normalize_source(raw_spec)
         shash = spec_hash(norm_spec)
         req_build_id = body.get("buildId")
 
+        if req_build_id is not None and not isinstance(req_build_id, str):
+            return JSONResponse(
+                status_code=400,
+                content={
+                    "error": {
+                        "code": "INVALID_BUILD_ID",
+                        "message": "Field 'buildId' must be a string",
+                    }
+                },
+            )
+
         # Verify buildId if supplied
         if req_build_id:
+            state.cleanup_expired()
             if req_build_id not in state.builds:
                 return JSONResponse(
                     status_code=404,
@@ -863,11 +1123,16 @@ def create_app(
         # Worker thread for attack job
         def attack_worker() -> None:
             t0 = time.time()
+            ATTACK_TIMEOUT = 60.0
             staging_run_dir = state.staging_dir / run_id
             staging_run_dir.mkdir(parents=True, exist_ok=True)
             staging_app_dir = staging_run_dir / "app"
+            final_result: Optional[RunResult] = None
 
             def on_event(ev: RunEvent) -> None:
+                # Discard terminal result from harness callback; server owns terminal emission
+                if getattr(ev.payload, "type", "") == "result":
+                    return
                 run_record.add_event(ev.payload)
 
             try:
@@ -876,7 +1141,7 @@ def create_app(
                 if not check_res.ok:
                     ms = int((time.time() - t0) * 1000)
                     fail_code: Literal[1, 2] = 1 if check_res.exit_code == 1 else 2
-                    failure = RunFailure(
+                    final_result = RunFailure(
                         schemaVersion=2,
                         specVersion=spec_ver,
                         specHash=shash,
@@ -888,35 +1153,26 @@ def create_app(
                         specErrors=check_res.spec_errors,
                         diagnostics=check_res.diagnostics,
                     )
-                    run_record.result = failure
-                    run_record.state = "terminal"
-                    run_record.completed_at = time.time()
-                    run_record.add_event(ResultPayload(result=failure))
                     return
 
-                # Parse program
-                try:
-                    program = parse_text(norm_spec)
-                except Exception as exc:
+                if run_record.cancelled:
                     ms = int((time.time() - t0) * 1000)
-                    failure = RunFailure(
+                    final_result = RunFailure(
                         schemaVersion=2,
                         specVersion=spec_ver,
                         specHash=shash,
                         command="attack spec.trust",
                         ms=ms,
                         kind="attack",
-                        status="invalid_spec",
-                        exitCode=2,
+                        status="cancelled",
+                        exitCode=130,
                         specErrors=[],
                         diagnostics=[],
-                        error={"code": "PARSE_FAILED", "message": str(exc)},
                     )
-                    run_record.result = failure
-                    run_record.state = "terminal"
-                    run_record.completed_at = time.time()
-                    run_record.add_event(ResultPayload(result=failure))
                     return
+
+                # Parse program
+                program = parse_text(norm_spec)
 
                 # 2. Prepare artifact in staging
                 if req_build_id:
@@ -929,36 +1185,15 @@ def create_app(
                 else:
                     spec_file = staging_run_dir / "spec.trust"
                     spec_file.write_text(norm_spec, encoding="utf-8")
-                    try:
-                        build_app(
-                            spec_file,
-                            staging_app_dir,
-                            spec_version=spec_ver,
-                        )
-                    except Exception as exc:
-                        ms = int((time.time() - t0) * 1000)
-                        failure = RunFailure(
-                            schemaVersion=2,
-                            specVersion=spec_ver,
-                            specHash=shash,
-                            command="attack spec.trust",
-                            ms=ms,
-                            kind="attack",
-                            status="error",
-                            exitCode=3,
-                            specErrors=[],
-                            diagnostics=[],
-                            error={"code": "BUILD_FAILED", "message": str(exc)},
-                        )
-                        run_record.result = failure
-                        run_record.state = "terminal"
-                        run_record.completed_at = time.time()
-                        run_record.add_event(ResultPayload(result=failure))
-                        return
+                    build_app(
+                        spec_file,
+                        staging_app_dir,
+                        spec_version=spec_ver,
+                    )
 
                 if run_record.cancelled:
                     ms = int((time.time() - t0) * 1000)
-                    failure = RunFailure(
+                    final_result = RunFailure(
                         schemaVersion=2,
                         specVersion=spec_ver,
                         specHash=shash,
@@ -970,54 +1205,85 @@ def create_app(
                         specErrors=[],
                         diagnostics=[],
                     )
-                    run_record.result = failure
-                    run_record.state = "terminal"
-                    run_record.completed_at = time.time()
-                    run_record.add_event(ResultPayload(result=failure))
                     return
 
                 # 3. Execute attack harness
+                res = run_attack_harness(
+                    program=program,
+                    artifact_dir=staging_app_dir,
+                    event_callback=on_event,
+                    cancel_event=run_record.cancel_event,
+                    timeout_seconds=ATTACK_TIMEOUT,
+                    spec_version=spec_ver,
+                    spec_hash=shash,
+                    run_id=run_id,
+                    command="attack spec.trust",
+                )
+                final_result = res
+
+            except Exception as exc:
+                ms = int((time.time() - t0) * 1000)
+                final_result = RunFailure(
+                    schemaVersion=2,
+                    specVersion=spec_ver,
+                    specHash=shash,
+                    command="attack spec.trust",
+                    ms=ms,
+                    kind="attack",
+                    status="error",
+                    exitCode=3,
+                    specErrors=[],
+                    diagnostics=[],
+                    error={"code": "ATTACK_FAILED", "message": str(exc)},
+                )
+            finally:
+                # 1. Clean staging directory
+                shutil.rmtree(staging_run_dir, ignore_errors=True)
+                # 2. Release worker lock and clear active run id FIRST
+                state.active_run_id = None
                 try:
-                    res = run_attack_harness(
-                        program=program,
-                        artifact_dir=staging_app_dir,
-                        event_callback=on_event,
-                        cancel_event=run_record.cancel_event,
-                        timeout_seconds=60.0,
-                        spec_version=spec_ver,
-                        spec_hash=shash,
-                        run_id=run_id,
-                        command="attack spec.trust",
-                    )
-                    if run_record.result is None:
-                        run_record.result = res
-                        run_record.state = "terminal"
-                        run_record.completed_at = time.time()
-                        run_record.add_event(ResultPayload(result=res))
-                except Exception as exc:
-                    ms = int((time.time() - t0) * 1000)
-                    failure = RunFailure(
+                    state.worker_lock.release()
+                except RuntimeError:
+                    pass
+
+                # 3. Check cancellation atomically under lock
+                if final_result is None:
+                    final_result = RunFailure(
                         schemaVersion=2,
                         specVersion=spec_ver,
                         specHash=shash,
                         command="attack spec.trust",
-                        ms=ms,
+                        ms=int((time.time() - t0) * 1000),
                         kind="attack",
                         status="error",
                         exitCode=3,
                         specErrors=[],
                         diagnostics=[],
-                        error={"code": "ATTACK_FAILED", "message": str(exc)},
+                        error={
+                            "code": "UNKNOWN_ERROR",
+                            "message": "Worker terminated unexpectedly",
+                        },
                     )
-                    run_record.result = failure
-                    run_record.state = "terminal"
+                with run_record.lock:
+                    if run_record.cancelled and getattr(final_result, "status", "") != "cancelled":
+                        final_result = RunFailure(
+                            schemaVersion=2,
+                            specVersion=spec_ver,
+                            specHash=shash,
+                            command="attack spec.trust",
+                            ms=int((time.time() - t0) * 1000),
+                            kind="attack",
+                            status="cancelled",
+                            exitCode=130,
+                            specErrors=[],
+                            diagnostics=[],
+                        )
+                    run_record.result = final_result
                     run_record.completed_at = time.time()
-                    run_record.add_event(ResultPayload(result=failure))
+                    run_record.state = "terminal"
 
-            finally:
-                shutil.rmtree(staging_run_dir, ignore_errors=True)
-                state.active_run_id = None
-                state.worker_lock.release()
+                # 4. Emit single terminal ResultPayload
+                run_record.add_event(ResultPayload(result=final_result))
 
         th = threading.Thread(target=attack_worker, daemon=True)
         run_record.worker_thread = th
@@ -1109,7 +1375,7 @@ def create_app(
                 )
 
         async def sse_generator() -> AsyncGenerator[str, None]:
-            listener_queue: asyncio.Queue = asyncio.Queue()
+            listener_queue: asyncio.Queue = asyncio.Queue(maxsize=256)
             with run.lock:
                 run.listeners.append(listener_queue)
                 replay_events = [ev for ev in run.events if ev.seq > cursor_seq]
@@ -1167,6 +1433,14 @@ def create_app(
     @app.get("/api/runs/{run_id}")
     async def get_run_status(run_id: str) -> Any:
         now = time.time()
+        state.cleanup_expired(now)
+        if run_id in state.expired_run_ids:
+            return JSONResponse(
+                status_code=410,
+                content={
+                    "error": {"code": "EXPIRED_RUN", "message": f"Run '{run_id}' has expired"}
+                },
+            )
         if run_id not in state.runs:
             return JSONResponse(
                 status_code=404,
@@ -1219,6 +1493,9 @@ def create_app(
     # -------------------------------------------------------------------------
     @app.get("/api/builds/{build_id}/out.zip")
     async def get_build_zip(build_id: str) -> Any:
+        now = time.time()
+        state.cleanup_expired(now)
+
         if ".." in build_id or "/" in build_id or "\\" in build_id:
             return JSONResponse(
                 status_code=400,
@@ -1226,6 +1503,17 @@ def create_app(
                     "error": {
                         "code": "INVALID_BUILD_ID",
                         "message": "Invalid build ID format",
+                    }
+                },
+            )
+
+        if build_id in state.expired_build_ids:
+            return JSONResponse(
+                status_code=410,
+                content={
+                    "error": {
+                        "code": "EXPIRED_BUILD",
+                        "message": f"Build '{build_id}' artifacts have expired",
                     }
                 },
             )
@@ -1242,6 +1530,23 @@ def create_app(
             )
 
         build_rec = state.builds[build_id]
+        if (now - build_rec.created_at) > RETENTION_SECONDS or not build_rec.zip_path.exists():
+            shutil.rmtree(build_rec.artifact_dir, ignore_errors=True)
+            try:
+                build_rec.zip_path.unlink(missing_ok=True)
+            except Exception:
+                pass
+            state.builds.pop(build_id, None)
+            return JSONResponse(
+                status_code=410,
+                content={
+                    "error": {
+                        "code": "EXPIRED_BUILD",
+                        "message": f"Build '{build_id}' artifacts have expired",
+                    }
+                },
+            )
+
         zip_resolved = build_rec.zip_path.resolve()
         if (
             build_rec.zip_path.is_symlink()
@@ -1253,17 +1558,6 @@ def create_app(
                     "error": {
                         "code": "FORBIDDEN_PATH",
                         "message": "Path traversal or symlink artifact forbidden",
-                    }
-                },
-            )
-
-        if not build_rec.zip_path.exists():
-            return JSONResponse(
-                status_code=410,
-                content={
-                    "error": {
-                        "code": "EXPIRED_BUILD",
-                        "message": f"Build '{build_id}' artifacts have expired",
                     }
                 },
             )
@@ -1314,6 +1608,12 @@ def create_app(
                 )
             if target.is_file():
                 return FileResponse(str(target))
+            # If path has an extension (.zip, .js, .css, etc.) and not found, return 404
+            if Path(full_path).suffix:
+                return JSONResponse(
+                    status_code=404,
+                    content={"error": {"code": "NOT_FOUND", "message": "File not found"}},
+                )
             index_file = p_static / "index.html"
             if index_file.is_file():
                 return FileResponse(str(index_file))
@@ -1345,8 +1645,30 @@ def run_server(
     p_static = Path(static_dir) if static_dir else None
     app = create_app(workspace_dir=p_workspace, port=port, static_dir=p_static)
 
+    # Record verified server process info in .trustc-server.pid
+    pid_dir = p_workspace or Path.cwd()
+    pid_file = pid_dir / ".trustc-server.pid"
+    pid_record = {
+        "pid": os.getpid(),
+        "executable": sys.executable,
+        "start_time": time.time(),
+        "workspace": str(pid_dir.resolve()),
+        "port": port,
+        "sessionId": app.state.trustc.session_id,
+    }
+    try:
+        pid_file.write_text(json.dumps(pid_record, indent=2), encoding="utf-8")
+    except Exception:
+        pass
+
     print(
         f"Starting TrustC server on http://{host}:{port} "
         f"(sessionId: {app.state.trustc.session_id})"
     )
-    uvicorn.run(app, host=host, port=port, log_level="info")
+    try:
+        uvicorn.run(app, host=host, port=port, log_level="info")
+    finally:
+        try:
+            pid_file.unlink(missing_ok=True)
+        except Exception:
+            pass

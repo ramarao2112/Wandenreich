@@ -92,7 +92,7 @@ def step_wheel_packaging() -> tuple[bool, dict[str, object]]:
     rc, summary = mod.run_wheel_smoke_test(
         repo_root=REPO_ROOT,
         log_file=smoke_log,
-        stage=7,
+        stage=8,
     )
     if rc == 0:
         log("✅ [PASS] Wheel packaging and clean virtualenv installation passed.")
@@ -186,12 +186,50 @@ def step_failure_resilience_drills() -> tuple[bool, list[str]]:
     else:
         drill_results.append("FAIL: F4 syntax error did not exit 2 or emitted raw traceback.")
 
-    # Drill 3: Scoped reset tool executes cleanly
-    rc, stdout, stderr = run_cmd([sys.executable, "scripts/reset-workbench.py"])
-    if rc == 0 and "Reset complete" in stdout:
-        drill_results.append("PASS: Scoped reset script executed cleanly without killing unrelated processes.")
-    else:
-        drill_results.append("FAIL: Scoped reset script exited nonzero.")
+    # Drill 3: Server lifecycle — start our own server on an ephemeral port,
+    # verify it responds, then clean up via the process handle.
+    # This NEVER runs reset-workbench.py against the user's desktop (R01).
+    import socket
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.bind(("127.0.0.1", 0))
+        ephemeral_port = s.getsockname()[1]
+
+    server_proc = subprocess.Popen(
+        [sys.executable, "-m", "trustc.cli", "serve", "--port", str(ephemeral_port)],
+        cwd=str(REPO_ROOT),
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        env={**os.environ, "PYTHONUTF8": "1"},
+    )
+    try:
+        import urllib.request
+        server_ready = False
+        for _attempt in range(20):
+            time.sleep(0.5)
+            try:
+                req = urllib.request.Request(f"http://127.0.0.1:{ephemeral_port}/api/meta")
+                with urllib.request.urlopen(req, timeout=2) as resp:
+                    if resp.status == 200:
+                        server_ready = True
+                        break
+            except Exception:
+                pass
+
+        if server_ready:
+            drill_results.append(
+                f"PASS: Server started on ephemeral port {ephemeral_port} and responded to /api/meta."
+            )
+        else:
+            drill_results.append(
+                f"FAIL: Server on ephemeral port {ephemeral_port} did not respond within 10s."
+            )
+    finally:
+        server_proc.terminate()
+        try:
+            server_proc.wait(timeout=5)
+        except subprocess.TimeoutExpired:
+            server_proc.kill()
+            server_proc.wait(timeout=3)
 
     all_passed = all(r.startswith("PASS") for r in drill_results)
     for r in drill_results:

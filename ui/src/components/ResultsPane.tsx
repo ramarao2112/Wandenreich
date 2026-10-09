@@ -15,6 +15,39 @@ export const ResultsPane: React.FC = () => {
     attackResult,
   } = useWorkbenchStore();
 
+  const tabList: ('diagnostics' | 'code' | 'tests' | 'evidence')[] = [
+    'diagnostics',
+    'code',
+    'tests',
+    'evidence',
+  ];
+
+  const handleKeyDown = (
+    e: React.KeyboardEvent,
+    currentTab: 'diagnostics' | 'code' | 'tests' | 'evidence'
+  ) => {
+    const currentIndex = tabList.indexOf(currentTab);
+    let targetIndex = -1;
+
+    if (e.key === 'ArrowRight') {
+      targetIndex = (currentIndex + 1) % tabList.length;
+    } else if (e.key === 'ArrowLeft') {
+      targetIndex = (currentIndex - 1 + tabList.length) % tabList.length;
+    } else if (e.key === 'Home') {
+      targetIndex = 0;
+    } else if (e.key === 'End') {
+      targetIndex = tabList.length - 1;
+    }
+
+    if (targetIndex !== -1) {
+      e.preventDefault();
+      const nextTab = tabList[targetIndex];
+      setActiveTab(nextTab);
+      const tabEl = document.getElementById(`tab-${nextTab}`);
+      tabEl?.focus();
+    }
+  };
+
   const violationCount = checkResult?.diagnostics?.length ?? 0;
   const fileCount = buildResult?.files?.length ?? 0;
   const testCount = attackResult?.total ?? 0;
@@ -31,7 +64,7 @@ export const ResultsPane: React.FC = () => {
         overflow: 'hidden',
       }}
     >
-      {/* Tab Navigation Header */}
+      {/* Tab Navigation Header with Horizontally Scrollable Strip for Narrow Screens */}
       <div
         role="tablist"
         aria-label="Workbench Result Tabs"
@@ -50,10 +83,12 @@ export const ResultsPane: React.FC = () => {
         <button
           role="tab"
           id="tab-diagnostics"
+          tabIndex={activeTab === 'diagnostics' ? 0 : -1}
           aria-selected={activeTab === 'diagnostics'}
           aria-controls="panel-diagnostics"
           type="button"
           onClick={() => setActiveTab('diagnostics')}
+          onKeyDown={(e) => handleKeyDown(e, 'diagnostics')}
           style={{
             display: 'flex',
             alignItems: 'center',
@@ -71,6 +106,8 @@ export const ResultsPane: React.FC = () => {
             fontWeight: 600,
             cursor: 'pointer',
             transition: 'all 0.15s ease',
+            flexShrink: 0,
+            whiteSpace: 'nowrap',
           }}
         >
           {violationCount > 0 ? (
@@ -99,10 +136,12 @@ export const ResultsPane: React.FC = () => {
         <button
           role="tab"
           id="tab-code"
+          tabIndex={activeTab === 'code' ? 0 : -1}
           aria-selected={activeTab === 'code'}
           aria-controls="panel-code"
           type="button"
           onClick={() => setActiveTab('code')}
+          onKeyDown={(e) => handleKeyDown(e, 'code')}
           style={{
             display: 'flex',
             alignItems: 'center',
@@ -120,6 +159,8 @@ export const ResultsPane: React.FC = () => {
             fontWeight: 600,
             cursor: 'pointer',
             transition: 'all 0.15s ease',
+            flexShrink: 0,
+            whiteSpace: 'nowrap',
           }}
         >
           <FileCode2 size={15} />
@@ -143,10 +184,12 @@ export const ResultsPane: React.FC = () => {
         <button
           role="tab"
           id="tab-tests"
+          tabIndex={activeTab === 'tests' ? 0 : -1}
           aria-selected={activeTab === 'tests'}
           aria-controls="panel-tests"
           type="button"
           onClick={() => setActiveTab('tests')}
+          onKeyDown={(e) => handleKeyDown(e, 'tests')}
           style={{
             display: 'flex',
             alignItems: 'center',
@@ -164,6 +207,8 @@ export const ResultsPane: React.FC = () => {
             fontWeight: 600,
             cursor: 'pointer',
             transition: 'all 0.15s ease',
+            flexShrink: 0,
+            whiteSpace: 'nowrap',
           }}
         >
           <Crosshair size={15} />
@@ -187,10 +232,12 @@ export const ResultsPane: React.FC = () => {
         <button
           role="tab"
           id="tab-evidence"
+          tabIndex={activeTab === 'evidence' ? 0 : -1}
           aria-selected={activeTab === 'evidence'}
           aria-controls="panel-evidence"
           type="button"
           onClick={() => setActiveTab('evidence')}
+          onKeyDown={(e) => handleKeyDown(e, 'evidence')}
           style={{
             display: 'flex',
             alignItems: 'center',
@@ -208,6 +255,8 @@ export const ResultsPane: React.FC = () => {
             fontWeight: 600,
             cursor: 'pointer',
             transition: 'all 0.15s ease',
+            flexShrink: 0,
+            whiteSpace: 'nowrap',
           }}
         >
           <FileCheck size={15} />
@@ -215,10 +264,12 @@ export const ResultsPane: React.FC = () => {
         </button>
       </div>
 
-      {/* Tab Content Panels */}
+      {/* Tab Content Panel with Explicit Active Label */}
       <div
         id={`panel-${activeTab}`}
         role="tabpanel"
+        aria-labelledby={`tab-${activeTab}`}
+        tabIndex={0}
         style={{ flex: 1, minHeight: 0, overflowY: 'auto' }}
       >
         {activeTab === 'diagnostics' && <DiagnosticsTab />}

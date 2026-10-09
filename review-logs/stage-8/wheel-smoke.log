@@ -1,21 +1,21 @@
-[2026-10-09T19:11:05.434795+00:00] Starting Stage 8 Wheel Installation & Smoke Test
+[2026-10-09T23:10:30.705212+00:00] Starting Stage 8 Wheel Installation & Smoke Test
 Repository Root: C:\Users\rama rao\OneDrive\Desktop\TrustC
 
 --- Step 1: Building wheel with command: C:\Users\rama rao\OneDrive\Desktop\TrustC\.venv-win\Scripts\python.exe -m build --wheel --outdir C:\Users\rama rao\OneDrive\Desktop\TrustC\dist ---
-PASS: Wheel built successfully: trustc-0.1.0-py3-none-any.whl (104374 bytes)
+PASS: Wheel built successfully: trustc-0.1.0-py3-none-any.whl (485939 bytes)
 
 --- Step 2: Inspecting wheel archive contents ---
 PASS: Archive contains all required Stage 4 templates: 6 templates verified
 PASS: Archive contains all required resources (grammar size: 2517 bytes)
 
---- Step 3: Creating fresh virtualenv in C:\Users\RAMARA~1\AppData\Local\Temp\trustc_smoke_venv_3_tb8gua ---
-PASS: Fresh virtualenv initialized at C:\Users\RAMARA~1\AppData\Local\Temp\trustc_smoke_venv_3_tb8gua
+--- Step 3: Creating fresh virtualenv in C:\Users\RAMARA~1\AppData\Local\Temp\trustc_smoke_venv_0w_o8dmv ---
+PASS: Fresh virtualenv initialized at C:\Users\RAMARA~1\AppData\Local\Temp\trustc_smoke_venv_0w_o8dmv
 
---- Step 4: Installing wheel: C:\Users\RAMARA~1\AppData\Local\Temp\trustc_smoke_venv_3_tb8gua\Scripts\python.exe -m pip install C:\Users\rama rao\OneDrive\Desktop\TrustC\dist\trustc-0.1.0-py3-none-any.whl[harness,server] ---
-PASS: Wheel installed in fresh environment (24.774s)
+--- Step 4: Installing wheel: C:\Users\RAMARA~1\AppData\Local\Temp\trustc_smoke_venv_0w_o8dmv\Scripts\python.exe -m pip install C:\Users\rama rao\OneDrive\Desktop\TrustC\dist\trustc-0.1.0-py3-none-any.whl[harness,server] ---
+PASS: Wheel installed in fresh environment (11.289s)
 
---- Step 5: Verifying import isolation in C:\Users\RAMARA~1\AppData\Local\Temp\trustc_smoke_run_jpfvjkk1 ---
-Imported trustc module location: C:\Users\RAMARA~1\AppData\Local\Temp\trustc_smoke_venv_3_tb8gua\Lib\site-packages\trustc\__init__.py
+--- Step 5: Verifying import isolation in C:\Users\RAMARA~1\AppData\Local\Temp\trustc_smoke_run_hmvf_0sl ---
+Imported trustc module location: C:\Users\RAMARA~1\AppData\Local\Temp\trustc_smoke_venv_0w_o8dmv\Lib\site-packages\trustc\__init__.py
 PASS: Module verified imported from fresh virtualenv site-packages
 
 --- Step 6: Testing installed `trustc parse` entrypoint on F2 and F4 ---
@@ -36,20 +36,22 @@ PASS: Installed trustc build F2 verified exit 0 with all template assets
 
 --- Step 6d: Testing installed `trustc attack` entrypoint on F2 ---
 Attack F2 exit code: 0 (expected 0)
-PASS: Installed trustc attack F2 verified exit 0 with 6 expected, 0 review, 0 unexpected (5.927s)
+PASS: Installed trustc attack F2 verified exit 0 with 6 expected, 0 review, 0 unexpected (2.823s)
 
 --- Step 6e: Testing installed `trustc serve --help` entrypoint ---
 Serve help exit code: 0 (expected 0)
 PASS: Installed trustc serve --help entrypoint verified
 
 --- Step 6f: Testing installed `trustc serve` outside repository ---
-PASS: /api/meta returned valid sessionId e8368d78-7ee4-4f22-89d5-f15027f91bc8
+PASS: /api/meta returned valid sessionId 54297ce6-b9de-4469-b1fe-57ae439e2f4d
+PASS: GET / verified serving packaged UI HTML
+PASS: GET /api/examples verified serving 6 packaged examples
 PASS: /api/check verified cleanly via installed server
-PASS: /api/build completed with buildId ca060592-caae-4f5f-aec1-cdb8b926ebe7
-PASS: /api/builds/ca060592-caae-4f5f-aec1-cdb8b926ebe7/out.zip verified (12 files)
+PASS: /api/build completed with buildId c9dbaa20-8720-4260-b070-ee0f301596e5
+PASS: /api/builds/c9dbaa20-8720-4260-b070-ee0f301596e5/out.zip verified (12 files)
 PASS: Installed server verified outside repository (meta, check, build, download)
 
 --- Step 7: Cleaning up test directories ---
 PASS: Cleaned up temporary virtualenv and test run directory
 
-[2026-10-09T19:12:01.768524+00:00] Stage 8 Wheel Installation & Smoke Test PASSED completely!
+[2026-10-09T23:10:57.778170+00:00] Stage 8 Wheel Installation & Smoke Test PASSED completely!

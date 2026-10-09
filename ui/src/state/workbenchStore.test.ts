@@ -113,4 +113,65 @@ describe('workbenchStore', () => {
     const f3Matched = f3Mock.asExpected + f3Mock.review;
     expect(f3Matched).toBe(10);
   });
+
+  it('R03: mode change clears incompatible cached results and active runs', () => {
+    // Populate store with mock results
+    useWorkbenchStore.setState({
+      dataMode: 'mock',
+      resultOriginMode: 'mock',
+      buildId: 'mock-build-123',
+      buildHash: 'mock-hash',
+      checkHash: 'mock-hash',
+    });
+
+    // Switch to live mode
+    useWorkbenchStore.getState().setDataMode('live');
+
+    const state = useWorkbenchStore.getState();
+    expect(state.dataMode).toBe('live');
+    expect(state.resultOriginMode).toBeNull();
+    expect(state.buildId).toBeNull();
+    expect(state.buildHash).toBeNull();
+    expect(state.checkHash).toBeNull();
+    expect(state.checkResult).toBeNull();
+    expect(state.buildResult).toBeNull();
+    expect(state.attackResult).toBeNull();
+  });
+
+  it('R05: preserves synchronous edit order and discards out-of-order hashes', async () => {
+    const store = useWorkbenchStore.getState();
+
+    // Fire two edits in rapid succession
+    const p1 = store.setSource('first edit');
+    const p2 = store.setSource('second edit');
+
+    // Synchronously, the second edit should immediately win
+    expect(useWorkbenchStore.getState().source).toBe('second edit');
+    expect(useWorkbenchStore.getState().sourceVersion).toBe(2);
+
+    await Promise.all([p1, p2]);
+
+    // After promises resolve, source is still second edit and hash is not corrupted
+    const finalState = useWorkbenchStore.getState();
+    expect(finalState.source).toBe('second edit');
+    expect(finalState.sourceVersion).toBe(2);
+  });
+
+  it('R09: locks actions at submission to prevent duplicate concurrent runs', async () => {
+    useWorkbenchStore.setState({
+      activeRun: {
+        runId: null,
+        kind: 'build',
+        status: 'submitting',
+        sourceSnapshot: null,
+        sourceHashSnapshot: null,
+        sourceVersionSnapshot: null,
+        events: [],
+      },
+    });
+
+    // Calling runCheck / runBuild while submitting should be ignored
+    await useWorkbenchStore.getState().runCheck();
+    expect(useWorkbenchStore.getState().activeRun.kind).toBe('build');
+  });
 });

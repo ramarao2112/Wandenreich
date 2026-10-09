@@ -105,8 +105,10 @@ def _safe_print(text: str) -> None:
     try:
         print(text)
     except UnicodeEncodeError:
-        ascii_text = text.replace("✅", "[PASS]").replace("❌", "[FAIL]").replace("⚠️", "[WARN]")
-        print(ascii_text)
+        enc = sys.stdout.encoding or "utf-8"
+        cleaned = text.replace("✅", "[PASS]").replace("❌", "[FAIL]").replace("⚠️", "[WARN]")
+        safe = cleaned.encode(enc, errors="replace").decode(enc)
+        print(safe)
 
 
 def _timestamp() -> str:

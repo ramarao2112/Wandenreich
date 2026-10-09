@@ -7,7 +7,7 @@ name = "trustc"
 version = "0.1.0"
 description = "TrustC — security-focused compiler and workbench for TrustSpec"
 requires-python = ">=3.9"
-license = {text = "MIT"}
+license = "MIT"
 authors = [{name = "TrustC Team"}]
 
 dependencies = [
@@ -60,6 +60,9 @@ trustc = [
     "grammars/*.lark",
     "templates/**/*",
     "rule_docs/*.md",
+    "examples/*.trust",
+    "ui_dist/**/*",
+    "ui_dist/*",
 ]
 
 [tool.pytest.ini_options]

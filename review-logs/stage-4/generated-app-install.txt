@@ -3,7 +3,7 @@ Stage 4 Standalone Generated App Installation & Runtime Test
 Spec: C:\Users\rama rao\OneDrive\Desktop\TrustC\tests\fixtures\F2.trust
 Timestamp: 2026-10-08
 
-Build ID: b956f2fb-99c6-4afe-95fa-470418094400
+Build ID: e1da2fdd-0b54-4359-ae4e-6d9a986e4bd2
 Files generated: 12
 
 Generated requirements.txt content:
@@ -16,58 +16,58 @@ pydantic==2.13.5
 email-validator==2.3.0
 
 
-Pip install command: C:\Users\RAMARA~1\AppData\Local\Temp\trustc_clean_install_40v9btmg\venv\Scripts\pip.exe install -r C:\Users\RAMARA~1\AppData\Local\Temp\trustc_clean_install_40v9btmg\generated_f2\requirements.txt
+Pip install command: C:\Users\RAMARA~1\AppData\Local\Temp\trustc_clean_install_636sq3zk\venv\Scripts\pip.exe install -r C:\Users\RAMARA~1\AppData\Local\Temp\trustc_clean_install_636sq3zk\generated_f2\requirements.txt
 Pip exit code: 0
 Pip stdout:
-Collecting fastapi==0.142.4 (from -r C:\Users\RAMARA~1\AppData\Local\Temp\trustc_clean_install_40v9btmg\generated_f2\requirements.txt (line 1))
+Collecting fastapi==0.142.4 (from -r C:\Users\RAMARA~1\AppData\Local\Temp\trustc_clean_install_636sq3zk\generated_f2\requirements.txt (line 1))
   Using cached fastapi-0.142.4-py3-none-any.whl.metadata (26 kB)
-Collecting uvicorn==0.54.0 (from uvicorn[standard]==0.54.0->-r C:\Users\RAMARA~1\AppData\Local\Temp\trustc_clean_install_40v9btmg\generated_f2\requirements.txt (line 2))
+Collecting uvicorn==0.54.0 (from uvicorn[standard]==0.54.0->-r C:\Users\RAMARA~1\AppData\Local\Temp\trustc_clean_install_636sq3zk\generated_f2\requirements.txt (line 2))
   Using cached uvicorn-0.54.0-py3-none-any.whl.metadata (6.6 kB)
-Collecting sqlalchemy==2.1.4 (from sqlalchemy[asyncio]==2.1.4->-r C:\Users\RAMARA~1\AppData\Local\Temp\trustc_clean_install_40v9btmg\generated_f2\requirements.txt (line 3))
+Collecting sqlalchemy==2.1.4 (from sqlalchemy[asyncio]==2.1.4->-r C:\Users\RAMARA~1\AppData\Local\Temp\trustc_clean_install_636sq3zk\generated_f2\requirements.txt (line 3))
   Using cached sqlalchemy-2.1.4-cp314-cp314-win_amd64.whl.metadata (9.9 kB)
-Collecting aiosqlite==0.22.1 (from -r C:\Users\RAMARA~1\AppData\Local\Temp\trustc_clean_install_40v9btmg\generated_f2\requirements.txt (line 4))
+Collecting aiosqlite==0.22.1 (from -r C:\Users\RAMARA~1\AppData\Local\Temp\trustc_clean_install_636sq3zk\generated_f2\requirements.txt (line 4))
   Using cached aiosqlite-0.22.1-py3-none-any.whl.metadata (4.3 kB)
-Collecting pyjwt==2.15.1 (from -r C:\Users\RAMARA~1\AppData\Local\Temp\trustc_clean_install_40v9btmg\generated_f2\requirements.txt (line 5))
+Collecting pyjwt==2.15.1 (from -r C:\Users\RAMARA~1\AppData\Local\Temp\trustc_clean_install_636sq3zk\generated_f2\requirements.txt (line 5))
   Using cached pyjwt-2.15.1-py3-none-any.whl.metadata (3.5 kB)
-Collecting pydantic==2.13.5 (from -r C:\Users\RAMARA~1\AppData\Local\Temp\trustc_clean_install_40v9btmg\generated_f2\requirements.txt (line 6))
+Collecting pydantic==2.13.5 (from -r C:\Users\RAMARA~1\AppData\Local\Temp\trustc_clean_install_636sq3zk\generated_f2\requirements.txt (line 6))
   Using cached pydantic-2.13.5-py3-none-any.whl.metadata (110 kB)
-Collecting email-validator==2.3.0 (from -r C:\Users\RAMARA~1\AppData\Local\Temp\trustc_clean_install_40v9btmg\generated_f2\requirements.txt (line 7))
+Collecting email-validator==2.3.0 (from -r C:\Users\RAMARA~1\AppData\Local\Temp\trustc_clean_install_636sq3zk\generated_f2\requirements.txt (line 7))
   Using cached email_validator-2.3.0-py3-none-any.whl.metadata (26 kB)
-Collecting starlette>=0.46.0 (from fastapi==0.142.4->-r C:\Users\RAMARA~1\AppData\Local\Temp\trustc_clean_install_40v9btmg\generated_f2\requirements.txt (line 1))
+Collecting starlette>=0.46.0 (from fastapi==0.142.4->-r C:\Users\RAMARA~1\AppData\Local\Temp\trustc_clean_install_636sq3zk\generated_f2\requirements.txt (line 1))
   Using cached starlette-1.7.0-py3-none-any.whl.metadata (6.6 kB)
-Collecting typing-extensions>=4.8.0 (from fastapi==0.142.4->-r C:\Users\RAMARA~1\AppData\Local\Temp\trustc_clean_install_40v9btmg\generated_f2\requirements.txt (line 1))
+Collecting typing-extensions>=4.8.0 (from fastapi==0.142.4->-r C:\Users\RAMARA~1\AppData\Local\Temp\trustc_clean_install_636sq3zk\generated_f2\requirements.txt (line 1))
   Using cached typing_extensions-4.16.0-py3-none-any.whl.metadata (3.3 kB)
-Collecting typing-inspection>=0.4.2 (from fastapi==0.142.4->-r C:\Users\RAMARA~1\AppData\Local\Temp\trustc_clean_install_40v9btmg\generated_f2\requirements.txt (line 1))
+Collecting typing-inspection>=0.4.2 (from fastapi==0.142.4->-r C:\Users\RAMARA~1\AppData\Local\Temp\trustc_clean_install_636sq3zk\generated_f2\requirements.txt (line 1))
   Using cached typing_inspection-0.4.4-py3-none-any.whl.metadata (2.6 kB)
-Collecting annotated-doc>=0.0.2 (from fastapi==0.142.4->-r C:\Users\RAMARA~1\AppData\Local\Temp\trustc_clean_install_40v9btmg\generated_f2\requirements.txt (line 1))
+Collecting annotated-doc>=0.0.2 (from fastapi==0.142.4->-r C:\Users\RAMARA~1\AppData\Local\Temp\trustc_clean_install_636sq3zk\generated_f2\requirements.txt (line 1))
   Using cached annotated_doc-0.0.5-py3-none-any.whl.metadata (6.5 kB)
-Collecting opentelemetry-api>=1.44.0 (from fastapi==0.142.4->-r C:\Users\RAMARA~1\AppData\Local\Temp\trustc_clean_install_40v9btmg\generated_f2\requirements.txt (line 1))
+Collecting opentelemetry-api>=1.44.0 (from fastapi==0.142.4->-r C:\Users\RAMARA~1\AppData\Local\Temp\trustc_clean_install_636sq3zk\generated_f2\requirements.txt (line 1))
   Using cached opentelemetry_api-1.45.1-py3-none-any.whl.metadata (1.4 kB)
-Collecting click>=7.0 (from uvicorn==0.54.0->uvicorn[standard]==0.54.0->-r C:\Users\RAMARA~1\AppData\Local\Temp\trustc_clean_install_40v9btmg\generated_f2\requirements.txt (line 2))
+Collecting click>=7.0 (from uvicorn==0.54.0->uvicorn[standard]==0.54.0->-r C:\Users\RAMARA~1\AppData\Local\Temp\trustc_clean_install_636sq3zk\generated_f2\requirements.txt (line 2))
   Using cached click-8.5.0-py3-none-any.whl.metadata (2.6 kB)
-Collecting h11>=0.8 (from uvicorn==0.54.0->uvicorn[standard]==0.54.0->-r C:\Users\RAMARA~1\AppData\Local\Temp\trustc_clean_install_40v9btmg\generated_f2\requirements.txt (line 2))
+Collecting h11>=0.8 (from uvicorn==0.54.0->uvicorn[standard]==0.54.0->-r C:\Users\RAMARA~1\AppData\Local\Temp\trustc_clean_install_636sq3zk\generated_f2\requirements.txt (line 2))
   Using cached h11-0.16.0-py3-none-any.whl.metadata (8.3 kB)
-Collecting annotated-types>=0.6.0 (from pydantic==2.13.5->-r C:\Users\RAMARA~1\AppData\Local\Temp\trustc_clean_install_40v9btmg\generated_f2\requirements.txt (line 6))
+Collecting annotated-types>=0.6.0 (from pydantic==2.13.5->-r C:\Users\RAMARA~1\AppData\Local\Temp\trustc_clean_install_636sq3zk\generated_f2\requirements.txt (line 6))
   Using cached annotated_types-0.8.0-py3-none-any.whl.metadata (15 kB)
-Collecting pydantic-core==2.46.5 (from pydantic==2.13.5->-r C:\Users\RAMARA~1\AppData\Local\Temp\trustc_clean_install_40v9btmg\generated_f2\requirements.txt (line 6))
+Collecting pydantic-core==2.46.5 (from pydantic==2.13.5->-r C:\Users\RAMARA~1\AppData\Local\Temp\trustc_clean_install_636sq3zk\generated_f2\requirements.txt (line 6))
   Using cached pydantic_core-2.46.5-cp314-cp314-win_amd64.whl.metadata (6.7 kB)
-Collecting dnspython>=2.0.0 (from email-validator==2.3.0->-r C:\Users\RAMARA~1\AppData\Local\Temp\trustc_clean_install_40v9btmg\generated_f2\requirements.txt (line 7))
+Collecting dnspython>=2.0.0 (from email-validator==2.3.0->-r C:\Users\RAMARA~1\AppData\Local\Temp\trustc_clean_install_636sq3zk\generated_f2\requirements.txt (line 7))
   Using cached dnspython-2.9.0-py3-none-any.whl.metadata (5.7 kB)
-Collecting idna>=2.0.0 (from email-validator==2.3.0->-r C:\Users\RAMARA~1\AppData\Local\Temp\trustc_clean_install_40v9btmg\generated_f2\requirements.txt (line 7))
+Collecting idna>=2.0.0 (from email-validator==2.3.0->-r C:\Users\RAMARA~1\AppData\Local\Temp\trustc_clean_install_636sq3zk\generated_f2\requirements.txt (line 7))
   Using cached idna-3.20-py3-none-any.whl.metadata (7.2 kB)
-Collecting greenlet>=1 (from sqlalchemy[asyncio]==2.1.4->-r C:\Users\RAMARA~1\AppData\Local\Temp\trustc_clean_install_40v9btmg\generated_f2\requirements.txt (line 3))
+Collecting greenlet>=1 (from sqlalchemy[asyncio]==2.1.4->-r C:\Users\RAMARA~1\AppData\Local\Temp\trustc_clean_install_636sq3zk\generated_f2\requirements.txt (line 3))
   Using cached greenlet-3.5.6-cp314-cp314-win_amd64.whl.metadata (3.9 kB)
-Collecting httptools>=0.8.0 (from uvicorn[standard]==0.54.0->-r C:\Users\RAMARA~1\AppData\Local\Temp\trustc_clean_install_40v9btmg\generated_f2\requirements.txt (line 2))
-  Using cached httptools-0.8.0-cp314-cp314-win_amd64.whl.metadata (3.7 kB)
-Collecting python-dotenv>=0.13 (from uvicorn[standard]==0.54.0->-r C:\Users\RAMARA~1\AppData\Local\Temp\trustc_clean_install_40v9btmg\generated_f2\requirements.txt (line 2))
+Collecting httptools>=0.8.0 (from uvicorn[standard]==0.54.0->-r C:\Users\RAMARA~1\AppData\Local\Temp\trustc_clean_install_636sq3zk\generated_f2\requirements.txt (line 2))
+  Using cached httptools-0.9.0-cp314-cp314-win_amd64.whl.metadata (3.7 kB)
+Collecting python-dotenv>=0.13 (from uvicorn[standard]==0.54.0->-r C:\Users\RAMARA~1\AppData\Local\Temp\trustc_clean_install_636sq3zk\generated_f2\requirements.txt (line 2))
   Using cached python_dotenv-1.2.4-py3-none-any.whl.metadata (29 kB)
-Collecting pyyaml>=5.1 (from uvicorn[standard]==0.54.0->-r C:\Users\RAMARA~1\AppData\Local\Temp\trustc_clean_install_40v9btmg\generated_f2\requirements.txt (line 2))
+Collecting pyyaml>=5.1 (from uvicorn[standard]==0.54.0->-r C:\Users\RAMARA~1\AppData\Local\Temp\trustc_clean_install_636sq3zk\generated_f2\requirements.txt (line 2))
   Using cached pyyaml-6.0.3-cp314-cp314-win_amd64.whl.metadata (2.4 kB)
-Collecting watchfiles>=0.20 (from uvicorn[standard]==0.54.0->-r C:\Users\RAMARA~1\AppData\Local\Temp\trustc_clean_install_40v9btmg\generated_f2\requirements.txt (line 2))
+Collecting watchfiles>=0.20 (from uvicorn[standard]==0.54.0->-r C:\Users\RAMARA~1\AppData\Local\Temp\trustc_clean_install_636sq3zk\generated_f2\requirements.txt (line 2))
   Using cached watchfiles-1.3.0-cp310-abi3-win_amd64.whl.metadata (5.0 kB)
-Collecting websockets>=13.0 (from uvicorn[standard]==0.54.0->-r C:\Users\RAMARA~1\AppData\Local\Temp\trustc_clean_install_40v9btmg\generated_f2\requirements.txt (line 2))
+Collecting websockets>=13.0 (from uvicorn[standard]==0.54.0->-r C:\Users\RAMARA~1\AppData\Local\Temp\trustc_clean_install_636sq3zk\generated_f2\requirements.txt (line 2))
   Using cached websockets-17.2-cp314-cp314-win_amd64.whl.metadata (6.5 kB)
-Collecting anyio<5,>=4.0.0 (from starlette>=0.46.0->fastapi==0.142.4->-r C:\Users\RAMARA~1\AppData\Local\Temp\trustc_clean_install_40v9btmg\generated_f2\requirements.txt (line 1))
+Collecting anyio<5,>=4.0.0 (from starlette>=0.46.0->fastapi==0.142.4->-r C:\Users\RAMARA~1\AppData\Local\Temp\trustc_clean_install_636sq3zk\generated_f2\requirements.txt (line 1))
   Using cached anyio-4.15.1-py3-none-any.whl.metadata (4.7 kB)
 Using cached fastapi-0.142.4-py3-none-any.whl (144 kB)
 Using cached uvicorn-0.54.0-py3-none-any.whl (87 kB)
@@ -83,7 +83,7 @@ Using cached click-8.5.0-py3-none-any.whl (125 kB)
 Using cached dnspython-2.9.0-py3-none-any.whl (354 kB)
 Using cached greenlet-3.5.6-cp314-cp314-win_amd64.whl (327 kB)
 Using cached h11-0.16.0-py3-none-any.whl (37 kB)
-Using cached httptools-0.8.0-cp314-cp314-win_amd64.whl (92 kB)
+Using cached httptools-0.9.0-cp314-cp314-win_amd64.whl (94 kB)
 Using cached idna-3.20-py3-none-any.whl (69 kB)
 Using cached opentelemetry_api-1.45.1-py3-none-any.whl (60 kB)
 Using cached python_dotenv-1.2.4-py3-none-any.whl (23 kB)
@@ -96,12 +96,12 @@ Using cached watchfiles-1.3.0-cp310-abi3-win_amd64.whl (290 kB)
 Using cached websockets-17.2-cp314-cp314-win_amd64.whl (218 kB)
 Installing collected packages: websockets, typing-extensions, pyyaml, python-dotenv, pyjwt, idna, httptools, h11, greenlet, dnspython, click, annotated-types, annotated-doc, aiosqlite, uvicorn, typing-inspection, sqlalchemy, pydantic-core, opentelemetry-api, email-validator, anyio, watchfiles, starlette, pydantic, fastapi
 
-Successfully installed aiosqlite-0.22.1 annotated-doc-0.0.5 annotated-types-0.8.0 anyio-4.15.1 click-8.5.0 dnspython-2.9.0 email-validator-2.3.0 fastapi-0.142.4 greenlet-3.5.6 h11-0.16.0 httptools-0.8.0 idna-3.20 opentelemetry-api-1.45.1 pydantic-2.13.5 pydantic-core-2.46.5 pyjwt-2.15.1 python-dotenv-1.2.4 pyyaml-6.0.3 sqlalchemy-2.1.4 starlette-1.7.0 typing-extensions-4.16.0 typing-inspection-0.4.4 uvicorn-0.54.0 watchfiles-1.3.0 websockets-17.2
+Successfully installed aiosqlite-0.22.1 annotated-doc-0.0.5 annotated-types-0.8.0 anyio-4.15.1 click-8.5.0 dnspython-2.9.0 email-validator-2.3.0 fastapi-0.142.4 greenlet-3.5.6 h11-0.16.0 httptools-0.9.0 idna-3.20 opentelemetry-api-1.45.1 pydantic-2.13.5 pydantic-core-2.46.5 pyjwt-2.15.1 python-dotenv-1.2.4 pyyaml-6.0.3 sqlalchemy-2.1.4 starlette-1.7.0 typing-extensions-4.16.0 typing-inspection-0.4.4 uvicorn-0.54.0 watchfiles-1.3.0 websockets-17.2
 
 Pip stderr:
 
 [notice] A new release of pip is available: 26.0.1 -> 26.2.1
-[notice] To update, run: C:\Users\rama rao\AppData\Local\Temp\trustc_clean_install_40v9btmg\venv\Scripts\python.exe -m pip install --upgrade pip
+[notice] To update, run: C:\Users\rama rao\AppData\Local\Temp\trustc_clean_install_636sq3zk\venv\Scripts\python.exe -m pip install --upgrade pip
 
 
 Resolved runtime dependency versions from requirements.txt (pip freeze):
@@ -115,7 +115,7 @@ email-validator==2.3.0
 fastapi==0.142.4
 greenlet==3.5.6
 h11==0.16.0
-httptools==0.8.0
+httptools==0.9.0
 idna==3.20
 opentelemetry-api==1.45.1
 pydantic==2.13.5

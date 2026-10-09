@@ -278,7 +278,9 @@ export const DiagnosticsTab: React.FC = () => {
                     {diag.fix.type === 'diff' ? (
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <span style={{ fontSize: '12px', color: 'var(--color-teal)', fontWeight: 600 }}>
-                          {diag.fix.label ? `Suggested restrictive default: ${diag.fix.label}` : 'Suggested restrictive default'}
+                          {diag.fix.label
+                            ? `Suggested restrictive default: ${diag.fix.label.replace(/^Suggested restrictive default:\s*/i, '')}`
+                            : 'Suggested restrictive default'}
                         </span>
                         <button
                           type="button"

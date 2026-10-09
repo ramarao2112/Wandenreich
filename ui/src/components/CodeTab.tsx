@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useWorkbenchStore } from '../state/workbenchStore';
 import { Download, FileCode, ArrowRight, Layers } from 'lucide-react';
 import { ForcedLine } from '../api/types';
@@ -12,11 +12,31 @@ export const CodeTab: React.FC = () => {
     selectedFile,
     selectFile,
     selectSourceSpan,
+    dataMode,
+    resultOriginMode,
   } = useWorkbenchStore();
 
   const [activeForcedLine, setActiveForcedLine] = useState<ForcedLine | null>(null);
 
   const isStale = Boolean(buildResult && buildHash && buildHash !== sourceHash);
+  const isMock = resultOriginMode === 'mock' || dataMode === 'mock';
+
+  // Section 3.2: Default to a useful file and line when entering provenance inspection
+  useEffect(() => {
+    if (!buildResult || !buildResult.files || buildResult.files.length === 0) return;
+    const fileWithForced = buildResult.files.find((f) => (f.forced || []).length > 0);
+    if (fileWithForced) {
+      if (!selectedFile || !buildResult.files.find((f) => f.path === selectedFile)?.forced?.length) {
+        selectFile(fileWithForced.path);
+        setActiveForcedLine(fileWithForced.forced[0]);
+      } else if (!activeForcedLine) {
+        const currentF = buildResult.files.find((f) => f.path === selectedFile);
+        if (currentF?.forced?.length) {
+          setActiveForcedLine(currentF.forced[0]);
+        }
+      }
+    }
+  }, [buildId, buildResult]);
 
   if (!buildResult || !buildResult.files || buildResult.files.length === 0) {
     return (
@@ -96,27 +116,46 @@ export const CodeTab: React.FC = () => {
         </div>
 
         {buildId && (
-          <a
-            href={`/api/builds/${buildId}/out.zip`}
-            download={`trustc-${buildId}.zip`}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              padding: '5px 12px',
-              backgroundColor: 'var(--color-raised)',
-              color: 'var(--color-text-primary)',
-              border: '1px solid var(--color-border)',
-              borderRadius: 'var(--radius-md)',
-              fontSize: '12px',
-              fontWeight: 600,
-              textDecoration: 'none',
-              cursor: 'pointer',
-            }}
-          >
-            <Download size={13} color="var(--color-teal)" />
-            <span>Download out.zip</span>
-          </a>
+          isMock ? (
+            <span
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '5px 12px',
+                backgroundColor: 'var(--color-raised)',
+                color: 'var(--color-text-secondary)',
+                border: '1px solid var(--color-border)',
+                borderRadius: 'var(--radius-md)',
+                fontSize: '12px',
+                fontStyle: 'italic',
+              }}
+            >
+              <span>Mock build (ZIP unavailable)</span>
+            </span>
+          ) : (
+            <a
+              href={`/api/builds/${buildId}/out.zip`}
+              download={`trustc-${buildId}.zip`}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '5px 12px',
+                backgroundColor: 'var(--color-raised)',
+                color: 'var(--color-text-primary)',
+                border: '1px solid var(--color-border)',
+                borderRadius: 'var(--radius-md)',
+                fontSize: '12px',
+                fontWeight: 600,
+                textDecoration: 'none',
+                cursor: 'pointer',
+              }}
+            >
+              <Download size={13} color="var(--color-teal)" />
+              <span>Download out.zip</span>
+            </a>
+          )
         )}
       </div>
 
@@ -156,7 +195,8 @@ export const CodeTab: React.FC = () => {
                 type="button"
                 onClick={() => {
                   selectFile(file.path);
-                  setActiveForcedLine(null);
+                  const fileForced = file.forced || [];
+                  setActiveForcedLine(fileForced.length > 0 ? fileForced[0] : null);
                 }}
                 style={{
                   display: 'flex',
@@ -216,7 +256,16 @@ export const CodeTab: React.FC = () => {
                   return (
                     <tr
                       key={lineNum}
+                      tabIndex={forced ? 0 : undefined}
+                      role={forced ? 'button' : undefined}
+                      aria-label={forced ? `Line ${lineNum}: forced by ${forced.kind}` : undefined}
                       onClick={() => forced && setActiveForcedLine(forced)}
+                      onKeyDown={(e) => {
+                        if (forced && (e.key === 'Enter' || e.key === ' ')) {
+                          e.preventDefault();
+                          setActiveForcedLine(forced);
+                        }
+                      }}
                       style={{
                         backgroundColor: isHighlighted
                           ? 'rgba(99, 223, 208, 0.2)'

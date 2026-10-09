@@ -17,7 +17,7 @@ export type ResultTab = 'diagnostics' | 'code' | 'tests' | 'evidence';
 export interface ActiveRunState {
   runId: string | null;
   kind: 'check' | 'build' | 'attack' | null;
-  status: 'idle' | 'running' | 'cancelling' | 'terminal';
+  status: 'idle' | 'submitting' | 'running' | 'reconnecting' | 'cancelling' | 'terminal';
   sourceSnapshot: string | null;
   sourceHashSnapshot: string | null;
   sourceVersionSnapshot: number | null;
@@ -29,8 +29,10 @@ export interface WorkbenchState {
   source: string;
   sourceVersion: number;
   sourceHash: string;
+  isHashing: boolean;
   serverSessionId: string | null;
   dataMode: DataMode;
+  resultOriginMode: DataMode | null;
   isOffline: boolean;
   announcement: string | null;
 
@@ -49,6 +51,7 @@ export interface WorkbenchState {
 
   // Active run & historical cached results
   activeRun: ActiveRunState;
+  activeRunController: (() => void) | null;
   checkResult: CheckResult | null;
   checkHash: string | null;
   buildResult: BuildSuccess | null;
@@ -88,8 +91,10 @@ export const useWorkbenchStore = create<WorkbenchState>((set, get) => ({
   source: '',
   sourceVersion: 0,
   sourceHash: '',
+  isHashing: false,
   serverSessionId: null,
   dataMode: 'live',
+  resultOriginMode: null,
   isOffline: false,
   announcement: null,
 
@@ -113,6 +118,7 @@ export const useWorkbenchStore = create<WorkbenchState>((set, get) => ({
     sourceVersionSnapshot: null,
     events: [],
   },
+  activeRunController: null,
 
   checkResult: null,
   checkHash: null,
@@ -151,6 +157,7 @@ export const useWorkbenchStore = create<WorkbenchState>((set, get) => ({
               attackResult: null,
               attackHash: null,
               attackBuildId: null,
+              resultOriginMode: null,
               announcement: 'Server restarted: prior builds invalidated.',
             }
           : {}),
@@ -180,14 +187,24 @@ export const useWorkbenchStore = create<WorkbenchState>((set, get) => ({
   },
 
   setSource: async (newSource: string) => {
-    const newHash = await computeSpecHash(newSource);
-    set((state) => ({
+    const nextVersion = get().sourceVersion + 1;
+    // Update source and version synchronously so edit order is never inverted
+    set({
       source: newSource,
-      sourceVersion: state.sourceVersion + 1,
-      sourceHash: newHash,
-      // If user edits, clear active diff preview
+      sourceVersion: nextVersion,
       diffPreview: null,
-    }));
+      isHashing: true,
+    });
+
+    return computeSpecHash(newSource).then((newHash) => {
+      // Guard: only publish hash if revision is still current
+      if (get().sourceVersion === nextVersion) {
+        set({
+          sourceHash: newHash,
+          isHashing: false,
+        });
+      }
+    });
   },
 
   loadExample: async (exampleId: string) => {
@@ -195,18 +212,27 @@ export const useWorkbenchStore = create<WorkbenchState>((set, get) => ({
     const ex = examples.find((e) => e.id.toLowerCase() === exampleId.toLowerCase());
     if (!ex) return;
 
-    const newHash = await computeSpecHash(ex.spec);
+    const nextVersion = get().sourceVersion + 1;
     set((state) => ({
       undoStack: source ? [...state.undoStack, source] : state.undoStack,
       source: ex.spec,
-      sourceVersion: state.sourceVersion + 1,
-      sourceHash: newHash,
+      sourceVersion: nextVersion,
       selectedExampleId: ex.id,
       selectedDiagnosticIndex: null,
       diffPreview: null,
       selectedSourceSpan: null,
+      isHashing: true,
       announcement: `Loaded example ${ex.title}`,
     }));
+
+    return computeSpecHash(ex.spec).then((newHash) => {
+      if (get().sourceVersion === nextVersion) {
+        set({
+          sourceHash: newHash,
+          isHashing: false,
+        });
+      }
+    });
   },
 
   setActiveTab: (tab: ResultTab) => {
@@ -239,27 +265,34 @@ export const useWorkbenchStore = create<WorkbenchState>((set, get) => ({
   },
 
   applyFix: async (diff: string, baseSpecHash: string) => {
-    const { source, sourceHash, undoStack } = get();
-    if (sourceHash !== baseSpecHash) {
-      set({ announcement: 'Cannot apply fix: source has changed since check.' });
+    const { source, sourceHash, undoStack, isHashing } = get();
+    if (isHashing || sourceHash !== baseSpecHash) {
+      set({ announcement: 'Cannot apply fix: source has changed since check or hash is calculating.' });
       return false;
     }
 
     const patched = applyUnifiedDiff(source, diff);
-    const newHash = await computeSpecHash(patched);
+    const nextVersion = get().sourceVersion + 1;
 
-    set((state) => ({
+    set({
       undoStack: [...undoStack, source],
       source: patched,
-      sourceVersion: state.sourceVersion + 1,
-      sourceHash: newHash,
+      sourceVersion: nextVersion,
       diffPreview: null,
       selectedDiagnosticIndex: null,
+      isHashing: true,
       announcement: 'Fix applied to specification.',
-    }));
+    });
 
-    // Auto-run check to verify the applied fix
-    await get().runCheck();
+    const newHash = await computeSpecHash(patched);
+    if (get().sourceVersion === nextVersion) {
+      set({
+        sourceHash: newHash,
+        isHashing: false,
+      });
+      // Auto-run check to verify the applied fix
+      await get().runCheck();
+    }
     return true;
   },
 
@@ -269,29 +302,47 @@ export const useWorkbenchStore = create<WorkbenchState>((set, get) => ({
 
     const prevSource = undoStack[undoStack.length - 1];
     const newStack = undoStack.slice(0, -1);
-    const newHash = await computeSpecHash(prevSource);
+    const nextVersion = get().sourceVersion + 1;
 
-    set((state) => ({
+    set({
       undoStack: newStack,
       source: prevSource,
-      sourceVersion: state.sourceVersion + 1,
-      sourceHash: newHash,
+      sourceVersion: nextVersion,
       diffPreview: null,
+      isHashing: true,
       announcement: 'Undid previous action.',
-    }));
+    });
+
+    return computeSpecHash(prevSource).then((newHash) => {
+      if (get().sourceVersion === nextVersion) {
+        set({
+          sourceHash: newHash,
+          isHashing: false,
+        });
+      }
+    });
   },
 
   runCheck: async () => {
-    const { source, sourceVersion, sourceHash, dataMode } = get();
+    const { activeRun, source, sourceVersion, isHashing, dataMode } = get();
+    if (activeRun.status !== 'idle') return;
+
+    // Ensure hash is resolved before submission
+    let currentHash = get().sourceHash;
+    if (isHashing || !currentHash) {
+      currentHash = await computeSpecHash(source);
+      set({ sourceHash: currentHash, isHashing: false });
+    }
+
     const t0 = performance.now();
 
     set({
       activeRun: {
         runId: null,
         kind: 'check',
-        status: 'running',
+        status: 'submitting',
         sourceSnapshot: source,
-        sourceHashSnapshot: sourceHash,
+        sourceHashSnapshot: currentHash,
         sourceVersionSnapshot: sourceVersion,
         events: [],
       },
@@ -305,7 +356,8 @@ export const useWorkbenchStore = create<WorkbenchState>((set, get) => ({
 
       set({
         checkResult: result,
-        checkHash: sourceHash,
+        checkHash: currentHash,
+        resultOriginMode: dataMode,
         executionFailure: null,
         activeRun: {
           runId: null,
@@ -350,11 +402,29 @@ export const useWorkbenchStore = create<WorkbenchState>((set, get) => ({
   },
 
   runBuild: async () => {
-    const { source, sourceVersion, sourceHash, dataMode } = get();
+    const { activeRun, source, sourceVersion, isHashing, dataMode } = get();
+    if (activeRun.status !== 'idle') return;
+
+    let currentHash = get().sourceHash;
+    if (isHashing || !currentHash) {
+      currentHash = await computeSpecHash(source);
+      set({ sourceHash: currentHash, isHashing: false });
+    }
+
     const t0 = performance.now();
 
+    // Set submitting synchronously to prevent duplicate triggers
     set({
       activeTab: 'code',
+      activeRun: {
+        runId: null,
+        kind: 'build',
+        status: 'submitting',
+        sourceSnapshot: source,
+        sourceHashSnapshot: currentHash,
+        sourceVersionSnapshot: sourceVersion,
+        events: [],
+      },
       announcement: 'Submitting build job...',
     });
 
@@ -368,15 +438,17 @@ export const useWorkbenchStore = create<WorkbenchState>((set, get) => ({
           kind: 'build',
           status: 'running',
           sourceSnapshot: source,
-          sourceHashSnapshot: sourceHash,
+          sourceHashSnapshot: currentHash,
           sourceVersionSnapshot: sourceVersion,
           events: [],
         },
       });
 
-      api.subscribeRunEvents(
+      const unsub = api.subscribeRunEvents(
         runId,
         (ev) => {
+          // Ignore if obsolete
+          if (get().activeRun.runId !== runId) return;
           set((state) => ({
             activeRun: {
               ...state.activeRun,
@@ -385,7 +457,7 @@ export const useWorkbenchStore = create<WorkbenchState>((set, get) => ({
           }));
         },
         async () => {
-          // Terminal completion
+          if (get().activeRun.runId !== runId) return;
           const status = await api.getRunStatus(runId, dataMode);
           const ms = Math.round(performance.now() - t0);
 
@@ -393,9 +465,11 @@ export const useWorkbenchStore = create<WorkbenchState>((set, get) => ({
             const buildRes = status.result as BuildSuccess;
             set({
               buildResult: buildRes,
-              buildHash: sourceHash,
+              buildHash: currentHash,
               buildId: buildRes.buildId,
+              resultOriginMode: dataMode,
               selectedFile: buildRes.files[0]?.path || 'main.py',
+              activeRunController: null,
               activeRun: {
                 runId: null,
                 kind: null,
@@ -416,6 +490,7 @@ export const useWorkbenchStore = create<WorkbenchState>((set, get) => ({
             const fail = status.result as RunFailure;
             set({
               executionFailure: fail,
+              activeRunController: null,
               activeRun: {
                 runId: null,
                 kind: null,
@@ -435,7 +510,9 @@ export const useWorkbenchStore = create<WorkbenchState>((set, get) => ({
           }
         },
         (err) => {
+          if (get().activeRun.runId !== runId) return;
           set({
+            activeRunController: null,
             activeRun: {
               runId: null,
               kind: null,
@@ -450,9 +527,12 @@ export const useWorkbenchStore = create<WorkbenchState>((set, get) => ({
         },
         dataMode
       );
+
+      set({ activeRunController: unsub });
     } catch (err: any) {
       set({
         announcement: `Build failed to start: ${err.message}`,
+        activeRunController: null,
         activeRun: {
           runId: null,
           kind: null,
@@ -467,12 +547,27 @@ export const useWorkbenchStore = create<WorkbenchState>((set, get) => ({
   },
 
   runAttack: async () => {
-    const { source, sourceVersion, sourceHash, buildId, dataMode } = get();
-    if (!buildId) return;
+    const { activeRun, source, sourceVersion, isHashing, buildId, dataMode } = get();
+    if (activeRun.status !== 'idle' || !buildId) return;
+
+    let currentHash = get().sourceHash;
+    if (isHashing || !currentHash) {
+      currentHash = await computeSpecHash(source);
+      set({ sourceHash: currentHash, isHashing: false });
+    }
 
     const t0 = performance.now();
     set({
       activeTab: 'tests',
+      activeRun: {
+        runId: null,
+        kind: 'attack',
+        status: 'submitting',
+        sourceSnapshot: source,
+        sourceHashSnapshot: currentHash,
+        sourceVersionSnapshot: sourceVersion,
+        events: [],
+      },
       announcement: 'Executing live access attacks...',
     });
 
@@ -486,15 +581,16 @@ export const useWorkbenchStore = create<WorkbenchState>((set, get) => ({
           kind: 'attack',
           status: 'running',
           sourceSnapshot: source,
-          sourceHashSnapshot: sourceHash,
+          sourceHashSnapshot: currentHash,
           sourceVersionSnapshot: sourceVersion,
           events: [],
         },
       });
 
-      api.subscribeRunEvents(
+      const unsub = api.subscribeRunEvents(
         runId,
         (ev) => {
+          if (get().activeRun.runId !== runId) return;
           set((state) => ({
             activeRun: {
               ...state.activeRun,
@@ -503,6 +599,7 @@ export const useWorkbenchStore = create<WorkbenchState>((set, get) => ({
           }));
         },
         async () => {
+          if (get().activeRun.runId !== runId) return;
           const status = await api.getRunStatus(runId, dataMode);
           const ms = Math.round(performance.now() - t0);
 
@@ -511,8 +608,10 @@ export const useWorkbenchStore = create<WorkbenchState>((set, get) => ({
             const matched = attackRes.asExpected + attackRes.review;
             set({
               attackResult: attackRes,
-              attackHash: sourceHash,
+              attackHash: currentHash,
               attackBuildId: buildId,
+              resultOriginMode: dataMode,
+              activeRunController: null,
               activeRun: {
                 runId: null,
                 kind: null,
@@ -533,6 +632,7 @@ export const useWorkbenchStore = create<WorkbenchState>((set, get) => ({
             const fail = status.result as RunFailure;
             set({
               executionFailure: fail,
+              activeRunController: null,
               activeRun: {
                 runId: null,
                 kind: null,
@@ -552,7 +652,9 @@ export const useWorkbenchStore = create<WorkbenchState>((set, get) => ({
           }
         },
         (err) => {
+          if (get().activeRun.runId !== runId) return;
           set({
+            activeRunController: null,
             activeRun: {
               runId: null,
               kind: null,
@@ -567,9 +669,12 @@ export const useWorkbenchStore = create<WorkbenchState>((set, get) => ({
         },
         dataMode
       );
+
+      set({ activeRunController: unsub });
     } catch (err: any) {
       set({
         announcement: `Attack failed to start: ${err.message}`,
+        activeRunController: null,
         activeRun: {
           runId: null,
           kind: null,
@@ -584,8 +689,26 @@ export const useWorkbenchStore = create<WorkbenchState>((set, get) => ({
   },
 
   cancelActiveRun: async () => {
-    const { activeRun, dataMode } = get();
-    if (!activeRun.runId) return;
+    const { activeRun, dataMode, activeRunController } = get();
+    if (!activeRun.runId) {
+      if (activeRun.status === 'submitting') {
+        activeRunController?.();
+        set({
+          activeRun: {
+            runId: null,
+            kind: null,
+            status: 'idle',
+            sourceSnapshot: null,
+            sourceHashSnapshot: null,
+            sourceVersionSnapshot: null,
+            events: [],
+          },
+          activeRunController: null,
+          announcement: 'Submission cancelled.',
+        });
+      }
+      return;
+    }
 
     set((state) => ({
       activeRun: {
@@ -595,10 +718,57 @@ export const useWorkbenchStore = create<WorkbenchState>((set, get) => ({
       announcement: 'Cancelling active run...',
     }));
 
-    await api.cancelRun(activeRun.runId, dataMode);
+    try {
+      await api.cancelRun(activeRun.runId, dataMode);
+      set({
+        announcement: 'Run cancelled by user.',
+      });
+    } catch (err: any) {
+      set({
+        announcement: `Failed to cancel run: ${err.message}`,
+      });
+    }
   },
 
   setDataMode: (mode: DataMode) => {
-    set({ dataMode: mode, announcement: `Switched to ${mode} mode.` });
+    const current = get().dataMode;
+    if (current === mode) return;
+
+    const controller = get().activeRunController;
+    if (controller) {
+      try {
+        controller();
+      } catch {
+        // ignore
+      }
+    }
+
+    // Per R03: Bind every result to its originating mode; on mode changes,
+    // clear incompatible results and disable downstream actions.
+    set({
+      dataMode: mode,
+      resultOriginMode: null,
+      activeRunController: null,
+      activeRun: {
+        runId: null,
+        kind: null,
+        status: 'idle',
+        sourceSnapshot: null,
+        sourceHashSnapshot: null,
+        sourceVersionSnapshot: null,
+        events: [],
+      },
+      checkResult: null,
+      checkHash: null,
+      buildResult: null,
+      buildHash: null,
+      buildId: null,
+      attackResult: null,
+      attackHash: null,
+      attackBuildId: null,
+      executionFailure: null,
+      diffPreview: null,
+      announcement: `Switched to ${mode} mode. Incompatible cached results cleared.`,
+    });
   },
 }));

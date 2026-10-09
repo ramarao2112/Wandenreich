@@ -12,6 +12,9 @@ export const EvidenceTab: React.FC = () => {
     checkResult,
     sourceHash,
     buildId,
+    dataMode,
+    resultOriginMode,
+    serverSessionId,
   } = useWorkbenchStore();
 
   const [showTechnicalDetails, setShowTechnicalDetails] = useState(false);
@@ -26,6 +29,10 @@ export const EvidenceTab: React.FC = () => {
   );
 
   const handleExportJSON = () => {
+    const matchingCheck =
+      checkResult && checkResult.specHash === evidence?.specHash ? checkResult : null;
+    const isEditorStale = sourceHash !== evidence?.specHash;
+
     const runtimeEvidence = isAttackMatching
       ? attackResult
       : {
@@ -35,10 +42,16 @@ export const EvidenceTab: React.FC = () => {
         };
 
     const bundle = {
-      specHash: sourceHash,
+      specHash: evidence?.specHash || sourceHash,
       buildId: buildId,
+      originMode: resultOriginMode || dataMode,
+      serverSessionId: serverSessionId,
+      ...(isEditorStale ? { currentEditorContext: { specHash: sourceHash, isStale: true } } : {}),
       compilerEvidence: evidence || null,
-      checkResult: checkResult || null,
+      checkResult: matchingCheck,
+      ...(!matchingCheck && checkResult
+        ? { unmatchedLatestCheck: { specHash: checkResult.specHash, ok: checkResult.ok } }
+        : {}),
       runtimeAttackEvidence: runtimeEvidence,
       exportedAt: new Date().toISOString(),
       disclaimer:
@@ -265,24 +278,93 @@ export const EvidenceTab: React.FC = () => {
         <h3 style={{ fontSize: '14px', fontWeight: 600, color: 'var(--color-text-primary)' }}>
           Runtime Access Invariant Observations
         </h3>
-        {isAttackMatching && attackResult ? (
-          <div
-            style={{
-              padding: '12px 14px',
-              backgroundColor: 'var(--color-panel)',
-              borderRadius: 'var(--radius-md)',
-              border: '1px solid var(--color-border)',
-              fontSize: '13px',
-            }}
-          >
-            <div style={{ color: 'var(--color-success)', fontWeight: 600, marginBottom: '4px' }}>
-              ✓ Observed in {attackResult.steps.length} automated harness execution steps.
+        {isAttackMatching && attackResult ? (() => {
+          const hasFailed = attackResult.unexpected > 0 || attackResult.exitCode !== 0;
+          const hasReview = attackResult.review > 0;
+          const isEmpty = attackResult.total === 0;
+
+          let borderCol = 'var(--color-border)';
+          let bgCol = 'var(--color-panel)';
+          let titleCol = 'var(--color-success)';
+          let title = '✓ All actor requests conformed';
+          let subtitle = `Observed in ${attackResult.steps.length} automated harness execution steps`;
+          let desc = `All ${attackResult.total} actor requests conformed to specified isolation boundaries under test for build ${buildId}.`;
+
+          if (hasFailed) {
+            borderCol = 'var(--color-error)';
+            bgCol = 'rgba(255, 135, 149, 0.1)';
+            titleCol = 'var(--color-error)';
+            title = `✕ Access violations detected: ${attackResult.unexpected} unexpected disclosures or failures`;
+            subtitle = `Observed in ${attackResult.steps.length} automated harness execution steps`;
+            desc = `${attackResult.unexpected} actor request(s) violated security boundaries (exit code ${attackResult.exitCode}). Review the failed assertions in Access tests.`;
+          } else if (hasReview) {
+            borderCol = 'var(--color-review)';
+            bgCol = 'rgba(243, 196, 126, 0.1)';
+            titleCol = 'var(--color-review)';
+            title = `⚠ Policy review required: ${attackResult.review} request(s) exercised explicit waivers`;
+            subtitle = `Observed in ${attackResult.steps.length} automated harness execution steps`;
+            desc = `${attackResult.review} actor request(s) exercised explicit policy waivers and require manual review for build ${buildId}.`;
+          } else if (isEmpty) {
+            titleCol = 'var(--color-text-secondary)';
+            title = `No eligible endpoints exercised`;
+            subtitle = `Observed in 0 automated harness execution steps`;
+            desc = `0 automated test steps were generated or run for build ${buildId}.`;
+          }
+
+          const totalEndpoints =
+            (attackResult.coverage?.testedEndpoints?.length || 0) +
+            (attackResult.coverage?.excludedEndpoints?.length || 0);
+          const exercisedEndpoints = attackResult.coverage?.testedEndpoints?.length || 0;
+
+          return (
+            <div
+              style={{
+                padding: '14px 16px',
+                backgroundColor: bgCol,
+                borderRadius: 'var(--radius-md)',
+                border: `1px solid ${borderCol}`,
+                fontSize: '13px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '8px',
+              }}
+            >
+              <div style={{ color: titleCol, fontWeight: 700, fontSize: '14px' }}>
+                {title}
+              </div>
+              <div style={{ color: 'var(--color-text-secondary)', fontSize: '12px', fontWeight: 600 }}>
+                {subtitle}
+              </div>
+              <div style={{ color: 'var(--color-text-primary)', fontSize: '13px', lineHeight: '1.5' }}>
+                {desc}
+              </div>
+
+              {/* Endpoint coverage display per brief §3.6 */}
+              {totalEndpoints > 0 && (
+                <div
+                  style={{
+                    marginTop: '4px',
+                    paddingTop: '8px',
+                    borderTop: '1px solid rgba(255, 255, 255, 0.1)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '4px',
+                    fontSize: '12px',
+                  }}
+                >
+                  <div style={{ fontWeight: 600, color: 'var(--color-teal)' }}>
+                    Endpoint Coverage: {exercisedEndpoints} of {totalEndpoints} endpoints exercised
+                  </div>
+                  {attackResult.coverage.excludedEndpoints.map((ex, idx) => (
+                    <div key={idx} style={{ color: 'var(--color-text-secondary)' }}>
+                      • <code>{ex.endpoint}</code>: {ex.reason}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
-            <div style={{ color: 'var(--color-text-secondary)', fontSize: '12px' }}>
-              All actor requests conformed to specified isolation boundaries under test for build {buildId}.
-            </div>
-          </div>
-        ) : (
+          );
+        })() : (
           <div
             style={{
               padding: '12px 14px',

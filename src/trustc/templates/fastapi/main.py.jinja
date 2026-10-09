@@ -15,9 +15,9 @@ from routers.{{ r.module_name }} import router as {{ r.module_name }}_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
     try:
+        async with engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
         yield
     finally:
         await engine.dispose()
